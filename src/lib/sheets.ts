@@ -69,11 +69,13 @@ export async function checkDuplicate(
   const dataRows = rows[0]?.[3]?.toLowerCase() === 'email' ? rows.slice(1) : rows;
 
   const emailNorm = email.toLowerCase().trim();
-  const phoneNorm = phone.replace(/\s/g, '');
+  // Strip every non-digit character so formatting differences like
+  // "+1 555-123-4567" vs "+1(555)123 4567" still match.
+  const phoneNorm = phone.replace(/\D/g, '');
 
   for (const row of dataRows) {
     if ((row[3] ?? '').toLowerCase().trim() === emailNorm) return 'email';
-    if ((row[4] ?? '').replace(/\s/g, '') === phoneNorm) return 'phone';
+    if ((row[4] ?? '').replace(/\D/g, '') === phoneNorm) return 'phone';
   }
 
   return null;
