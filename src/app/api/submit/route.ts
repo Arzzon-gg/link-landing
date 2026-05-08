@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import { registrationSchema } from '@/lib/validation';
-import { appendRegistration } from '@/lib/sheets';
+import { appendRegistration, checkDuplicate } from '@/lib/sheets';
 import { checkRateLimit } from '@/lib/rate-limit';
 
 export async function POST(req: NextRequest) {
@@ -58,6 +58,28 @@ export async function POST(req: NextRequest) {
   // Column order matches the sheet header:
   // Submission ID | Created At | Name | Email | Phone | Address | Age
   const row = [submissionId, createdAt, name, email, phone, address, String(age)];
+
+  // ── Duplicate check ───────────────────────────────────────────────────────
+  try {
+    const duplicate = await checkDuplicate(email, phone);
+    if (duplicate) {
+      const field = duplicate === 'email' ? 'email address' : 'phone number';
+      return NextResponse.json(
+        {
+          success: false,
+          message: `This ${field} is already registered. Each person can only register once.`,
+        },
+        { status: 409 }
+      );
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown error.';
+    console.error('[submit] Duplicate check error:', message);
+    return NextResponse.json(
+      { success: false, message: 'We could not verify your registration. Please try again.' },
+      { status: 500 }
+    );
+  }
 
   // ── Write to Google Sheets ────────────────────────────────────────────────
   try {

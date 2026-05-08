@@ -27,6 +27,58 @@ function buildCredentials() {
   return { email, privateKey };
 }
 
+// Shared helper — builds an authenticated Sheets client.
+function buildSheetsClient(sheetId: string) {
+  const { email, privateKey } = buildCredentials();
+
+  const auth = new google.auth.GoogleAuth({
+    credentials: { client_email: email, private_key: privateKey },
+    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+  });
+
+  return { sheets: google.sheets({ version: 'v4', auth }), sheetId };
+}
+
+export type DuplicateField = 'email' | 'phone';
+
+/**
+ * Reads all existing rows and checks whether the given email or phone
+ * already appears in the sheet. Returns which field is duplicated, or
+ * null if the registration is new.
+ *
+ * Column indices (0-based): 0=SubmissionID, 1=CreatedAt, 2=Name,
+ *   3=Email, 4=Phone, 5=Address, 6=Age
+ */
+export async function checkDuplicate(
+  email: string,
+  phone: string
+): Promise<DuplicateField | null> {
+  const sheetId = process.env.GOOGLE_SHEET_ID;
+  if (!sheetId) throw new Error('GOOGLE_SHEET_ID is not configured.');
+
+  const { sheets, sheetId: id } = buildSheetsClient(sheetId);
+
+  const res = await sheets.spreadsheets.values.get({
+    spreadsheetId: id,
+    range: SHEET_RANGE,
+  });
+
+  const rows = res.data.values ?? [];
+
+  // Skip header row if present (row[0] would be 'Submission ID' or similar)
+  const dataRows = rows[0]?.[3]?.toLowerCase() === 'email' ? rows.slice(1) : rows;
+
+  const emailNorm = email.toLowerCase().trim();
+  const phoneNorm = phone.replace(/\s/g, '');
+
+  for (const row of dataRows) {
+    if ((row[3] ?? '').toLowerCase().trim() === emailNorm) return 'email';
+    if ((row[4] ?? '').replace(/\s/g, '') === phoneNorm) return 'phone';
+  }
+
+  return null;
+}
+
 export async function appendRegistration(row: string[]): Promise<void> {
   const sheetId = process.env.GOOGLE_SHEET_ID;
 
@@ -36,24 +88,10 @@ export async function appendRegistration(row: string[]): Promise<void> {
     );
   }
 
-  const { email, privateKey } = buildCredentials();
-
-  // GoogleAuth with a credentials object is the recommended approach for
-  // service accounts loaded from environment variables. It avoids the OpenSSL
-  // DECODER routines::unsupported error that google.auth.JWT can trigger on
-  // Node.js 18+ / OpenSSL 3.
-  const auth = new google.auth.GoogleAuth({
-    credentials: {
-      client_email: email,
-      private_key: privateKey,
-    },
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-  });
-
-  const sheets = google.sheets({ version: 'v4', auth });
+  const { sheets, sheetId: id } = buildSheetsClient(sheetId);
 
   await sheets.spreadsheets.values.append({
-    spreadsheetId: sheetId,
+    spreadsheetId: id,
     range: SHEET_RANGE,
     valueInputOption: 'USER_ENTERED',
     insertDataOption: 'INSERT_ROWS',
