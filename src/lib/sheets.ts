@@ -1,15 +1,12 @@
 import { google } from 'googleapis';
 
-// The tab name inside your Google Sheet where rows will be appended.
-// Create this tab manually and add the header row shown below.
-//
 // Column order: Submission ID | Created At | Name | Email | Phone | Address | Age
-const SHEET_TAB = 'Registrations';
-
-// Column range — G covers all 7 columns (A through G)
+// Defaults to 'Sheet1' (the Google Sheets default tab name).
+// Override by setting GOOGLE_SHEET_TAB in your environment.
+const SHEET_TAB = process.env.GOOGLE_SHEET_TAB ?? 'Sheet1';
 const SHEET_RANGE = `${SHEET_TAB}!A:G`;
 
-function buildAuth() {
+function buildCredentials() {
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const rawKey = process.env.GOOGLE_PRIVATE_KEY;
 
@@ -20,15 +17,14 @@ function buildAuth() {
     );
   }
 
-  // Environment variables store \n as a literal two-character sequence.
-  // Replace them so the PEM key is parsed correctly by the Google auth library.
-  const privateKey = rawKey.replace(/\\n/g, '\n');
+  // 1. Strip any surrounding quotes that some env loaders leave in place.
+  // 2. Convert literal \n sequences to real newlines (handles both dotenv modes:
+  //    expanded double-quoted values and unexpanded single-quoted / unquoted values).
+  const privateKey = rawKey
+    .replace(/^["']|["']$/g, '')
+    .replace(/\\n/g, '\n');
 
-  return new google.auth.JWT({
-    email,
-    key: privateKey,
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-  });
+  return { email, privateKey };
 }
 
 export async function appendRegistration(row: string[]): Promise<void> {
@@ -40,7 +36,20 @@ export async function appendRegistration(row: string[]): Promise<void> {
     );
   }
 
-  const auth = buildAuth();
+  const { email, privateKey } = buildCredentials();
+
+  // GoogleAuth with a credentials object is the recommended approach for
+  // service accounts loaded from environment variables. It avoids the OpenSSL
+  // DECODER routines::unsupported error that google.auth.JWT can trigger on
+  // Node.js 18+ / OpenSSL 3.
+  const auth = new google.auth.GoogleAuth({
+    credentials: {
+      client_email: email,
+      private_key: privateKey,
+    },
+    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+  });
+
   const sheets = google.sheets({ version: 'v4', auth });
 
   await sheets.spreadsheets.values.append({
