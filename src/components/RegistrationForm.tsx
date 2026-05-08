@@ -36,6 +36,7 @@ export function RegistrationForm() {
     formState: { errors, isSubmitting },
   } = useForm<RegistrationInput>({
     resolver: zodResolver(registrationSchema),
+    defaultValues: { countryCode: '961' },
   });
 
   async function onSubmit(data: RegistrationInput) {

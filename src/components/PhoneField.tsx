@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { forwardRef } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import type { UseFormRegisterReturn } from 'react-hook-form';
 import { cn } from '@/lib/utils';
 import { COUNTRY_CODES } from '@/data/countryCodes';
@@ -38,48 +38,106 @@ export const PhoneField = forwardRef<HTMLDivElement, PhoneFieldProps>(
       ? `${countryHint.min === countryHint.max ? countryHint.min : `${countryHint.min}–${countryHint.max}`} digits`
       : undefined;
 
+    // Local query state allows typing and filtering the dropdown.
+    const [query, setQuery] = useState<string>(selectedDial ?? '');
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+      setQuery(selectedDial ?? '');
+    }, [selectedDial]);
+
+    const wrapperRef = useRef<HTMLDivElement | null>(null);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+      function onDoc(e: MouseEvent) {
+        if (!wrapperRef.current) return;
+        if (!wrapperRef.current.contains(e.target as Node)) setOpen(false);
+      }
+      document.addEventListener('click', onDoc);
+      return () => document.removeEventListener('click', onDoc);
+    }, []);
+
     return (
-      <div ref={ref} className="space-y-1.5">
+      <div ref={(node) => {
+        // forward incoming ref to the wrapper too
+        // @ts-ignore
+        if (typeof ref === 'function') ref(node);
+        else if (ref) (ref as any).current = node;
+        wrapperRef.current = node;
+      }} className="space-y-1.5">
         <label className="block text-[11px] font-semibold tracking-widest uppercase text-slate-500">
           Phone Number
         </label>
 
-        <div className="flex gap-2">
-          {/* ── Country code select ───────────────────────────────── */}
-          <select
-            {...countryCodeReg}
-            className={cn(
-              inputBase,
-              'h-11 rounded-xl cursor-pointer appearance-none pr-2 pl-3',
-              // fixed width to fit "🇦🇫 +213" comfortably
-              'w-[108px] shrink-0',
-              hasError && 'border-red-500/40 focus:border-red-500/60 focus:shadow-[0_0_0_1px_rgba(239,68,68,0.3)]'
-            )}
-          >
-            <option value="" disabled>
-              🌐 Code
-            </option>
-            {COUNTRY_CODES.map((c) => (
-              <option key={`${c.name}-${c.dial}`} value={c.dial}>
-                {c.flag} +{c.dial}
-              </option>
-            ))}
-          </select>
+        <div className="relative">
+          <div className="flex gap-2">
+            {/* ── Country code input (editable) with custom dropdown ── */}
+            <div className="relative w-[120px] shrink-0">
+              <input
+                {...countryCodeReg}
+                value={query}
+                onChange={(e) => {
+                  const v = e.target.value.replace(/[^0-9]/g, '');
+                  setQuery(v);
+                  // notify react-hook-form
+                  try { countryCodeReg.onChange && countryCodeReg.onChange({ target: { value: v } } as any); } catch {}
+                  setOpen(true);
+                }}
+                onFocus={() => setOpen(true)}
+                className={cn(
+                  inputBase,
+                  'h-11 rounded-xl pr-3 pl-3 cursor-text',
+                  hasError && 'border-red-500/40 focus:border-red-500/60'
+                )}
+                placeholder="Code"
+                aria-label="Country code"
+              />
 
-          {/* ── Phone number input ────────────────────────────────── */}
-          <input
-            {...phoneNumberReg}
-            id="phoneNumber"
-            type="tel"
-            inputMode="numeric"
-            placeholder={hintText ? `e.g. ${'0'.repeat(countryHint!.min)}` : 'Number'}
-            autoComplete="tel-national"
-            className={cn(
-              inputBase,
-              'h-11 rounded-xl flex-1',
-              hasError && 'border-red-500/40 focus:border-red-500/60 focus:shadow-[0_0_0_1px_rgba(239,68,68,0.3)]'
-            )}
-          />
+              {/* Dropdown */}
+              {open && (
+                <ul className="absolute z-40 mt-1 left-0 right-0 max-h-56 overflow-auto rounded-lg bg-white shadow-lg ring-1 ring-black/5">
+                  {COUNTRY_CODES.filter((c) => {
+                    const q = query.trim();
+                    if (!q) return true;
+                    return c.dial.startsWith(q) || c.name.toLowerCase().includes(q.toLowerCase());
+                  }).map((c) => (
+                    <li
+                      key={`${c.name}-${c.dial}`}
+                      role="option"
+                      onMouseDown={(ev) => {
+                        ev.preventDefault();
+                        // set dial
+                        setQuery(c.dial);
+                        try { countryCodeReg.onChange && countryCodeReg.onChange({ target: { value: c.dial } } as any); } catch {}
+                        setOpen(false);
+                      }}
+                      className="cursor-pointer px-3 py-2 hover:bg-sky-600 hover:text-white text-sm text-slate-900 flex items-center gap-2"
+                    >
+                      <span className="text-lg">{c.flag}</span>
+                      <span className="flex-1">{c.name}</span>
+                      <span className="font-mono">+{c.dial}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {/* ── Phone number input ────────────────────────────────── */}
+            <input
+              {...phoneNumberReg}
+              id="phoneNumber"
+              type="tel"
+              inputMode="numeric"
+              placeholder={hintText ? `e.g. ${'0'.repeat(countryHint!.min)}` : 'Number'}
+              autoComplete="tel-national"
+              className={cn(
+                inputBase,
+                'h-11 rounded-xl flex-1',
+                hasError && 'border-red-500/40 focus:border-red-500/60'
+              )}
+            />
+          </div>
         </div>
 
         {/* Hint text (expected digit length) */}
