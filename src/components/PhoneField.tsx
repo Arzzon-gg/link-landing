@@ -96,7 +96,7 @@ export const PhoneField = forwardRef<HTMLDivElement, PhoneFieldProps>(
 
               {/* Dropdown */}
               {open && (
-                <ul className="absolute z-40 mt-1 left-0 right-0 max-h-56 overflow-auto rounded-lg bg-white shadow-lg ring-1 ring-black/5">
+                <ul className="absolute z-40 mt-1 left-0 right-0 max-h-56 overflow-auto rounded-lg bg-white shadow-lg ring-1 ring-black/5 w-[150px]">
                   {COUNTRY_CODES.filter((c) => {
                     const q = query.trim();
                     if (!q) return true;
