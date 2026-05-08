@@ -49,7 +49,10 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { name, email, phone, address, age } = parsed.data;
+  const { name, email, countryCode, phoneNumber, address, age } = parsed.data;
+
+  // Combine into a full international phone string stored in the sheet
+  const phone = `+${countryCode}${phoneNumber}`;
 
   // ── Build the row ─────────────────────────────────────────────────────────
   const submissionId = uuidv4();

@@ -8,6 +8,7 @@ import { Gamepad2, Zap, Loader2, AlertCircle } from 'lucide-react';
 
 import { registrationSchema, type RegistrationInput } from '@/lib/validation';
 import { FormField } from './FormField';
+import { PhoneField } from './PhoneField';
 import { SuccessScreen } from './SuccessScreen';
 import type { ApiResponse } from '@/types/form';
 
@@ -31,6 +32,7 @@ export function RegistrationForm() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<RegistrationInput>({
     resolver: zodResolver(registrationSchema),
@@ -157,14 +159,12 @@ export function RegistrationForm() {
 
             {/* Phone */}
             <motion.div variants={rowVariants}>
-              <FormField
-                label="Phone Number"
-                id="phone"
-                type="tel"
-                placeholder="+1 555 000 0000"
-                autoComplete="tel"
-                error={errors.phone?.message}
-                {...register('phone')}
+              <PhoneField
+                countryCodeReg={register('countryCode')}
+                phoneNumberReg={register('phoneNumber')}
+                countryCodeError={errors.countryCode?.message}
+                phoneNumberError={errors.phoneNumber?.message}
+                selectedDial={watch('countryCode')}
               />
             </motion.div>
 
