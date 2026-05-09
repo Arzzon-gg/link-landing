@@ -135,13 +135,13 @@ export function RegistrationForm() {
                 />
               </div>
               <FormField
-                label="Age"
-                id="age"
-                type="number"
-                placeholder="24"
-                autoComplete="off"
-                error={errors.age?.message}
-                {...register('age')}
+                label="Date of Birth"
+                id="dateOfBirth"
+                type="date"
+                placeholder=""
+                autoComplete="bday"
+                error={errors.dateOfBirth?.message}
+                {...register('dateOfBirth')}
               />
             </motion.div>
 

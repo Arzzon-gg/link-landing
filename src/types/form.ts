@@ -3,7 +3,7 @@ export interface FormValues {
   phone: string;
   email: string;
   address: string;
-  age: number;
+  dateOfBirth: string; // ISO date (YYYY-MM-DD)
 }
 
 export interface ApiResponse {

@@ -35,12 +35,8 @@ export const registrationSchema = z
       .min(10, 'Please enter your full address (at least 10 characters)')
       .max(300, 'Address is too long'),
 
-    // z.coerce handles the string-to-number cast from the HTML input
-    age: z.coerce
-      .number({ invalid_type_error: 'Age must be a number' })
-      .int('Age must be a whole number')
-      .min(13, 'You must be at least 13 years old to register')
-      .max(120, 'Please enter a valid age'),
+    // Date of birth as an ISO date string (YYYY-MM-DD)
+    dateOfBirth: z.string().min(1, 'Date of birth is required'),
   })
   .superRefine((data, ctx) => {
     const country = COUNTRY_CODES.find((c) => c.dial === data.countryCode);
@@ -67,6 +63,26 @@ export const registrationSchema = z
         message: `${country.name} numbers must be at most ${country.max} digits`,
         path: ['phoneNumber'],
       });
+    }
+
+    // Validate dateOfBirth: must be a valid date and age between 13 and 120
+    try {
+      const dob = new Date(data.dateOfBirth);
+      if (Number.isNaN(dob.getTime())) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Please enter a valid date', path: ['dateOfBirth'] });
+      } else {
+        const now = new Date();
+        let age = now.getFullYear() - dob.getFullYear();
+        const m = now.getMonth() - dob.getMonth();
+        if (m < 0 || (m === 0 && now.getDate() < dob.getDate())) age--;
+        if (age < 13) {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'You must be at least 13 years old to register', path: ['dateOfBirth'] });
+        } else if (age > 120) {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Please enter a valid date of birth', path: ['dateOfBirth'] });
+        }
+      }
+    } catch (e) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Please enter a valid date', path: ['dateOfBirth'] });
     }
   });
 

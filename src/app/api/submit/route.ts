@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { name, email, countryCode, phoneNumber, address, age } = parsed.data;
+  const { name, email, countryCode, phoneNumber, address, dateOfBirth } = parsed.data;
 
   // Combine into a full international phone string stored in the sheet
   const phone = `+${countryCode}${phoneNumber}`;
@@ -59,8 +59,9 @@ export async function POST(req: NextRequest) {
   const createdAt = new Date().toISOString();
 
   // Column order matches the sheet header:
-  // Submission ID | Created At | Name | Email | Phone | Address | Age
-  const row = [submissionId, createdAt, name, email, phone, address, String(age)];
+  // Submission ID | Created At | Name | Email | Phone | Address | DateOfBirth
+  // Store dateOfBirth as the provided ISO date (YYYY-MM-DD)
+  const row = [submissionId, createdAt, name, email, phone, address, String(dateOfBirth)];
 
   // ── Duplicate check ───────────────────────────────────────────────────────
   try {
