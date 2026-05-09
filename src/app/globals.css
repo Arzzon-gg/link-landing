@@ -106,3 +106,20 @@ input[type='number'] {
   border-radius: inherit;
   z-index: 0;
 }
+
+/* Date input tweaks: extra right padding for the native calendar icon
+   and lighter icon color for dark background. */
+input[type="date"] {
+  padding-right: 0.5rem; /* make room for the calendar icon */
+}
+
+/* WebKit/Blink calendar icon color tweak */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) grayscale(1) contrast(0.9) brightness(1.1);
+  opacity: 0.95;
+}
+
+/* Firefox uses a different pseudo; give it a lighter tint where supported */
+input[type="date"]::-moz-focus-inner {
+  color: #ffffff;
+}

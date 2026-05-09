@@ -53,7 +53,7 @@ export const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
             id={id}
             type={type}
             ref={ref}
-            className={cn(sharedInputClasses, 'h-11')}
+            className={cn(sharedInputClasses, 'h-11', type === 'date' && 'pr-12')}
             {...rest}
           />
         )}
