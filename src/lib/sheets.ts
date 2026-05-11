@@ -1,10 +1,10 @@
 import { google } from 'googleapis';
 
-// Column order: Submission ID | Created At | Name | Email | Phone | Address | DateOfBirth
+// Column order: Submission ID | Created At | Name | Email | Phone | Address | DateOfBirth | Married | AnniversaryDate
 // Defaults to 'Sheet1' (the Google Sheets default tab name).
 // Override by setting GOOGLE_SHEET_TAB in your environment.
 const SHEET_TAB = process.env.GOOGLE_SHEET_TAB ?? 'Sheet1';
-const SHEET_RANGE = `${SHEET_TAB}!A:G`;
+const SHEET_RANGE = `${SHEET_TAB}!A:I`;
 
 function buildCredentials() {
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
@@ -47,7 +47,7 @@ export type DuplicateField = 'email' | 'phone';
  * null if the registration is new.
  *
  * Column indices (0-based): 0=SubmissionID, 1=CreatedAt, 2=Name,
- *   3=Email, 4=Phone, 5=Address, 6=DateOfBirth
+ *   3=Email, 4=Phone, 5=Address, 6=DateOfBirth, 7=Married, 8=AnniversaryDate
  */
 export async function checkDuplicate(
   email: string,

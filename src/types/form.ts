@@ -4,6 +4,8 @@ export interface FormValues {
   email: string;
   address: string;
   dateOfBirth: string; // ISO date (YYYY-MM-DD)
+  married?: 'yes' | 'no';
+  anniversaryDate?: string;
 }
 
 export interface ApiResponse {

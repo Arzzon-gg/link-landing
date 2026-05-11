@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'LINK — Early Access',
+  title: 'Prelaunch Form',
   description:
     'Be the first to experience the future of arcade gaming. Register now and secure your spot.',
   // Keep the page off public search indices during pre-launch

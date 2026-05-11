@@ -4,13 +4,20 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Gamepad2, Zap, Loader2, AlertCircle } from 'lucide-react';
+import Image from 'next/image';
+import { AlertCircle } from 'lucide-react';
 
-import { registrationSchema, type RegistrationInput } from '@/lib/validation';
+import { cn } from '@/lib/utils';
+import {
+  getAgeFromDateOfBirth,
+  registrationSchema,
+  type RegistrationInput,
+} from '@/lib/validation';
 import { FormField } from './FormField';
 import { PhoneField } from './PhoneField';
 import { SuccessScreen } from './SuccessScreen';
 import type { ApiResponse } from '@/types/form';
+import logo from '../../ZlinkLogo.png';
 
 // Staggered entrance for each form row
 const containerVariants = {
@@ -37,7 +44,14 @@ export function RegistrationForm() {
   } = useForm<RegistrationInput>({
     resolver: zodResolver(registrationSchema),
     defaultValues: { countryCode: '961' },
+    shouldUnregister: true,
   });
+
+  const dateOfBirth = watch('dateOfBirth');
+  const married = watch('married');
+  const age = getAgeFromDateOfBirth(dateOfBirth);
+  const showMarriageQuestion = age !== null && age > 19;
+  const showAnniversaryDate = showMarriageQuestion && married === 'yes';
 
   async function onSubmit(data: RegistrationInput) {
     setServerError(null);
@@ -74,41 +88,30 @@ export function RegistrationForm() {
       className="relative w-full max-w-lg mx-auto"
     >
       {/* Card */}
-      <div className="scanlines relative rounded-2xl border border-violet-500/[0.18] bg-[rgba(10,10,25,0.92)] backdrop-blur-xl shadow-[0_0_80px_rgba(139,92,246,0.07),0_0_0_1px_rgba(139,92,246,0.05)]">
-        {/* Top gradient line */}
-        <div className="absolute top-0 left-0 right-0 h-px rounded-t-2xl bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" />
+      <div className="plasma-frame relative rounded-[2.2rem] p-[6px]">
+        <div className="plasma-frame__glow absolute -inset-3 rounded-[2.6rem]" />
+        <div className="plasma-frame__orbit absolute inset-0 rounded-[inherit]" />
+        <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-[linear-gradient(135deg,rgba(255,255,255,0.24),rgba(255,255,255,0.02)_26%,rgba(255,255,255,0.16)_54%,rgba(255,255,255,0.03)_100%)] opacity-75" />
 
-        {/* Corner brackets */}
-        <div className="absolute top-3.5 left-3.5 w-5 h-5 border-l-2 border-t-2 border-violet-500/25 rounded-tl" />
-        <div className="absolute top-3.5 right-3.5 w-5 h-5 border-r-2 border-t-2 border-violet-500/25 rounded-tr" />
-        <div className="absolute bottom-3.5 left-3.5 w-5 h-5 border-l-2 border-b-2 border-violet-500/25 rounded-bl" />
-        <div className="absolute bottom-3.5 right-3.5 w-5 h-5 border-r-2 border-b-2 border-violet-500/25 rounded-br" />
+        <div className="scanlines relative z-10 rounded-[calc(2.2rem-6px)] border border-white/10 bg-[linear-gradient(180deg,rgba(11,13,23,0.97),rgba(8,9,18,0.94))] backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_0_0_1px_rgba(255,255,255,0.04)]">
+          <div className="pointer-events-none absolute inset-[14px] rounded-[1.5rem] border border-white/[0.055]" />
 
-        <div className="relative z-10 p-8 sm:p-10">
+          <div className="relative z-10 p-8 sm:p-10">
           {/* ── Header ─────────────────────────────────────────────────── */}
           <div className="text-center mb-8">
-            {/* Brand icon */}
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-violet-500/10 border border-violet-500/20 mb-5">
-              <Gamepad2 className="w-5 h-5 text-violet-400" />
+            {/* Brand logo */}
+            <div className="relative mx-auto mb-5 h-28 w-28 sm:h-32 sm:w-32">
+              <Image
+                src={logo}
+                alt="Brand logo"
+                fill
+                priority
+                className="object-contain drop-shadow-[0_10px_24px_rgba(0,0,0,0.35)]"
+              />
             </div>
-
-            {/* Early Access badge */}
-            <div className="flex justify-center mb-4">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-violet-500/10 to-cyan-500/10 border border-violet-500/20">
-                <Zap className="w-3 h-3 text-cyan-400" />
-                <span className="text-[10px] font-bold tracking-[0.18em] text-cyan-400 uppercase">
-                  Early Access
-                </span>
-              </div>
-            </div>
-
-            <h1 className="text-4xl font-black tracking-tight gradient-text mb-2.5">
-              LINK
-            </h1>
 
             <p className="text-slate-400 text-sm leading-relaxed max-w-xs mx-auto">
-              Be the first to experience the future of arcade gaming.
-              Register now and unlock your exclusive early spot.
+              Register to get exclusive offers! Enjoy!
             </p>
           </div>
 
@@ -144,6 +147,80 @@ export function RegistrationForm() {
                 {...register('dateOfBirth')}
               />
             </motion.div>
+
+            <AnimatePresence initial={false}>
+              {showMarriageQuestion && (
+                <motion.div
+                  key="marital-status"
+                  variants={rowVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                  className="space-y-1.5"
+                >
+                  <label className="block text-[11px] font-semibold tracking-widest uppercase text-slate-500">
+                    Are you married?
+                  </label>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <label
+                      className={cn(
+                        'flex h-11 cursor-pointer items-center justify-center rounded-xl border px-4 text-sm font-medium transition-all',
+                        married === 'no'
+                          ? 'border-violet-500/60 bg-violet-500/10 text-white shadow-[0_0_0_1px_rgba(139,92,246,0.2)]'
+                          : 'border-white/[0.08] bg-white/[0.04] text-slate-300 hover:border-white/[0.16] hover:bg-white/[0.06]'
+                      )}
+                    >
+                      <input type="radio" value="no" className="sr-only" {...register('married')} />
+                      No
+                    </label>
+
+                    <label
+                      className={cn(
+                        'flex h-11 cursor-pointer items-center justify-center rounded-xl border px-4 text-sm font-medium transition-all',
+                        married === 'yes'
+                          ? 'border-violet-500/60 bg-violet-500/10 text-white shadow-[0_0_0_1px_rgba(139,92,246,0.2)]'
+                          : 'border-white/[0.08] bg-white/[0.04] text-slate-300 hover:border-white/[0.16] hover:bg-white/[0.06]'
+                      )}
+                    >
+                      <input type="radio" value="yes" className="sr-only" {...register('married')} />
+                      Yes
+                    </label>
+                  </div>
+
+                  <div
+                    className={cn(
+                      'overflow-hidden transition-all duration-200',
+                      errors.married?.message ? 'max-h-8 opacity-100' : 'max-h-0 opacity-0'
+                    )}
+                  >
+                    <p className="text-xs text-red-400 pt-0.5">{errors.married?.message}</p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence initial={false}>
+              {showAnniversaryDate && (
+                <motion.div
+                  key="anniversary-date"
+                  variants={rowVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                >
+                  <FormField
+                    label="Anniversary Date"
+                    id="anniversaryDate"
+                    type="date"
+                    placeholder=""
+                    autoComplete="off"
+                    error={errors.anniversaryDate?.message}
+                    {...register('anniversaryDate')}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Email */}
             <motion.div variants={rowVariants}>
@@ -223,17 +300,7 @@ export function RegistrationForm() {
                 <div className="absolute inset-0 rounded-xl shadow-[0_0_24px_rgba(139,92,246,0)] group-hover:shadow-[0_0_24px_rgba(139,92,246,0.35)] transition-shadow duration-300" />
 
                 <span className="relative flex items-center justify-center gap-2">
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Registering…
-                    </>
-                  ) : (
-                    <>
-                      <Zap className="w-4 h-4" />
-                      Claim My Spot
-                    </>
-                  )}
+                  {isSubmitting ? <>Submitting…</> : <>Submit</>}
                 </span>
               </button>
             </motion.div>
@@ -247,6 +314,7 @@ export function RegistrationForm() {
             </motion.p>
           </motion.form>
         </div>
+      </div>
       </div>
     </motion.div>
   );

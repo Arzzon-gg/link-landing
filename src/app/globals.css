@@ -107,6 +107,141 @@ input[type='number'] {
   z-index: 0;
 }
 
+/* Animated plasma border shell for the main form card. */
+.plasma-frame {
+  isolation: isolate;
+  overflow: visible;
+}
+
+.plasma-frame__orbit,
+.plasma-frame__glow {
+  background-repeat: no-repeat;
+  transform-origin: center;
+  will-change: background-position, background-size, opacity, filter;
+}
+
+.plasma-frame__orbit {
+  background-image:
+    radial-gradient(circle at 14% 18%, rgba(244, 114, 182, 0.95) 0%, rgba(244, 114, 182, 0.72) 14%, transparent 38%),
+    radial-gradient(circle at 84% 16%, rgba(96, 165, 250, 0.92) 0%, rgba(96, 165, 250, 0.7) 13%, transparent 34%),
+    radial-gradient(circle at 78% 82%, rgba(253, 224, 71, 0.82) 0%, rgba(253, 224, 71, 0.58) 12%, transparent 33%),
+    radial-gradient(circle at 18% 84%, rgba(45, 212, 191, 0.84) 0%, rgba(45, 212, 191, 0.6) 14%, transparent 36%),
+    conic-gradient(
+      from 180deg at 50% 50%,
+      #f472b6 0deg,
+      #d946ef 55deg,
+      #8b5cf6 118deg,
+      #60a5fa 174deg,
+      #2dd4bf 232deg,
+      #a3e635 286deg,
+      #fde047 324deg,
+      #fb923c 350deg,
+      #f472b6 360deg
+    );
+  background-size: 170% 170%, 185% 185%, 175% 175%, 180% 180%, 145% 145%;
+  background-position: 4% 12%, 92% 10%, 82% 88%, 8% 86%, 50% 50%;
+  filter: saturate(1.22) contrast(1.06);
+  animation: plasmaFlow 16s ease-in-out infinite, plasmaPulse 7s ease-in-out infinite;
+}
+
+.plasma-frame__glow {
+  background-image:
+    radial-gradient(circle at 22% 30%, rgba(244, 114, 182, 0.9) 0%, rgba(244, 114, 182, 0.4) 16%, transparent 42%),
+    radial-gradient(circle at 76% 24%, rgba(129, 140, 248, 0.85) 0%, rgba(129, 140, 248, 0.42) 16%, transparent 40%),
+    radial-gradient(circle at 72% 78%, rgba(163, 230, 53, 0.78) 0%, rgba(163, 230, 53, 0.34) 14%, transparent 36%),
+    radial-gradient(circle at 24% 76%, rgba(34, 211, 238, 0.82) 0%, rgba(34, 211, 238, 0.34) 15%, transparent 38%),
+    conic-gradient(
+      from 30deg at 50% 50%,
+      rgba(244, 114, 182, 0.8) 0deg,
+      rgba(168, 85, 247, 0.72) 70deg,
+      rgba(96, 165, 250, 0.74) 155deg,
+      rgba(45, 212, 191, 0.72) 225deg,
+      rgba(253, 224, 71, 0.7) 305deg,
+      rgba(251, 146, 60, 0.76) 340deg,
+      rgba(244, 114, 182, 0.8) 360deg
+    );
+  background-size: 190% 190%, 205% 205%, 200% 200%, 198% 198%, 155% 155%;
+  background-position: 18% 22%, 84% 18%, 74% 82%, 18% 78%, 50% 50%;
+  opacity: 0.82;
+  filter: blur(28px) saturate(1.35);
+  animation: plasmaFlowReverse 20s ease-in-out infinite, plasmaBloom 4.8s ease-in-out infinite;
+}
+
+@keyframes plasmaFlow {
+  0% {
+    background-position: 4% 12%, 92% 10%, 82% 88%, 8% 86%, 50% 50%;
+    background-size: 170% 170%, 185% 185%, 175% 175%, 180% 180%, 145% 145%;
+  }
+  25% {
+    background-position: 14% 28%, 78% 6%, 92% 66%, 4% 74%, 46% 52%;
+    background-size: 182% 182%, 174% 174%, 188% 188%, 168% 168%, 152% 152%;
+  }
+  50% {
+    background-position: 10% 8%, 88% 26%, 68% 90%, 18% 82%, 54% 44%;
+    background-size: 176% 176%, 194% 194%, 170% 170%, 186% 186%, 148% 148%;
+  }
+  75% {
+    background-position: 2% 24%, 96% 14%, 84% 74%, 12% 92%, 48% 56%;
+    background-size: 188% 188%, 180% 180%, 184% 184%, 174% 174%, 154% 154%;
+  }
+  100% {
+    background-position: 4% 12%, 92% 10%, 82% 88%, 8% 86%, 50% 50%;
+    background-size: 170% 170%, 185% 185%, 175% 175%, 180% 180%, 145% 145%;
+  }
+}
+
+@keyframes plasmaFlowReverse {
+  0% {
+    background-position: 18% 22%, 84% 18%, 74% 82%, 18% 78%, 50% 50%;
+    background-size: 190% 190%, 205% 205%, 200% 200%, 198% 198%, 155% 155%;
+  }
+  25% {
+    background-position: 24% 10%, 90% 28%, 62% 88%, 10% 70%, 54% 48%;
+    background-size: 208% 208%, 192% 192%, 184% 184%, 206% 206%, 162% 162%;
+  }
+  50% {
+    background-position: 8% 30%, 72% 10%, 82% 68%, 22% 86%, 46% 56%;
+    background-size: 194% 194%, 214% 214%, 206% 206%, 188% 188%, 150% 150%;
+  }
+  75% {
+    background-position: 16% 16%, 88% 8%, 70% 92%, 14% 74%, 56% 46%;
+    background-size: 202% 202%, 196% 196%, 214% 214%, 194% 194%, 160% 160%;
+  }
+  100% {
+    background-position: 18% 22%, 84% 18%, 74% 82%, 18% 78%, 50% 50%;
+    background-size: 190% 190%, 205% 205%, 200% 200%, 198% 198%, 155% 155%;
+  }
+}
+
+@keyframes plasmaPulse {
+  0%,
+  100% {
+    filter: saturate(1.16) contrast(1.02);
+  }
+  50% {
+    filter: saturate(1.32) contrast(1.12);
+  }
+}
+
+@keyframes plasmaBloom {
+  0%,
+  100% {
+    opacity: 0.58;
+    filter: blur(24px) saturate(1.18);
+  }
+  50% {
+    opacity: 0.9;
+    filter: blur(34px) saturate(1.45);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plasma-frame__orbit,
+  .plasma-frame__glow {
+    animation: none;
+  }
+}
+
 /* Date input tweaks: extra right padding for the native calendar icon
    and lighter icon color for dark background. */
 input[type="date"] {

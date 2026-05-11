@@ -49,19 +49,40 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { name, email, countryCode, phoneNumber, address, dateOfBirth } = parsed.data;
+  const {
+    name,
+    email,
+    countryCode,
+    phoneNumber,
+    address,
+    dateOfBirth,
+    married,
+    anniversaryDate,
+  } = parsed.data;
 
   // Combine into a full international phone string stored in the sheet
   const phone = `+${countryCode}${phoneNumber}`;
+  const maritalStatus = married === 'yes' ? 'Yes' : married === 'no' ? 'No' : '';
+  const anniversary = married === 'yes' ? String(anniversaryDate ?? '') : '';
 
   // ── Build the row ─────────────────────────────────────────────────────────
   const submissionId = uuidv4();
   const createdAt = new Date().toISOString();
 
   // Column order matches the sheet header:
-  // Submission ID | Created At | Name | Email | Phone | Address | DateOfBirth
+  // Submission ID | Created At | Name | Email | Phone | Address | DateOfBirth | Married | AnniversaryDate
   // Store dateOfBirth as the provided ISO date (YYYY-MM-DD)
-  const row = [submissionId, createdAt, name, email, phone, address, String(dateOfBirth)];
+  const row = [
+    submissionId,
+    createdAt,
+    name,
+    email,
+    phone,
+    address,
+    String(dateOfBirth),
+    maritalStatus,
+    anniversary,
+  ];
 
   // ── Duplicate check ───────────────────────────────────────────────────────
   try {

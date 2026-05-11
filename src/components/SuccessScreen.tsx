@@ -91,8 +91,6 @@ export function SuccessScreen({ submissionId }: SuccessScreenProps) {
           </h2>
 
           <p className="text-slate-400 text-sm leading-relaxed mb-8">
-            Welcome to the LINK early access list.
-            <br />
             We&apos;ll reach out as soon as your access is ready.
           </p>
 
