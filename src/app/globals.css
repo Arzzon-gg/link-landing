@@ -90,6 +90,20 @@ input[type='number'] {
   background-clip: text;
 }
 
+.logo-button-text {
+  display: inline-block;
+  font-family: var(--font-orbitron), var(--font-inter), sans-serif;
+  font-size: 1.34rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: #d1d5db;
+  text-shadow:
+    0 1px 0 rgba(107, 114, 128, 0.28),
+    0 2px 3px rgba(0, 0, 0, 0.26);
+}
+
 /* ─── Subtle scanline overlay (applied to a pseudo-element) ─── */
 .scanlines::after {
   content: '';
@@ -164,7 +178,7 @@ input[type='number'] {
   background-position: 18% 22%, 84% 18%, 74% 82%, 18% 78%, 50% 50%;
   opacity: 0.82;
   filter: blur(28px) saturate(1.35);
-  animation: plasmaFlowReverse 20s ease-in-out infinite, plasmaBloom 4.8s ease-in-out infinite;
+  animation: none;
 }
 
 @keyframes plasmaFlow {

@@ -277,32 +277,37 @@ export function RegistrationForm() {
 
             {/* Submit */}
             <motion.div variants={rowVariants} className="pt-1">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="
-                  relative w-full h-12 rounded-xl font-semibold text-sm tracking-wide
-                  text-white overflow-hidden group
-                  transition-transform duration-150 active:scale-[0.98]
-                  disabled:opacity-55 disabled:cursor-not-allowed disabled:active:scale-100
-                "
+              <div
+                className={cn(
+                  'group relative rounded-xl bg-[linear-gradient(135deg,#f472b6_0%,#c084fc_22%,#60a5fa_43%,#2dd4bf_62%,#a3e635_80%,#fb923c_100%)] p-[0.5px] shadow-[0_0_26px_rgba(192,132,252,0.14)] transition-all duration-300',
+                  isSubmitting && 'opacity-70'
+                )}
               >
-                {/* Base gradient */}
-                <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-cyan-600" />
+                <div className="pointer-events-none absolute -inset-1 rounded-[0.95rem] bg-[linear-gradient(135deg,rgba(244,114,182,0.65)_0%,rgba(192,132,252,0.55)_22%,rgba(96,165,250,0.55)_43%,rgba(45,212,191,0.5)_62%,rgba(163,230,53,0.48)_80%,rgba(251,146,60,0.58)_100%)] opacity-55 blur-md transition-opacity duration-300 group-hover:opacity-90" />
 
-                {/* Hover brightening layer */}
-                <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="
+                    relative w-full h-12 rounded-[10px] font-semibold text-sm tracking-wide
+                    text-slate-100 overflow-hidden
+                    transition-transform duration-150 active:scale-[0.98]
+                    disabled:cursor-not-allowed disabled:active:scale-100
+                  "
+                >
+                  {/* Dark metallic base */}
+                  <div className="absolute inset-0 bg-[linear-gradient(180deg,#1f2127_0%,#0f1014_46%,#06070a_100%)]" />
 
-                {/* Shimmer sweep on hover */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.12] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
+                  {/* Inner edge line */}
+                  <div className="absolute inset-[1px] rounded-[9px] border border-white/10" />
 
-                {/* Edge glow */}
-                <div className="absolute inset-0 rounded-xl shadow-[0_0_24px_rgba(139,92,246,0)] group-hover:shadow-[0_0_24px_rgba(139,92,246,0.35)] transition-shadow duration-300" />
-
-                <span className="relative flex items-center justify-center gap-2">
-                  {isSubmitting ? <>Submitting…</> : <>Submit</>}
-                </span>
-              </button>
+                  <span className="relative flex h-full items-center justify-center gap-2">
+                    <span className="logo-button-text">
+                    {isSubmitting ? <>Submitting…</> : <>Submit</>}
+                    </span>
+                  </span>
+                </button>
+              </div>
             </motion.div>
 
             {/* Privacy note */}
