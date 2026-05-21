@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Instagram, Youtube } from 'lucide-react';
 import { NewsletterForm } from './NewsletterForm';
+import Image from 'next/image';
 
 const quickLinks = ['Activities', 'Food & Drinks', 'Birthdays', 'Offers', 'Gallery', 'About', 'Contact'];
 const usefulInfo = ['About Us', 'FAQs', 'Blog', 'Careers', 'Privacy Policy', 'Terms & Conditions'];
@@ -16,10 +17,8 @@ export function Footer() {
 
           {/* Brand column */}
           <div className="col-span-2 sm:col-span-1">
-            <div className="border-2 border-white/60 px-3 py-2 leading-none text-center w-fit mb-5">
-              <div className="text-[9px] font-bold tracking-[0.25em] text-white font-orbitron">THE</div>
-              <div className="text-lg font-black text-white font-orbitron leading-tight">Link</div>
-              <div className="text-[7px] tracking-[0.2em] text-white/55 font-orbitron mt-0.5">FOREVER YOUNG</div>
+            <div className="leading-none w-fit mb-5">
+                <Image src="/images/ZlinkLogo.png" alt="The Link logo" width={150} height={50} className="object-contain" />
             </div>
             <p className="text-white/38 text-xs leading-relaxed mb-5 max-w-[190px]">
               Your ultimate hangout destination for games, good food, and great memories.

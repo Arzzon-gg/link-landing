@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
+import Image from 'next/image';
 
 const navLinks = [
   { label: 'HOME', href: '#home' },
@@ -37,11 +38,7 @@ export function Navbar() {
 
           {/* Logo */}
           <Link href="/" className="flex-shrink-0 group">
-            <div className="border-2 border-white/70 px-3 py-2 leading-none text-center group-hover:border-white transition-colors duration-200">
-              <div className="text-[9px] font-bold tracking-[0.25em] text-white font-orbitron">THE</div>
-              <div className="text-xl font-black text-white font-orbitron leading-tight">Link</div>
-              <div className="text-[7px] tracking-[0.2em] text-white/60 font-orbitron mt-0.5">FOREVER YOUNG</div>
-            </div>
+            <Image src="/images/ZlinkLogo.png" alt="The Link logo" width={100} height={40} className="object-contain" />
           </Link>
 
           {/* Desktop Nav */}

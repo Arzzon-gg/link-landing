@@ -17,8 +17,6 @@ import { FormField } from './FormField';
 import { PhoneField } from './PhoneField';
 import { SuccessScreen } from './SuccessScreen';
 import type { ApiResponse } from '@/types/form';
-import logo from '../../ZlinkLogo.png';
-import submitText from '../../submit-text.png';
 
 // Staggered entrance for each form row
 const containerVariants = {
@@ -103,7 +101,7 @@ export function RegistrationForm() {
             {/* Brand logo */}
             <div className="relative mx-auto mb-5 h-28 w-28 sm:h-32 sm:w-32">
               <Image
-                src={logo}
+                src="/images/ZlinkLogo.png"
                 alt="Brand logo"
                 fill
                 priority
@@ -277,10 +275,10 @@ export function RegistrationForm() {
             </AnimatePresence>
 
             {/* Submit */}
-            <motion.div variants={rowVariants} className="pt-1 flex justify-center">
+            <motion.div variants={rowVariants} className="pt-1">
               <div
                 className={cn(
-                  'group relative rounded-xl bg-[linear-gradient(135deg,#f472b6_0%,#c084fc_22%,#60a5fa_43%,#2dd4bf_62%,#a3e635_80%,#fb923c_100%)] p-[0.5px] shadow-[0_0_26px_rgba(192,132,252,0.14)] transition-all duration-300 w-fit',
+                  'group relative rounded-xl bg-[linear-gradient(135deg,#f472b6_0%,#c084fc_22%,#60a5fa_43%,#2dd4bf_62%,#a3e635_80%,#fb923c_100%)] p-[0.5px] shadow-[0_0_26px_rgba(192,132,252,0.14)] transition-all duration-300',
                   isSubmitting && 'opacity-70'
                 )}
               >
@@ -290,7 +288,7 @@ export function RegistrationForm() {
                   type="submit"
                   disabled={isSubmitting}
                   className="
-                    relative w-fit px-6 h-12 rounded-[10px] font-semibold text-sm tracking-wide
+                    relative w-full h-12 rounded-[10px] font-semibold text-sm tracking-wide
                     text-slate-100 overflow-hidden
                     transition-transform duration-150 active:scale-[0.98]
                     disabled:cursor-not-allowed disabled:active:scale-100
@@ -303,13 +301,9 @@ export function RegistrationForm() {
                   <div className="absolute inset-[1px] rounded-[9px] border border-white/10" />
 
                   <span className="relative flex h-full items-center justify-center gap-2">
-                    <Image
-                      src={submitText}
-                      alt="Submit"
-                      width={80}
-                      height={28}
-                      className="object-contain"
-                    />
+                    <span className="logo-button-text">
+                    {isSubmitting ? <>Submitting…</> : <>Submit</>}
+                    </span>
                   </span>
                 </button>
               </div>
