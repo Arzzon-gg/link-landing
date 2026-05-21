@@ -25,7 +25,7 @@ export function Hero() {
 
       {/* ── Gradient overlays for text legibility ── */}
       {/* Strong dark on left → transparent on right */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#020209] via-[#020209]/80 to-[#020209]/10" />
+      {/* <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#020209] via-[#020209]/80 to-[#020209]/10" /> */}
       {/* Top & bottom vignette */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#020209]/50 via-transparent to-[#020209]/60" />
 
