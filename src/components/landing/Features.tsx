@@ -5,46 +5,46 @@ const activities = [
     emoji: '🎳',
     title: 'BOWLING',
     subtitle: 'Strike up the fun',
-    glowColor: 'rgba(139,92,246,0.65)',
-    borderClass: 'border-violet-500/25 hover:border-violet-400/65',
-    shadowClass: 'hover:shadow-[0_0_40px_rgba(139,92,246,0.22)]',
-    bgGrad: 'from-violet-950/40',
+    glowHex: '#7c3aed',
+    imgBg: 'bg-gradient-to-b from-[#1a0533] via-[#2d1060] to-[#0d0020]',
+    borderHover: 'hover:border-violet-400/55',
+    shadowHover: 'hover:shadow-[0_8px_40px_-4px_rgba(124,58,237,0.4)]',
   },
   {
     emoji: '🎱',
     title: '8 BALL POOL',
     subtitle: 'Sink it. Win it.',
-    glowColor: 'rgba(6,182,212,0.65)',
-    borderClass: 'border-cyan-500/25 hover:border-cyan-400/65',
-    shadowClass: 'hover:shadow-[0_0_40px_rgba(6,182,212,0.22)]',
-    bgGrad: 'from-cyan-950/40',
+    glowHex: '#0891b2',
+    imgBg: 'bg-gradient-to-b from-[#001a2e] via-[#003355] to-[#000e1a]',
+    borderHover: 'hover:border-cyan-400/55',
+    shadowHover: 'hover:shadow-[0_8px_40px_-4px_rgba(8,145,178,0.4)]',
   },
   {
     emoji: '🎤',
     title: 'KARAOKE',
     subtitle: 'Sing loud. Shine bright.',
-    glowColor: 'rgba(236,72,153,0.65)',
-    borderClass: 'border-pink-500/25 hover:border-pink-400/65',
-    shadowClass: 'hover:shadow-[0_0_40px_rgba(236,72,153,0.22)]',
-    bgGrad: 'from-pink-950/40',
+    glowHex: '#be185d',
+    imgBg: 'bg-gradient-to-b from-[#33001a] via-[#550030] to-[#1a000d]',
+    borderHover: 'hover:border-pink-400/55',
+    shadowHover: 'hover:shadow-[0_8px_40px_-4px_rgba(190,24,93,0.4)]',
   },
   {
     emoji: '🕹️',
     title: 'ARCADE',
     subtitle: 'Play. Compete. Repeat.',
-    glowColor: 'rgba(192,38,211,0.65)',
-    borderClass: 'border-fuchsia-500/25 hover:border-fuchsia-400/65',
-    shadowClass: 'hover:shadow-[0_0_40px_rgba(192,38,211,0.22)]',
-    bgGrad: 'from-fuchsia-950/40',
+    glowHex: '#a21caf',
+    imgBg: 'bg-gradient-to-b from-[#1a0033] via-[#300055] to-[#0a0020]',
+    borderHover: 'hover:border-fuchsia-400/55',
+    shadowHover: 'hover:shadow-[0_8px_40px_-4px_rgba(162,28,175,0.4)]',
   },
   {
     emoji: '🎂',
     title: 'BIRTHDAYS',
     subtitle: 'Celebrate in style.',
-    glowColor: 'rgba(234,179,8,0.6)',
-    borderClass: 'border-yellow-500/25 hover:border-yellow-400/65',
-    shadowClass: 'hover:shadow-[0_0_40px_rgba(234,179,8,0.18)]',
-    bgGrad: 'from-yellow-950/30',
+    glowHex: '#d97706',
+    imgBg: 'bg-gradient-to-b from-[#1a0d00] via-[#332200] to-[#0d0600]',
+    borderHover: 'hover:border-amber-400/55',
+    shadowHover: 'hover:shadow-[0_8px_40px_-4px_rgba(217,119,6,0.35)]',
   },
 ];
 
@@ -53,55 +53,82 @@ export function Features() {
     <section id="activities" className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
 
-        {/* Section title */}
+        {/* ── Section title ── */}
         <div className="flex items-center gap-5 justify-center mb-14">
-          <div className="flex-1 max-w-[72px] h-px bg-gradient-to-r from-transparent to-green-400/65" />
+          <div className="flex-1 max-w-[80px] h-px bg-gradient-to-r from-transparent to-green-400/65" />
           <span className="text-green-400 text-[10px] font-black tracking-[0.32em] uppercase font-orbitron whitespace-nowrap">
             ENDLESS WAYS TO HAVE FUN
           </span>
-          <div className="flex-1 max-w-[72px] h-px bg-gradient-to-l from-transparent to-green-400/65" />
+          <div className="flex-1 max-w-[80px] h-px bg-gradient-to-l from-transparent to-green-400/65" />
         </div>
 
-        {/* Activity cards */}
+        {/* ── Activity cards ── */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           {activities.map((act) => (
             <div
               key={act.title}
-              className={`group relative rounded-xl border bg-gradient-to-b ${act.bgGrad} to-[#08080f] p-6 pt-8 pb-7 flex flex-col items-center text-center cursor-pointer transition-all duration-300 overflow-hidden ${act.borderClass} ${act.shadowClass}`}
+              className={`group relative rounded-xl overflow-hidden border border-white/[0.09] bg-[#07070e] cursor-pointer transition-all duration-300 ${act.borderHover} ${act.shadowHover}`}
             >
-              {/* Top glow line on hover */}
-              <div
-                className="absolute top-0 inset-x-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                style={{ background: `linear-gradient(to right, transparent, ${act.glowColor}, transparent)` }}
-              />
+              {/* ── Image area (replace emoji div with <Image> later) ── */}
+              <div className={`relative h-44 overflow-hidden ${act.imgBg}`}>
+                {/* Radial glow from center */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: `radial-gradient(ellipse 75% 65% at 50% 60%, ${act.glowHex}40, transparent 70%)`,
+                  }}
+                />
 
-              <div
-                className="text-5xl mb-5 transition-transform duration-300 group-hover:-translate-y-1 select-none"
-                style={{ filter: `drop-shadow(0 0 14px ${act.glowColor})` }}
-              >
-                {act.emoji}
+                {/* ── Swap this whole div for <Image src="..." fill alt="..."> ── */}
+                <div className="absolute inset-0 flex items-center justify-center pb-2">
+                  <span
+                    className="text-8xl select-none transition-transform duration-500 group-hover:scale-110"
+                    style={{
+                      filter: `drop-shadow(0 0 20px ${act.glowHex}) drop-shadow(0 0 50px ${act.glowHex}99)`,
+                    }}
+                  >
+                    {act.emoji}
+                  </span>
+                </div>
+
+                {/* Bottom gradient fade */}
+                <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-[#07070e] to-transparent" />
+                {/* Top vignette */}
+                <div className="absolute top-0 inset-x-0 h-8 bg-gradient-to-b from-[#07070e]/50 to-transparent" />
+                {/* Top edge neon glow line */}
+                <div
+                  className="absolute top-0 inset-x-0 h-px"
+                  style={{
+                    background: `linear-gradient(to right, transparent, ${act.glowHex}cc, transparent)`,
+                  }}
+                />
               </div>
 
-              <h3 className="font-orbitron font-black text-[11px] text-white uppercase tracking-wider mb-1.5 leading-tight">
-                {act.title}
-              </h3>
-              <p className="text-white/38 text-[11px] leading-snug group-hover:text-white/60 transition-colors duration-300">
-                {act.subtitle}
-              </p>
+              {/* ── Text ── */}
+              <div className="px-3 pb-5 pt-2.5 text-center">
+                <h3 className="font-orbitron font-black text-[11px] sm:text-xs text-white uppercase tracking-wider mb-1.5 leading-tight">
+                  {act.title}
+                </h3>
+                <p className="text-white/40 text-[10px] sm:text-[11px] leading-snug group-hover:text-white/60 transition-colors duration-300">
+                  {act.subtitle}
+                </p>
+              </div>
             </div>
           ))}
         </div>
 
-        {/* CTA */}
+        {/* ── CTA ── */}
         <div className="mt-10 text-center">
           <Link
             href="#activities"
-            className="inline-block px-8 py-3 border border-white/22 text-white/80 text-[11px] font-black tracking-[0.28em] uppercase hover:border-white/50 hover:text-white hover:bg-white/[0.03] transition-all duration-300"
+            className="inline-block px-8 py-3 border border-white/20 text-white/75 text-[11px] font-black tracking-[0.28em] uppercase hover:border-white/50 hover:text-white hover:bg-white/[0.03] transition-all duration-300"
           >
             VIEW ALL ACTIVITIES
           </Link>
         </div>
+
       </div>
     </section>
   );
 }
+
