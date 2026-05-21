@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 export function CallToAction() {
@@ -42,19 +43,12 @@ export function CallToAction() {
                 className="absolute inset-0"
                 style={{ background: 'radial-gradient(ellipse 85% 80% at 60% 50%, rgba(236,72,153,0.2), transparent 70%)' }}
               />
-              {/* ── Image placeholder: replace with <Image> ── */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <span
-                    className="text-8xl lg:text-9xl select-none block transition-transform duration-500 group-hover:scale-105"
-                    style={{ filter: 'drop-shadow(0 0 28px rgba(236,72,153,0.8)) drop-shadow(0 0 60px rgba(236,72,153,0.4))' }}
-                  >🍔</span>
-                  <span
-                    className="text-5xl select-none block -mt-2"
-                    style={{ filter: 'drop-shadow(0 0 18px rgba(251,146,60,0.75))' }}
-                  >🍟</span>
-                </div>
-              </div>
+              <Image
+                src="/images/burger.png"
+                alt="Secret Teta food"
+                fill
+                className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+              />
             </div>
 
           </div>
@@ -94,19 +88,12 @@ export function CallToAction() {
                 className="absolute inset-0"
                 style={{ background: 'radial-gradient(ellipse 85% 80% at 60% 50%, rgba(34,197,94,0.18), transparent 70%)' }}
               />
-              {/* ── Image placeholder: replace with <Image> ── */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <span
-                    className="text-8xl lg:text-9xl select-none block transition-transform duration-500 group-hover:scale-105"
-                    style={{ filter: 'drop-shadow(0 0 28px rgba(34,197,94,0.8)) drop-shadow(0 0 60px rgba(34,197,94,0.4))' }}
-                  >🥗</span>
-                  <span
-                    className="text-4xl select-none block mt-1"
-                    style={{ filter: 'drop-shadow(0 0 16px rgba(16,185,129,0.7))' }}
-                  >🌿</span>
-                </div>
-              </div>
+              <Image
+                src="/images/fresh%20%26%20healthy.png"
+                alt="Fresh and healthy food"
+                fill
+                className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+              />
             </div>
 
           </div>
