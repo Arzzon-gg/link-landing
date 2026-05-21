@@ -1,13 +1,21 @@
 import { ArcadeBackground } from '@/components/ArcadeBackground';
-import { RegistrationForm } from '@/components/RegistrationForm';
+import { Navbar } from '@/components/landing/Navbar';
+import { Hero } from '@/components/landing/Hero';
+import { Features } from '@/components/landing/Features';
+import { CallToAction } from '@/components/landing/CallToAction';
+import { Footer } from '@/components/landing/Footer';
 
-export default function HomePage() {
+export default function LandingPage() {
   return (
-    <main className="relative min-h-screen flex items-center justify-center px-4 py-16">
+    <>
       <ArcadeBackground />
-      <div className="relative z-10 w-full">
-        <RegistrationForm />
-      </div>
-    </main>
+      <Navbar />
+      <main>
+        <Hero />
+        <Features />
+        <CallToAction />
+      </main>
+      <Footer />
+    </>
   );
 }
