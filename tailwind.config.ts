@@ -11,6 +11,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        orbitron: ['var(--font-orbitron)', 'sans-serif'],
       },
       animation: {
         'grid-scroll': 'gridScroll 8s linear infinite',

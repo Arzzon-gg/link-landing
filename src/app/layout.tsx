@@ -15,10 +15,9 @@ const orbitron = Orbitron({
 });
 
 export const metadata: Metadata = {
-  title: 'Prelaunch Form',
+  title: 'The Link — Forever Young | Play. Eat. Celebrate.',
   description:
-    'Be the first to experience the future of arcade gaming. Register now and secure your spot.',
-  // Keep the page off public search indices during pre-launch
+    'More than a place. It\'s a vibe. Bowling, pool, karaoke, arcade, birthdays & great food — all connected at The Link, Beirut.',
   robots: 'noindex, nofollow',
 };
 
