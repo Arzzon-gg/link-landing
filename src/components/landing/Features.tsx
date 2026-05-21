@@ -1,48 +1,49 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 const activities = [
   {
-    emoji: '🎳',
+    imgSrc: '/images/bowling.png',
     title: 'BOWLING',
     subtitle: 'Strike up the fun',
     glowHex: '#7c3aed',
-    imgBg: 'bg-gradient-to-b from-[#1a0533] via-[#2d1060] to-[#0d0020]',
+    imgBg: 'bg-[#0d0020]',
     borderHover: 'hover:border-violet-400/55',
     shadowHover: 'hover:shadow-[0_8px_40px_-4px_rgba(124,58,237,0.4)]',
   },
   {
-    emoji: '🎱',
+    imgSrc: '/images/8%20ball%20pool.png',
     title: '8 BALL POOL',
     subtitle: 'Sink it. Win it.',
     glowHex: '#0891b2',
-    imgBg: 'bg-gradient-to-b from-[#001a2e] via-[#003355] to-[#000e1a]',
+    imgBg: 'bg-[#000e1a]',
     borderHover: 'hover:border-cyan-400/55',
     shadowHover: 'hover:shadow-[0_8px_40px_-4px_rgba(8,145,178,0.4)]',
   },
   {
-    emoji: '🎤',
+    imgSrc: '/images/karaoke.png',
     title: 'KARAOKE',
     subtitle: 'Sing loud. Shine bright.',
     glowHex: '#be185d',
-    imgBg: 'bg-gradient-to-b from-[#33001a] via-[#550030] to-[#1a000d]',
+    imgBg: 'bg-[#1a000d]',
     borderHover: 'hover:border-pink-400/55',
     shadowHover: 'hover:shadow-[0_8px_40px_-4px_rgba(190,24,93,0.4)]',
   },
   {
-    emoji: '🕹️',
+    imgSrc: '/images/arcade.png',
     title: 'ARCADE',
     subtitle: 'Play. Compete. Repeat.',
     glowHex: '#a21caf',
-    imgBg: 'bg-gradient-to-b from-[#1a0033] via-[#300055] to-[#0a0020]',
+    imgBg: 'bg-[#0a0020]',
     borderHover: 'hover:border-fuchsia-400/55',
     shadowHover: 'hover:shadow-[0_8px_40px_-4px_rgba(162,28,175,0.4)]',
   },
   {
-    emoji: '🎂',
+    imgSrc: '/images/birthday.png',
     title: 'BIRTHDAYS',
     subtitle: 'Celebrate in style.',
     glowHex: '#d97706',
-    imgBg: 'bg-gradient-to-b from-[#1a0d00] via-[#332200] to-[#0d0600]',
+    imgBg: 'bg-[#0d0600]',
     borderHover: 'hover:border-amber-400/55',
     shadowHover: 'hover:shadow-[0_8px_40px_-4px_rgba(217,119,6,0.35)]',
   },
@@ -70,7 +71,7 @@ export function Features() {
               className={`group relative rounded-xl overflow-hidden border border-white/[0.09] bg-[#07070e] cursor-pointer transition-all duration-300 ${act.borderHover} ${act.shadowHover}`}
             >
               {/* ── Image area (replace emoji div with <Image> later) ── */}
-              <div className={`relative h-44 overflow-hidden ${act.imgBg}`}>
+              <div className={`relative h-48 overflow-hidden ${act.imgBg}`}>
                 {/* Radial glow from center */}
                 <div
                   className="absolute inset-0"
@@ -79,17 +80,13 @@ export function Features() {
                   }}
                 />
 
-                {/* ── Swap this whole div for <Image src="..." fill alt="..."> ── */}
-                <div className="absolute inset-0 flex items-center justify-center pb-2">
-                  <span
-                    className="text-8xl select-none transition-transform duration-500 group-hover:scale-110"
-                    style={{
-                      filter: `drop-shadow(0 0 20px ${act.glowHex}) drop-shadow(0 0 50px ${act.glowHex}99)`,
-                    }}
-                  >
-                    {act.emoji}
-                  </span>
-                </div>
+                {/* ── Activity image ── */}
+                <Image
+                  src={act.imgSrc}
+                  alt={act.title}
+                  fill
+                  className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                />
 
                 {/* Bottom gradient fade */}
                 <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-[#07070e] to-transparent" />
