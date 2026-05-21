@@ -47,6 +47,15 @@ const activities = [
     borderHover: 'hover:border-amber-400/55',
     shadowHover: 'hover:shadow-[0_8px_40px_-4px_rgba(217,119,6,0.35)]',
   },
+  {
+    imgSrc: '/images/playground.png',
+    title: 'PLAYGROUND',
+    subtitle: 'Jump in. Play free.',
+    glowHex: '#16a34a',
+    imgBg: 'bg-[#001a08]',
+    borderHover: 'hover:border-green-400/55',
+    shadowHover: 'hover:shadow-[0_8px_40px_-4px_rgba(22,163,74,0.4)]',
+  },
 ];
 
 export function Features() {
@@ -64,7 +73,7 @@ export function Features() {
         </div>
 
         {/* ── Activity cards ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {activities.map((act) => (
             <div
               key={act.title}
