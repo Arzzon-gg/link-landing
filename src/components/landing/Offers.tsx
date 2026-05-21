@@ -24,7 +24,7 @@ export function Offers() {
 
           {/* Content */}
           <div className="relative z-10 py-10 px-8 lg:px-14">
-            <div className="grid md:grid-cols-[1fr_auto_1fr] gap-8 md:gap-14 items-center">
+            <div className="grid md:grid-cols-[1fr_1fr] gap-8 md:gap-14 items-center">
 
               {/* Left: Weekday deals */}
               <div>
@@ -44,22 +44,6 @@ export function Offers() {
                 <p className="text-white/35 text-[11px] font-bold tracking-[0.22em] uppercase">
                   ON SELECTED ACTIVITIES
                 </p>
-              </div>
-
-              {/* Center: Neon % badge */}
-              <div className="flex justify-center">
-                <div className="relative w-20 h-20 flex items-center justify-center">
-                  <div
-                    className="absolute inset-0 rounded-full border-2 border-pink-500/70 animate-pulse-slow"
-                    style={{ boxShadow: '0 0 32px rgba(236,72,153,0.55), inset 0 0 20px rgba(236,72,153,0.18)' }}
-                  />
-                  <span
-                    className="font-orbitron font-black text-3xl text-pink-400"
-                    style={{ textShadow: '0 0 18px rgba(236,72,153,0.95)' }}
-                  >
-                    %
-                  </span>
-                </div>
               </div>
 
               {/* Right: More games text + CTA */}
