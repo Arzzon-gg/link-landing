@@ -38,7 +38,7 @@ export function Navbar() {
 
           {/* Logo */}
           <Link href="/" className="flex-shrink-0 group">
-            <Image src="/images/ZlinkLogo.png" alt="The Link logo" width={100} height={40} className="object-contain" />
+            <Image src="/images/ZlinkLogo.png" alt="The Link Diner & Bowling logo" width={100} height={40} className="object-contain" />
           </Link>
 
           {/* Desktop Nav */}
