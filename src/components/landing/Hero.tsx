@@ -55,7 +55,7 @@ export function Hero() {
       {/* ── Full-bleed hero image as background ── */}
       <Image
         src="/images/hero.png"
-        alt="The Link – Forever Young arcade experience"
+        alt="The Link Diner & Bowling arcade experience"
         fill
         className="object-cover object-center"
         priority

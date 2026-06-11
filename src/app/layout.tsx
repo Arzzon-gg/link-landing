@@ -15,9 +15,9 @@ const orbitron = Orbitron({
 });
 
 export const metadata: Metadata = {
-  title: 'The Link — Forever Young | Play. Eat. Celebrate.',
+  title: 'The Link Diner & Bowling | Bowling, Restaurant & Arcade',
   description:
-    'More than a place. It\'s a vibe. Bowling, pool, karaoke, arcade, birthdays & great food — all connected at The Link, Beirut.',
+    'The Link Diner & Bowling. Bowling, restaurant, and arcade fun in Antelias and Mkalles.',
   robots: 'noindex, nofollow',
 };
 
