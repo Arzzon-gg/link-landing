@@ -19,6 +19,16 @@ function getInitials(title: string) {
     .join('');
 }
 
+function proxyImageUrl(url: string): string {
+  // If the URL is external (from the backend API), proxy it
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    const encoded = encodeURIComponent(url);
+    return `/api/proxy-image?url=${encoded}`;
+  }
+  // If it's a relative URL, use it as-is
+  return url;
+}
+
 export function MenuItemImage({
   src,
   alt,
@@ -27,8 +37,9 @@ export function MenuItemImage({
 }: MenuItemImageProps) {
   const [broken, setBroken] = useState(false);
   const initials = useMemo(() => getInitials(title) || 'TL', [title]);
+  const proxiedSrc = useMemo(() => (src ? proxyImageUrl(src) : null), [src]);
 
-  if (!src || broken) {
+  if (!proxiedSrc || broken) {
     return (
       <div
         className={cn(
@@ -54,7 +65,7 @@ export function MenuItemImage({
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={src}
+      src={proxiedSrc}
       alt={alt}
       className={cn('h-full w-full object-cover object-center', className)}
       loading="lazy"
