@@ -12,22 +12,42 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Validate the URL is from our backend
-    const apiUrl = process.env.CLOUDHUB_API_URL;
-    if (!apiUrl || !imageUrl.startsWith(apiUrl)) {
+    const apiUrl = process.env.CLOUDHUB_API_URL?.trim();
+
+    if (!apiUrl) {
+      return NextResponse.json(
+        { error: 'Image proxy is not configured' },
+        { status: 500 }
+      );
+    }
+
+    let backendUrl: URL;
+    let requestedUrl: URL;
+
+    try {
+      backendUrl = new URL(apiUrl);
+      requestedUrl = new URL(imageUrl);
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid image source' },
+        { status: 400 }
+      );
+    }
+
+    if (requestedUrl.origin !== backendUrl.origin) {
       return NextResponse.json(
         { error: 'Invalid image source' },
         { status: 403 }
       );
     }
 
-    // Fetch the image from the backend
-    const response = await fetch(imageUrl, {
+    const response = await fetch(requestedUrl, {
       method: 'GET',
       headers: {
+        Accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
         'User-Agent': 'Mozilla/5.0 (compatible; NextJS)',
       },
-      cache: 'force-cache',
+      next: { revalidate: 86400 },
     });
 
     if (!response.ok) {
@@ -44,6 +64,7 @@ export async function GET(req: NextRequest) {
       status: 200,
       headers: {
         'Content-Type': contentType,
+        'Content-Length': String(buffer.byteLength),
         'Cache-Control': 'public, max-age=86400, immutable',
       },
     });

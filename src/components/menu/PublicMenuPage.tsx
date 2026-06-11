@@ -23,6 +23,7 @@ export function PublicMenuPage({ menu }: PublicMenuPageProps) {
           src="/images/hero-menu.png"
           alt=""
           fill
+          sizes="100vw"
           className="scale-[1.02] object-cover object-center"
           priority
         />

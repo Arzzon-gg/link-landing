@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 interface MenuItemImageProps {
@@ -36,8 +36,43 @@ export function MenuItemImage({
 }: MenuItemImageProps) {
   const [broken, setBroken] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const imageRef = useRef<HTMLImageElement | null>(null);
   const initials = useMemo(() => getInitials(title) || 'TL', [title]);
   const proxiedSrc = useMemo(() => (src ? proxyImageUrl(src) : null), [src]);
+
+  useEffect(() => {
+    setBroken(false);
+    setLoaded(false);
+  }, [proxiedSrc]);
+
+  useEffect(() => {
+    const image = imageRef.current;
+
+    if (!image || !proxiedSrc) {
+      return;
+    }
+
+    const markLoaded = () => setLoaded(true);
+    const markBroken = () => setBroken(true);
+
+    if (image.complete) {
+      if (image.naturalWidth > 0) {
+        markLoaded();
+      } else {
+        markBroken();
+      }
+
+      return;
+    }
+
+    image.addEventListener('load', markLoaded);
+    image.addEventListener('error', markBroken);
+
+    return () => {
+      image.removeEventListener('load', markLoaded);
+      image.removeEventListener('error', markBroken);
+    };
+  }, [proxiedSrc]);
 
   if (!proxiedSrc || broken) {
     return (
@@ -66,18 +101,21 @@ export function MenuItemImage({
   return (
     <div className={cn('relative h-full w-full overflow-hidden', className)}>
       {!loaded ? (
-        <div className="menu-shimmer absolute inset-0 bg-[linear-gradient(160deg,#0f1020_0%,#090914_55%,#050509_100%)]" />
+        <div className="menu-shimmer absolute inset-0 z-10 bg-[linear-gradient(160deg,#0f1020_0%,#090914_55%,#050509_100%)]" />
       ) : null}
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
+        ref={imageRef}
+        key={proxiedSrc}
         src={proxiedSrc}
         alt={alt}
         className={cn(
           'h-full w-full object-cover object-center transition-all duration-700',
-          loaded ? 'scale-100 opacity-100' : 'scale-[1.04] opacity-0',
+          loaded ? 'scale-100 opacity-100' : 'scale-[1.02] opacity-100',
         )}
         loading="lazy"
+        decoding="async"
         onLoad={() => setLoaded(true)}
         onError={() => setBroken(true)}
       />
