@@ -8,11 +8,11 @@ import Image from 'next/image';
 
 const navLinks = [
   { label: 'HOME', href: '/#home', activePath: '/' },
-  { label: 'ACTIVITIES', href: '/#activities' },
-  { label: 'FOOD & DRINKS', href: '/#food' },
+  // { label: 'ACTIVITIES', href: '/#activities' },
+  // { label: 'FOOD & DRINKS', href: '/#food' },
   { label: 'MENU', href: '/menu', activePath: '/menu' },
-  { label: 'OFFERS', href: '/#offers' },
-  { label: 'CONTACT', href: '/#contact' },
+  // { label: 'OFFERS', href: '/#offers' },
+  // { label: 'CONTACT', href: '/#contact' },
 ];
 
 export function Navbar() {
