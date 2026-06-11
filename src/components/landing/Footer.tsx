@@ -6,7 +6,15 @@ import Image from 'next/image';
 const anteliasMapsHref = 'https://www.google.com/maps/search/?api=1&query=The%20Link%20Diner%20%26%20Bowling%20Antelias%2C%20Lebanon';
 const mkallesMapsHref = 'https://www.google.com/maps/search/?api=1&query=The%20Link%20Diner%20%26%20Bowling%20Mkalles%2C%20Lebanon';
 
-const quickLinks = ['Activities', 'Food & Drinks', 'Birthdays', 'Offers', 'Gallery', 'About', 'Contact'];
+const quickLinks = [
+  { label: 'Activities', href: '/#activities' },
+  { label: 'Food & Drinks', href: '/#food' },
+  { label: 'Birthdays', href: '/#birthdays' },
+  { label: 'Offers', href: '/#offers' },
+  { label: 'Gallery', href: '/#gallery' },
+  { label: 'About', href: '/#about' },
+  { label: 'Contact', href: '/#contact' },
+];
 const usefulInfo = ['About Us', 'FAQs', 'Blog', 'Careers', 'Privacy Policy', 'Terms & Conditions'];
 
 export function Footer() {
