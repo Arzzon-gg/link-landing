@@ -2,32 +2,13 @@ export function MenuPageLoading() {
   return (
     <div className="px-4 pb-24 pt-24 sm:px-6 lg:px-8 lg:pt-28">
       <div className="mx-auto max-w-7xl animate-pulse space-y-10">
-        <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="space-y-5">
+        <section className="flex min-h-[300px] flex-col items-center justify-center gap-5 py-10 sm:min-h-[340px] sm:py-14">
+          <div className="h-16 w-full max-w-3xl rounded-3xl bg-white/8 sm:h-20" />
+          <div className="flex flex-wrap items-center justify-center gap-3">
             <div className="h-10 w-40 rounded-full bg-white/8" />
-            <div className="h-16 max-w-3xl rounded-3xl bg-white/8 sm:h-20" />
-            <div className="h-16 max-w-2xl rounded-3xl bg-white/6" />
-            <div className="flex flex-wrap gap-3">
-              <div className="h-12 w-40 rounded-full bg-white/8" />
-              <div className="h-12 w-44 rounded-full bg-white/8" />
-            </div>
+            <div className="h-10 w-44 rounded-full bg-white/8" />
           </div>
-
-          <div className="rounded-[1.75rem] border border-white/8 bg-white/[0.03] p-4">
-            <div className="grid gap-4 sm:grid-cols-[0.9fr_1.1fr]">
-              <div className="h-[240px] rounded-[1.2rem] bg-white/8" />
-              <div className="space-y-4 rounded-[1.2rem] border border-white/8 bg-white/[0.03] p-5">
-                <div className="h-4 w-28 rounded-full bg-white/8" />
-                <div className="h-12 rounded-2xl bg-white/8" />
-                <div className="h-20 rounded-2xl bg-white/6" />
-                <div className="grid grid-cols-2 gap-3">
-                  {Array.from({ length: 4 }).map((_, index) => (
-                    <div key={index} className="h-20 rounded-2xl bg-white/8" />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          <div className="h-12 w-48 rounded-full bg-white/8" />
         </section>
 
         <div className="flex gap-3 overflow-x-auto py-2">
@@ -41,7 +22,7 @@ export function MenuPageLoading() {
 
         <section className="space-y-6">
           <div className="h-12 w-80 rounded-3xl bg-white/8" />
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {Array.from({ length: 4 }).map((_, index) => (
               <div
                 key={index}
