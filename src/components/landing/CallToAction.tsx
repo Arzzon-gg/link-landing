@@ -25,7 +25,7 @@ export function CallToAction() {
                 </p>
               </div>
               <Link
-                href="#food"
+                href="/menu"
                 className="mt-5 self-start inline-block px-5 py-2.5 border border-white/28 text-white text-[11px] font-black tracking-[0.22em] uppercase hover:border-pink-400 hover:text-pink-400 hover:shadow-[0_0_18px_rgba(236,72,153,0.3)] transition-all duration-300"
               >
                 DISCOVER THE MENU
@@ -73,7 +73,7 @@ export function CallToAction() {
                 </p>
               </div>
               <Link
-                href="#food"
+                href="/menu"
                 className="mt-5 self-start inline-block px-5 py-2.5 border border-white/28 text-white text-[11px] font-black tracking-[0.22em] uppercase hover:border-green-400 hover:text-green-400 hover:shadow-[0_0_18px_rgba(57,255,20,0.3)] transition-all duration-300"
               >
                 EXPLORE HEALTHY

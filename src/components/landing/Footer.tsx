@@ -3,12 +3,19 @@ import { Instagram, Youtube } from 'lucide-react';
 import { NewsletterForm } from './NewsletterForm';
 import Image from 'next/image';
 
-const quickLinks = ['Activities', 'Food & Drinks', 'Birthdays', 'Offers', 'Gallery', 'About', 'Contact'];
+const quickLinks = [
+  { label: 'Home', href: '/#home' },
+  { label: 'Activities', href: '/#activities' },
+  { label: 'Food & Drinks', href: '/#food' },
+  { label: 'Menu', href: '/menu' },
+  { label: 'Offers', href: '/#offers' },
+  { label: 'Contact', href: '/#contact' },
+];
 const usefulInfo = ['About Us', 'FAQs', 'Blog', 'Careers', 'Privacy Policy', 'Terms & Conditions'];
 
 export function Footer() {
   return (
-    <footer className="relative border-t border-white/[0.07] bg-[#02020c] pt-14 pb-8 px-4 sm:px-6 lg:px-8">
+    <footer id="contact" className="relative border-t border-white/[0.07] bg-[#02020c] pt-14 pb-8 px-4 sm:px-6 lg:px-8">
       {/* Top gradient accent line */}
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-violet-500/45 to-transparent" />
 
@@ -46,12 +53,12 @@ export function Footer() {
             </h4>
             <ul className="space-y-2.5">
               {quickLinks.map((link) => (
-                <li key={link}>
+                <li key={link.label}>
                   <Link
-                    href={`#${link.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                    href={link.href}
                     className="text-white/38 text-xs hover:text-white/75 transition-colors duration-200"
                   >
-                    {link}
+                    {link.label}
                   </Link>
                 </li>
               ))}

@@ -2,28 +2,33 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import Image from 'next/image';
 
 const navLinks = [
-  { label: 'HOME', href: '#home' },
-  { label: 'ACTIVITIES', href: '#activities' },
-  { label: 'FOOD & DRINKS', href: '#food' },
-  { label: 'BIRTHDAYS', href: '#birthdays' },
-  { label: 'OFFERS', href: '#offers' },
-  { label: 'GALLERY', href: '#gallery' },
-  { label: 'ABOUT', href: '#about' },
+  { label: 'HOME', href: '/#home', activePath: '/' },
+  { label: 'ACTIVITIES', href: '/#activities' },
+  { label: 'FOOD & DRINKS', href: '/#food' },
+  { label: 'MENU', href: '/menu', activePath: '/menu' },
+  { label: 'OFFERS', href: '/#offers' },
+  { label: 'CONTACT', href: '/#contact' },
 ];
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  function isActive(activePath?: string) {
+    return activePath ? pathname === activePath : false;
+  }
 
   return (
     <header
@@ -43,16 +48,16 @@ export function Navbar() {
 
           {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-7">
-            {navLinks.map((link, i) => (
+            {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 className={`relative text-[11px] font-bold tracking-widest uppercase transition-colors duration-200 group ${
-                  i === 0 ? 'text-white' : 'text-white/65 hover:text-white'
+                  isActive(link.activePath) ? 'text-white' : 'text-white/65 hover:text-white'
                 }`}
               >
                 {link.label}
-                {i === 0 && (
+                {isActive(link.activePath) && (
                   <span className="absolute -bottom-1 left-0 w-full h-px bg-white" />
                 )}
                 <span className="absolute -bottom-1 left-0 w-0 h-px bg-gradient-to-r from-pink-500 to-violet-500 group-hover:w-full transition-all duration-300" />

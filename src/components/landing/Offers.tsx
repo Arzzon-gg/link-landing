@@ -65,10 +65,10 @@ export function Offers() {
                   </span>
                 </p>
                 <Link
-                  href="#offers"
+                  href="/menu"
                   className="inline-block px-7 py-3 border border-white/28 text-white text-[11px] font-black tracking-[0.28em] uppercase hover:border-pink-400 hover:text-pink-400 hover:shadow-[0_0_22px_rgba(236,72,153,0.3)] transition-all duration-300"
                 >
-                  SEE OFFERS
+                  SEE THE MENU
                 </Link>
               </div>
 
