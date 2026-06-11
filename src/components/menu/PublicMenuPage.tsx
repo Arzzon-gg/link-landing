@@ -62,25 +62,13 @@ export function PublicMenuPage({ menu }: PublicMenuPageProps) {
 
       <section id="menu-categories" className="px-4 pb-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-2xl">
-              <div className="mb-4 flex items-center gap-5">
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent to-cyan-400/60" />
-                <span className="font-orbitron text-[10px] font-black uppercase tracking-[0.34em] text-cyan-300">
-                  Browse by category
-                </span>
-                <div className="h-px flex-1 bg-gradient-to-l from-transparent to-cyan-400/60" />
-              </div>
-
-            </div>
-
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/55">
-              <span className="font-orbitron text-[10px] font-black uppercase tracking-[0.28em] text-white/70">
-                Updated
+          <div className="mb-10 text-center">
+            <div className="flex items-center justify-center gap-5">
+              <div className="h-px w-16 bg-gradient-to-r from-transparent to-cyan-400/60 sm:w-24" />
+              <span className="font-orbitron text-[10px] font-black uppercase tracking-[0.34em] text-cyan-300">
+                Browse by category
               </span>
-              <div className="mt-1 font-semibold text-white">
-                {formatMenuDate(menu.generatedAtUtc)}
-              </div>
+              <div className="h-px w-16 bg-gradient-to-l from-transparent to-cyan-400/60 sm:w-24" />
             </div>
           </div>
 
@@ -270,13 +258,6 @@ function formatCurrency(amount: number) {
     currency: 'USD',
     minimumFractionDigits: 2,
   }).format(amount);
-}
-
-function formatMenuDate(value: string) {
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-  }).format(new Date(value));
 }
 
 
