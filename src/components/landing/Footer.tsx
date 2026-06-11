@@ -164,7 +164,7 @@ export function Footer() {
               Crafted By
             </p>
             <Image
-              src="/images/arzzon-logo.svg"
+              src="/images/Arzzon.png"
               alt="Arzzon logo"
               width={120}
               height={112}

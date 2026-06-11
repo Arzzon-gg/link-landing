@@ -4,16 +4,3 @@
 
 [functions]
   node_bundler = "esbuild"
-
-# Redirect trailing slashes to remove them (optional but recommended)
-[[redirects]]
-  from = "/:path*/"
-  to = "/:path"
-  status = 301
-
-# Rewrite all other requests to index for SPA routing (if needed)
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  condition = {Status = 404}
