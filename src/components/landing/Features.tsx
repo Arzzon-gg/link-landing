@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { FadeIn, StaggerGroup, StaggerItem } from '@/components/Reveal';
 
 const activities = [
   {
@@ -9,7 +10,7 @@ const activities = [
     glowHex: '#7c3aed',
     imgBg: 'bg-[#0d0020]',
     borderHover: 'hover:border-violet-400/55',
-    shadowHover: 'hover:shadow-[0_8px_40px_-4px_rgba(124,58,237,0.4)]',
+    shadowHover: 'hover:shadow-[0_16px_50px_-10px_rgba(124,58,237,0.46)]',
   },
   {
     imgSrc: '/images/8%20ball%20pool.png',
@@ -18,7 +19,7 @@ const activities = [
     glowHex: '#0891b2',
     imgBg: 'bg-[#000e1a]',
     borderHover: 'hover:border-cyan-400/55',
-    shadowHover: 'hover:shadow-[0_8px_40px_-4px_rgba(8,145,178,0.4)]',
+    shadowHover: 'hover:shadow-[0_16px_50px_-10px_rgba(8,145,178,0.42)]',
   },
   {
     imgSrc: '/images/karaoke.png',
@@ -27,7 +28,7 @@ const activities = [
     glowHex: '#be185d',
     imgBg: 'bg-[#1a000d]',
     borderHover: 'hover:border-pink-400/55',
-    shadowHover: 'hover:shadow-[0_8px_40px_-4px_rgba(190,24,93,0.4)]',
+    shadowHover: 'hover:shadow-[0_16px_50px_-10px_rgba(190,24,93,0.42)]',
   },
   {
     imgSrc: '/images/arcade.png',
@@ -36,7 +37,7 @@ const activities = [
     glowHex: '#a21caf',
     imgBg: 'bg-[#0a0020]',
     borderHover: 'hover:border-fuchsia-400/55',
-    shadowHover: 'hover:shadow-[0_8px_40px_-4px_rgba(162,28,175,0.4)]',
+    shadowHover: 'hover:shadow-[0_16px_50px_-10px_rgba(162,28,175,0.42)]',
   },
   {
     imgSrc: '/images/birthday.png',
@@ -45,7 +46,7 @@ const activities = [
     glowHex: '#d97706',
     imgBg: 'bg-[#0d0600]',
     borderHover: 'hover:border-amber-400/55',
-    shadowHover: 'hover:shadow-[0_8px_40px_-4px_rgba(217,119,6,0.35)]',
+    shadowHover: 'hover:shadow-[0_16px_50px_-10px_rgba(217,119,6,0.38)]',
   },
   {
     imgSrc: '/images/playground.png',
@@ -54,87 +55,86 @@ const activities = [
     glowHex: '#16a34a',
     imgBg: 'bg-[#001a08]',
     borderHover: 'hover:border-green-400/55',
-    shadowHover: 'hover:shadow-[0_8px_40px_-4px_rgba(22,163,74,0.4)]',
+    shadowHover: 'hover:shadow-[0_16px_50px_-10px_rgba(22,163,74,0.42)]',
   },
 ];
 
 export function Features() {
   return (
-    <section id="activities" className="py-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <section id="activities" className="px-4 py-20 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <FadeIn className="mb-14">
+          <div className="flex items-center justify-center gap-5">
+            <div className="h-px max-w-[80px] flex-1 bg-gradient-to-r from-transparent to-green-400/65" />
+            <span className="font-orbitron text-[10px] font-black uppercase tracking-[0.32em] text-green-400 whitespace-nowrap">
+              ENDLESS WAYS TO HAVE FUN
+            </span>
+            <div className="h-px max-w-[80px] flex-1 bg-gradient-to-l from-transparent to-green-400/65" />
+          </div>
+        </FadeIn>
 
-        {/* ── Section title ── */}
-        <div className="flex items-center gap-5 justify-center mb-14">
-          <div className="flex-1 max-w-[80px] h-px bg-gradient-to-r from-transparent to-green-400/65" />
-          <span className="text-green-400 text-[10px] font-black tracking-[0.32em] uppercase font-orbitron whitespace-nowrap">
-            ENDLESS WAYS TO HAVE FUN
-          </span>
-          <div className="flex-1 max-w-[80px] h-px bg-gradient-to-l from-transparent to-green-400/65" />
-        </div>
+        <StaggerGroup
+          className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6"
+          stagger={0.1}
+          amount={0.12}
+        >
+          {activities.map((activity) => (
+            <StaggerItem key={activity.title}>
+              <div
+                className={`feature-card group relative cursor-pointer overflow-hidden rounded-xl border border-white/[0.09] bg-[#07070e] transition-all duration-300 ${activity.borderHover} ${activity.shadowHover}`}
+              >
+                <div className={`relative h-48 overflow-hidden ${activity.imgBg}`}>
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background: `radial-gradient(ellipse 75% 65% at 50% 60%, ${activity.glowHex}40, transparent 70%)`,
+                    }}
+                  />
+                  <div
+                    className="absolute inset-x-4 top-4 h-px opacity-75"
+                    style={{
+                      background: `linear-gradient(to right, transparent, ${activity.glowHex}, transparent)`,
+                    }}
+                  />
+                  <div
+                    className="absolute -right-10 top-3 h-20 w-20 rounded-full blur-2xl transition-opacity duration-300 group-hover:opacity-100"
+                    style={{ backgroundColor: `${activity.glowHex}45`, opacity: 0.4 }}
+                  />
 
-        {/* ── Activity cards ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          {activities.map((act) => (
-            <div
-              key={act.title}
-              className={`group relative rounded-xl overflow-hidden border border-white/[0.09] bg-[#07070e] cursor-pointer transition-all duration-300 ${act.borderHover} ${act.shadowHover}`}
-            >
-              {/* ── Image area (replace emoji div with <Image> later) ── */}
-              <div className={`relative h-48 overflow-hidden ${act.imgBg}`}>
-                {/* Radial glow from center */}
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background: `radial-gradient(ellipse 75% 65% at 50% 60%, ${act.glowHex}40, transparent 70%)`,
-                  }}
-                />
+                  <Image
+                    src={activity.imgSrc}
+                    alt={activity.title}
+                    fill
+                    className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                  />
 
-                {/* ── Activity image ── */}
-                <Image
-                  src={act.imgSrc}
-                  alt={act.title}
-                  fill
-                  className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                />
+                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),transparent_26%,transparent_68%,rgba(2,2,9,0.8)_100%)] opacity-70" />
+                  <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-[#07070e] to-transparent" />
+                  <div className="absolute top-0 inset-x-0 h-8 bg-gradient-to-b from-[#07070e]/50 to-transparent" />
+                </div>
 
-                {/* Bottom gradient fade */}
-                <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-[#07070e] to-transparent" />
-                {/* Top vignette */}
-                <div className="absolute top-0 inset-x-0 h-8 bg-gradient-to-b from-[#07070e]/50 to-transparent" />
-                {/* Top edge neon glow line */}
-                <div
-                  className="absolute top-0 inset-x-0 h-px"
-                  style={{
-                    background: `linear-gradient(to right, transparent, ${act.glowHex}cc, transparent)`,
-                  }}
-                />
+                <div className="px-3 pb-5 pt-3 text-center">
+                  <h3 className="mb-1.5 font-orbitron text-[11px] font-black uppercase tracking-wider text-white sm:text-xs">
+                    {activity.title}
+                  </h3>
+                  <p className="text-[10px] leading-snug text-white/40 transition-colors duration-300 group-hover:text-white/65 sm:text-[11px]">
+                    {activity.subtitle}
+                  </p>
+                </div>
               </div>
-
-              {/* ── Text ── */}
-              <div className="px-3 pb-5 pt-2.5 text-center">
-                <h3 className="font-orbitron font-black text-[11px] sm:text-xs text-white uppercase tracking-wider mb-1.5 leading-tight">
-                  {act.title}
-                </h3>
-                <p className="text-white/40 text-[10px] sm:text-[11px] leading-snug group-hover:text-white/60 transition-colors duration-300">
-                  {act.subtitle}
-                </p>
-              </div>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerGroup>
 
-        {/* ── CTA ── */}
-        <div className="mt-10 text-center">
+        <FadeIn className="mt-10 text-center" delay={0.08}>
           <Link
             href="#activities"
-            className="inline-block px-8 py-3 border border-white/20 text-white/75 text-[11px] font-black tracking-[0.28em] uppercase hover:border-white/50 hover:text-white hover:bg-white/[0.03] transition-all duration-300"
+            className="button-sheen inline-block overflow-hidden border border-white/20 px-8 py-3 text-[11px] font-black uppercase tracking-[0.28em] text-white/75 transition-all duration-300 hover:-translate-y-0.5 hover:border-cyan-300/60 hover:bg-white/[0.03] hover:text-white hover:shadow-[0_0_28px_rgba(34,211,238,0.18)]"
           >
             VIEW ALL ACTIVITIES
           </Link>
-        </div>
-
+        </FadeIn>
       </div>
     </section>
   );
 }
-
