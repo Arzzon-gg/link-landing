@@ -240,6 +240,35 @@ input[type='number'] {
   animation-delay: 2.8s;
 }
 
+.menu-orb-float {
+  animation: menuOrbFloat 9s ease-in-out infinite;
+}
+
+.menu-orb-float-delayed {
+  animation-delay: 2.2s;
+}
+
+.menu-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.04) 34%,
+    rgba(255, 255, 255, 0.16) 50%,
+    rgba(255, 255, 255, 0.04) 66%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: shimmerSweep 1.7s linear infinite;
+}
+
 .hero-light-sweep {
   background: linear-gradient(112deg, transparent 18%, rgba(255, 255, 255, 0.06) 48%, transparent 76%);
   transform: translateX(-36%);
@@ -292,6 +321,23 @@ input[type='number'] {
   }
 }
 
+@keyframes menuOrbFloat {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(0, -14px, 0) scale(1.06);
+  }
+}
+
+@keyframes shimmerSweep {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 @keyframes plasmaFlow {
   0% {
     background-position: 4% 12%, 92% 10%, 82% 88%, 8% 86%, 50% 50%;
@@ -338,8 +384,10 @@ input[type='number'] {
   .arcade-grid,
   .plasma-frame__orbit,
   .hero-aurora,
+  .menu-orb-float,
   .hero-light-sweep,
-  .offer-glow {
+  .offer-glow,
+  .menu-shimmer::after {
     animation: none;
   }
 

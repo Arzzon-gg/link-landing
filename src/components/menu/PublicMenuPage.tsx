@@ -8,6 +8,7 @@ import {
   type PublicMenuLoadResult,
 } from '@/lib/public-menu';
 import type { PublicMenuData } from '@/types/menu';
+import { MenuCategoryNav } from './MenuCategoryNav';
 import { PublicMenuItemCard } from './PublicMenuItemCard';
 
 interface PublicMenuPageProps {
@@ -77,25 +78,13 @@ export function PublicMenuPage({ menu }: PublicMenuPageProps) {
           </FadeIn>
 
           <FadeIn>
-            <nav
-              aria-label="Menu categories"
-              className="sticky top-16 z-20 -mx-1 mb-10 flex gap-3 overflow-x-auto px-1 py-2 sm:top-20"
-            >
-              {menu.categories.map((category) => (
-                <a
-                  key={category.id}
-                  href={`#${buildMenuCategoryAnchor(category.name, category.id)}`}
-                  className="button-sheen group min-w-max overflow-hidden rounded-full border border-white/10 bg-[#0a0a17]/92 px-5 py-3 text-left backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-cyan-400/35 hover:bg-[#0c1020] hover:shadow-[0_0_28px_rgba(34,211,238,0.14)]"
-                >
-                  <div className="font-orbitron text-[11px] font-black uppercase tracking-[0.28em] text-white/86 transition-colors group-hover:text-cyan-300">
-                    {category.name}
-                  </div>
-                  <div className="mt-1 text-xs text-white/38">
-                    {category.items.length} {category.items.length === 1 ? 'dish' : 'dishes'}
-                  </div>
-                </a>
-              ))}
-            </nav>
+            <MenuCategoryNav
+              categories={menu.categories.map((category) => ({
+                id: buildMenuCategoryAnchor(category.name, category.id),
+                name: category.name,
+                itemCount: category.items.length,
+              }))}
+            />
           </FadeIn>
 
           {menu.categories.length ? (
