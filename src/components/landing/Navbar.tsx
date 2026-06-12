@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { cn } from '@/lib/utils';
 
 const navLinks = [
   { label: 'HOME', href: '/#home', activePath: '/' },
@@ -16,6 +17,7 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const isSignupPage = pathname === '/signup';
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -69,10 +71,15 @@ export function Navbar() {
 
           <div className="hidden lg:block">
             <Link
-              href="/register"
-              className="button-sheen inline-flex overflow-hidden rounded-full bg-gradient-to-r from-pink-600 to-violet-600 px-5 py-2.5 text-[11px] font-black uppercase tracking-widest text-white shadow-[0_0_20px_rgba(236,72,153,0.4)] transition-all duration-300 hover:-translate-y-0.5 hover:from-pink-500 hover:to-violet-500 hover:shadow-[0_0_35px_rgba(236,72,153,0.65)]"
+              href="/signup"
+              className={cn(
+                'button-sheen inline-flex overflow-hidden rounded-full px-5 py-2.5 text-[11px] font-black uppercase tracking-widest transition-all duration-300',
+                isSignupPage
+                  ? 'border border-white/16 bg-white/[0.04] text-white shadow-[0_0_20px_rgba(6,182,212,0.14)]'
+                  : 'bg-gradient-to-r from-pink-600 to-violet-600 text-white shadow-[0_0_20px_rgba(236,72,153,0.4)] hover:-translate-y-0.5 hover:from-pink-500 hover:to-violet-500 hover:shadow-[0_0_35px_rgba(236,72,153,0.65)]'
+              )}
             >
-              BOOK NOW
+              CREATE ACCOUNT
             </Link>
           </div>
 
@@ -120,11 +127,16 @@ export function Navbar() {
                 transition={{ delay: 0.12, duration: 0.22 }}
               >
                 <Link
-                  href="/register"
+                  href="/signup"
                   onClick={() => setMobileOpen(false)}
-                  className="button-sheen mt-2 inline-flex w-full justify-center overflow-hidden rounded-full bg-gradient-to-r from-pink-600 to-violet-600 px-5 py-3 text-center text-sm font-black uppercase tracking-widest text-white shadow-[0_0_20px_rgba(236,72,153,0.35)]"
+                  className={cn(
+                    'button-sheen mt-2 inline-flex w-full justify-center overflow-hidden rounded-full px-5 py-3 text-center text-sm font-black uppercase tracking-widest',
+                    isSignupPage
+                      ? 'border border-white/16 bg-white/[0.04] text-white'
+                      : 'bg-gradient-to-r from-pink-600 to-violet-600 text-white shadow-[0_0_20px_rgba(236,72,153,0.35)]'
+                  )}
                 >
-                  BOOK NOW
+                  CREATE ACCOUNT
                 </Link>
               </motion.div>
             </div>

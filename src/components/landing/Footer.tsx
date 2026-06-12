@@ -10,6 +10,7 @@ const mkallesMapsHref =
   'https://www.google.com/maps/search/?api=1&query=The%20Link%20Diner%20%26%20Bowling%20Mkalles%2C%20Lebanon';
 
 const quickLinks = [
+  { label: 'Create Account', href: '/signup' },
   { label: 'Activities', href: '/#activities' },
   { label: 'Food & Drinks', href: '/#food' },
   { label: 'Birthdays', href: '/#birthdays' },

@@ -129,16 +129,16 @@ export function Hero() {
             <StaggerItem>
               <div className="flex flex-wrap items-center gap-4">
                 <Link
-                  href="/register"
+                  href="/signup"
                   className="button-sheen inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-pink-600 via-fuchsia-600 to-violet-600 px-7 py-3.5 text-[11px] font-black uppercase tracking-widest text-white shadow-[0_0_28px_rgba(236,72,153,0.45)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_44px_rgba(236,72,153,0.7)]"
                 >
-                  BOOK YOUR EXPERIENCE <span className="text-base leading-none">›</span>
+                  CREATE YOUR ACCOUNT <span className="text-base leading-none">&gt;</span>
                 </Link>
                 <Link
                   href="#activities"
                   className="button-sheen inline-flex items-center gap-2 overflow-hidden rounded-full border border-white/40 bg-white/[0.02] px-7 py-3.5 text-[11px] font-black uppercase tracking-widest text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-cyan-300 hover:bg-white/[0.06] hover:shadow-[0_0_28px_rgba(34,211,238,0.18)]"
                 >
-                  EXPLORE ACTIVITIES <span className="text-base leading-none">›</span>
+                  EXPLORE ACTIVITIES <span className="text-base leading-none">&gt;</span>
                 </Link>
               </div>
             </StaggerItem>
