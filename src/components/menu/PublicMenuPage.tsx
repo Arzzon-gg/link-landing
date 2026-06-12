@@ -129,7 +129,7 @@ export function PublicMenuPage({ menu }: PublicMenuPageProps) {
 
                   {category.items.length ? (
                     <StaggerGroup className="grid gap-6 md:grid-cols-2 xl:grid-cols-3" stagger={0.1} amount={0.08}>
-                      {category.items.map((item) => (
+                      {category.items.map((item, itemIndex) => (
                         <StaggerItem key={item.id}>
                           <PublicMenuItemCard
                             item={item}
@@ -137,6 +137,7 @@ export function PublicMenuPage({ menu }: PublicMenuPageProps) {
                             imageUrl={resolvePublicMenuImageUrl(item.imageUrl)}
                             priceLabel={formatCurrency(item.basePrice)}
                             teaser={getMenuItemTeaser(item.description)}
+                            priorityImage={index === 0 && itemIndex < 3}
                           />
                         </StaggerItem>
                       ))}
@@ -166,40 +167,6 @@ export function PublicMenuPage({ menu }: PublicMenuPageProps) {
               </div>
             </FadeIn>
           )}
-
-          <FadeIn className="mt-16">
-            <div className="offer-card rounded-[2rem] border border-white/[0.08] bg-[linear-gradient(135deg,rgba(10,10,25,0.92),rgba(7,7,14,0.96))] p-6 shadow-[0_20px_70px_rgba(0,0,0,0.34)] sm:p-8 lg:flex lg:items-center lg:justify-between lg:gap-8">
-              <div className="max-w-2xl">
-                <p className="font-orbitron text-[10px] font-black uppercase tracking-[0.32em] text-green-300">
-                  Display-only experience
-                </p>
-                <h3 className="mt-3 font-orbitron text-2xl font-black uppercase text-white sm:text-3xl">
-                  No cart. No checkout. Just discovery.
-                </h3>
-                <p className="mt-4 text-sm leading-7 text-white/46">
-                  This menu is intentionally built for browsing. For bookings, birthdays,
-                  or pre-launch access, jump back into The Link experience.
-                </p>
-              </div>
-
-              <div className="mt-6 flex flex-wrap gap-4 lg:mt-0">
-                <Link
-                  href="/register"
-                  className="button-sheen inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-pink-600 to-violet-600 px-6 py-3 text-[11px] font-black uppercase tracking-[0.28em] text-white shadow-[0_0_24px_rgba(236,72,153,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:from-pink-500 hover:to-violet-500 hover:shadow-[0_0_38px_rgba(236,72,153,0.56)]"
-                >
-                  Book now
-                  <span className="text-base leading-none">&gt;</span>
-                </Link>
-                <Link
-                  href="/#offers"
-                  className="button-sheen inline-flex items-center gap-2 overflow-hidden rounded-full border border-white/20 px-6 py-3 text-[11px] font-black uppercase tracking-[0.28em] text-white/84 transition-all duration-300 hover:-translate-y-0.5 hover:border-green-400/45 hover:text-green-300 hover:shadow-[0_0_24px_rgba(74,222,128,0.14)]"
-                >
-                  See offers
-                  <span className="text-base leading-none">&gt;</span>
-                </Link>
-              </div>
-            </div>
-          </FadeIn>
         </div>
       </section>
     </div>
@@ -243,10 +210,10 @@ export function PublicMenuStatePage({
                 <span className="text-base leading-none">&gt;</span>
               </Link>
               <Link
-                href="/register"
+                href="/signup"
                 className="button-sheen inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-pink-600 to-violet-600 px-6 py-3 text-[11px] font-black uppercase tracking-[0.28em] text-white shadow-[0_0_24px_rgba(236,72,153,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:from-pink-500 hover:to-violet-500 hover:shadow-[0_0_38px_rgba(236,72,153,0.56)]"
               >
-                Book now
+                Create account
                 <span className="text-base leading-none">&gt;</span>
               </Link>
             </div>

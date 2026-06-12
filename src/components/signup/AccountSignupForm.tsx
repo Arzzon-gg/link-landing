@@ -353,8 +353,14 @@ function AccountSignupSuccess({
 
         <div className="mt-8 flex flex-wrap justify-center gap-4">
           <Link
+            href="/login"
+            className="button-sheen inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 px-6 py-3 text-[11px] font-black uppercase tracking-[0.28em] text-white shadow-[0_0_24px_rgba(34,211,238,0.32)] transition-all duration-300 hover:-translate-y-0.5 hover:from-cyan-400 hover:to-violet-500 hover:shadow-[0_0_38px_rgba(34,211,238,0.5)]"
+          >
+            Log in now <span className="text-base leading-none">&gt;</span>
+          </Link>
+          <Link
             href="/menu"
-            className="button-sheen inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-pink-600 to-violet-600 px-6 py-3 text-[11px] font-black uppercase tracking-[0.28em] text-white shadow-[0_0_24px_rgba(236,72,153,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:from-pink-500 hover:to-violet-500 hover:shadow-[0_0_38px_rgba(236,72,153,0.56)]"
+            className="button-sheen inline-flex items-center gap-2 overflow-hidden rounded-full border border-white/20 px-6 py-3 text-[11px] font-black uppercase tracking-[0.28em] text-white/84 transition-all duration-300 hover:-translate-y-0.5 hover:border-pink-400/45 hover:text-pink-300"
           >
             Browse menu <span className="text-base leading-none">&gt;</span>
           </Link>

@@ -12,6 +12,7 @@ interface PublicMenuItemCardProps {
   imageUrl?: string | null;
   priceLabel: string;
   teaser: string;
+  priorityImage?: boolean;
 }
 
 export function PublicMenuItemCard({
@@ -20,6 +21,7 @@ export function PublicMenuItemCard({
   imageUrl,
   priceLabel,
   teaser,
+  priorityImage = false,
 }: PublicMenuItemCardProps) {
   const [flipped, setFlipped] = useState(false);
   const reduceMotion = useReducedMotion();
@@ -65,7 +67,12 @@ export function PublicMenuItemCard({
                 </div>
 
                 <div className="h-[250px] sm:h-[260px]">
-                  <MenuItemImage src={imageUrl} alt={item.name} title={item.name} />
+                  <MenuItemImage
+                    src={imageUrl}
+                    alt={item.name}
+                    title={item.name}
+                    priority={priorityImage}
+                  />
                 </div>
 
                 <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),transparent_28%,transparent_72%,rgba(7,7,14,0.78)_100%)] opacity-75" />
@@ -93,29 +100,31 @@ export function PublicMenuItemCard({
                 {teaser}
               </p>
 
-              <div className="mt-5 grid grid-cols-[1fr_auto] items-center gap-3 rounded-[1.25rem] border border-white/[0.08] bg-white/[0.03] px-4 py-3.5 transition-all duration-300 group-hover:border-cyan-400/14 group-hover:bg-white/[0.04]">
-                <div>
-                  <p className="font-orbitron text-[11px] font-black uppercase tracking-[0.24em] text-white/82">
-                    {hasModifiers ? 'Flip for details' : 'Flip for chef notes'}
-                  </p>
-                  <p className="mt-1 text-xs text-white/36">
-                    {hasModifiers
-                      ? 'Description and customizations on the back.'
-                      : 'Quick description and serving notes on the back.'}
-                  </p>
-                </div>
+              {false && (
+                <div className="mt-5 grid grid-cols-[1fr_auto] items-center gap-3 rounded-[1.25rem] border border-white/[0.08] bg-white/[0.03] px-4 py-3.5 transition-all duration-300 group-hover:border-cyan-400/14 group-hover:bg-white/[0.04]">
+                  <div>
+                    <p className="font-orbitron text-[11px] font-black uppercase tracking-[0.24em] text-white/82">
+                      {hasModifiers ? 'Flip for details' : 'Flip for chef notes'}
+                    </p>
+                    <p className="mt-1 text-xs text-white/36">
+                      {hasModifiers
+                        ? 'Description and customizations on the back.'
+                        : 'Quick description and serving notes on the back.'}
+                    </p>
+                  </div>
 
-                <motion.button
-                  type="button"
-                  onClick={() => setFlipped(true)}
-                  className="button-sheen inline-flex items-center gap-2 overflow-hidden rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.24em] text-cyan-300 transition-all duration-300 hover:border-cyan-300/55 hover:bg-cyan-400/14"
-                  aria-label={`View details for ${item.name}`}
-                  whileTap={reduceMotion ? undefined : { scale: 0.96 }}
-                >
-                  View
-                  <span className="text-sm leading-none">&gt;</span>
-                </motion.button>
-              </div>
+                  <motion.button
+                    type="button"
+                    onClick={() => setFlipped(true)}
+                    className="button-sheen inline-flex items-center gap-2 overflow-hidden rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.24em] text-cyan-300 transition-all duration-300 hover:border-cyan-300/55 hover:bg-cyan-400/14"
+                    aria-label={`View details for ${item.name}`}
+                    whileTap={reduceMotion ? undefined : { scale: 0.96 }}
+                  >
+                    View
+                    <span className="text-sm leading-none">&gt;</span>
+                  </motion.button>
+                </div>
+              )}
             </div>
           </div>
         </div>

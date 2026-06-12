@@ -8,6 +8,7 @@ interface MenuItemImageProps {
   alt: string;
   title: string;
   className?: string;
+  priority?: boolean;
 }
 
 function getInitials(title: string) {
@@ -19,13 +20,32 @@ function getInitials(title: string) {
     .join('');
 }
 
-function proxyImageUrl(url: string): string {
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    const encoded = encodeURIComponent(url);
-    return `/api/proxy-image?url=${encoded}`;
+const MENU_IMAGE_BLUR =
+  "data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 780'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%230f1020'/%3E%3Cstop offset='52%25' stop-color='%23090914'/%3E%3Cstop offset='100%25' stop-color='%23050509'/%3E%3C/linearGradient%3E%3CradialGradient id='pink' cx='28%25' cy='22%25' r='38%25'%3E%3Cstop offset='0%25' stop-color='rgba(236,72,153,0.38)'/%3E%3Cstop offset='100%25' stop-color='rgba(236,72,153,0)'/%3E%3C/radialGradient%3E%3CradialGradient id='cyan' cx='74%25' cy='78%25' r='36%25'%3E%3Cstop offset='0%25' stop-color='rgba(34,211,238,0.32)'/%3E%3Cstop offset='100%25' stop-color='rgba(34,211,238,0)'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='1200' height='780' fill='url(%23bg)'/%3E%3Crect width='1200' height='780' fill='url(%23pink)'/%3E%3Crect width='1200' height='780' fill='url(%23cyan)'/%3E%3C/svg%3E";
+const MENU_IMAGE_WIDTHS = [360, 540, 720, 960] as const;
+const MENU_IMAGE_SIZES = '(min-width: 1280px) 31vw, (min-width: 768px) 45vw, 92vw';
+const MENU_IMAGE_QUALITY = 70;
+
+function buildMenuImageUrl(url: string, width = MENU_IMAGE_WIDTHS[MENU_IMAGE_WIDTHS.length - 1]) {
+  if (/^https?:\/\//i.test(url)) {
+    const params = new URLSearchParams({
+      url,
+      w: String(width),
+      q: String(MENU_IMAGE_QUALITY),
+    });
+
+    return `/api/proxy-image?${params.toString()}`;
   }
 
   return url;
+}
+
+function buildMenuImageSet(url: string) {
+  if (!/^https?:\/\//i.test(url)) {
+    return undefined;
+  }
+
+  return MENU_IMAGE_WIDTHS.map((width) => `${buildMenuImageUrl(url, width)} ${width}w`).join(', ');
 }
 
 export function MenuItemImage({
@@ -33,48 +53,34 @@ export function MenuItemImage({
   alt,
   title,
   className,
+  priority = false,
 }: MenuItemImageProps) {
   const [broken, setBroken] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const initials = useMemo(() => getInitials(title) || 'TL', [title]);
-  const proxiedSrc = useMemo(() => (src ? proxyImageUrl(src) : null), [src]);
+  const imageSrc = useMemo(() => (src ? buildMenuImageUrl(src) : null), [src]);
+  const imageSrcSet = useMemo(() => (src ? buildMenuImageSet(src) : undefined), [src]);
 
   useEffect(() => {
     setBroken(false);
     setLoaded(false);
-  }, [proxiedSrc]);
+  }, [imageSrc]);
 
   useEffect(() => {
     const image = imageRef.current;
 
-    if (!image || !proxiedSrc) {
+    if (!image || !imageSrc) {
       return;
     }
-
-    const markLoaded = () => setLoaded(true);
-    const markBroken = () => setBroken(true);
 
     if (image.complete) {
-      if (image.naturalWidth > 0) {
-        markLoaded();
-      } else {
-        markBroken();
-      }
-
-      return;
+      setLoaded(image.naturalWidth > 0);
+      setBroken(image.naturalWidth === 0);
     }
+  }, [imageSrc]);
 
-    image.addEventListener('load', markLoaded);
-    image.addEventListener('error', markBroken);
-
-    return () => {
-      image.removeEventListener('load', markLoaded);
-      image.removeEventListener('error', markBroken);
-    };
-  }, [proxiedSrc]);
-
-  if (!proxiedSrc || broken) {
+  if (!imageSrc || broken) {
     return (
       <div
         className={cn(
@@ -107,18 +113,29 @@ export function MenuItemImage({
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         ref={imageRef}
-        key={proxiedSrc}
-        src={proxiedSrc}
+        key={imageSrc}
+        src={imageSrc}
+        srcSet={imageSrcSet}
+        sizes={MENU_IMAGE_SIZES}
         alt={alt}
-        className={cn(
-          'h-full w-full object-cover object-center transition-all duration-700',
-          loaded ? 'scale-100 opacity-100' : 'scale-[1.02] opacity-100',
-        )}
-        loading="lazy"
+        loading={priority ? 'eager' : 'lazy'}
+        fetchPriority={priority ? 'high' : 'auto'}
         decoding="async"
+        draggable={false}
+        className={cn(
+          'absolute inset-0 h-full w-full object-cover object-center transition-all duration-700',
+          loaded ? 'scale-100 opacity-100' : 'scale-[1.02] opacity-95',
+        )}
         onLoad={() => setLoaded(true)}
         onError={() => setBroken(true)}
       />
+
+      {!loaded ? (
+        <div
+          className="absolute inset-0 z-[1] bg-cover bg-center opacity-90 transition-opacity duration-500"
+          style={{ backgroundImage: `url("${MENU_IMAGE_BLUR}")` }}
+        />
+      ) : null}
 
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(255,255,255,0.18),transparent_26%),linear-gradient(180deg,transparent,rgba(2,2,9,0.08))]" />
     </div>

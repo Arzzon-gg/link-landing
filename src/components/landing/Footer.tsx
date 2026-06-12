@@ -11,6 +11,7 @@ const mkallesMapsHref =
 
 const quickLinks = [
   { label: 'Create Account', href: '/signup' },
+  { label: 'Log In', href: '/login' },
   { label: 'Activities', href: '/#activities' },
   { label: 'Food & Drinks', href: '/#food' },
   { label: 'Birthdays', href: '/#birthdays' },
