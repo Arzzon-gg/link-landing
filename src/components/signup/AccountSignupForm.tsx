@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { GoogleAuthButton } from '@/components/auth/GoogleAuthButton';
 import { FormField } from '@/components/FormField';
 import { PhoneField } from '@/components/PhoneField';
 import {
@@ -126,6 +127,24 @@ export function AccountSignupForm() {
           <div className="pointer-events-none absolute inset-[14px] rounded-[1.5rem] border border-white/[0.055]" />
 
           <div className="relative z-10 p-8 sm:p-10">
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="mb-6 space-y-4"
+            >
+              <motion.div variants={rowVariants}>
+                <GoogleAuthButton mode="signup" onError={setServerError} />
+              </motion.div>
+              <motion.div variants={rowVariants} className="flex items-center gap-4">
+                <div className="h-px flex-1 bg-white/10" />
+                <span className="font-orbitron text-[10px] font-black uppercase tracking-[0.28em] text-white/28">
+                  Or create with email
+                </span>
+                <div className="h-px flex-1 bg-white/10" />
+              </motion.div>
+            </motion.div>
+
             <motion.form
               onSubmit={handleSubmit(onSubmit)}
               noValidate

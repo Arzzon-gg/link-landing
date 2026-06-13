@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { accountLoginSchema } from '@/lib/account-login-validation';
 import {
   createAccountSessionResponse,
   parseCloudHubSession,
@@ -7,6 +6,11 @@ import {
   type CloudHubAuthPayload,
 } from '@/lib/cloudhub-auth';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { z } from 'zod';
+
+const googleLoginSchema = z.object({
+  idToken: z.string().trim().min(1, 'Google ID token is required'),
+});
 
 export async function POST(req: NextRequest) {
   const ip =
@@ -14,7 +18,7 @@ export async function POST(req: NextRequest) {
     req.headers.get('x-real-ip') ??
     'unknown';
 
-  const rateLimit = checkRateLimit(`${ip}:account-login`);
+  const rateLimit = checkRateLimit(`${ip}:account-login-google`);
 
   if (!rateLimit.allowed) {
     return NextResponse.json(
@@ -39,13 +43,13 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const parsed = accountLoginSchema.safeParse(body);
+  const parsed = googleLoginSchema.safeParse(body);
 
   if (!parsed.success) {
     return NextResponse.json(
       {
         success: false,
-        message: 'Please fix the highlighted fields and try again.',
+        message: 'Google sign-in could not be completed. Please try again.',
         errors: parsed.error.flatten().fieldErrors,
       },
       { status: 422 }
@@ -65,7 +69,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const response = await fetch(`${apiBaseUrl.replace(/\/+$/, '')}/auth/login`, {
+    const response = await fetch(`${apiBaseUrl.replace(/\/+$/, '')}/auth/firebase/google`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -73,8 +77,7 @@ export async function POST(req: NextRequest) {
       },
       cache: 'no-store',
       body: JSON.stringify({
-        email: parsed.data.email.trim().toLowerCase(),
-        password: parsed.data.password,
+        idToken: parsed.data.idToken,
       }),
     });
 
@@ -85,14 +88,14 @@ export async function POST(req: NextRequest) {
         {
           success: false,
           message:
-            message ?? 'We could not sign you in right now. Please try again in a moment.',
+            message ?? 'We could not sign you in with Google right now. Please try again.',
         },
         { status: response.status }
       );
     }
 
-    const result = (await response.json()) as CloudHubAuthPayload;
-    const parsedSession = parseCloudHubSession(result);
+    const payload = (await response.json()) as CloudHubAuthPayload;
+    const parsedSession = parseCloudHubSession(payload);
 
     if (!parsedSession) {
       return NextResponse.json(
@@ -106,7 +109,7 @@ export async function POST(req: NextRequest) {
 
     return createAccountSessionResponse(parsedSession.session, parsedSession.token);
   } catch (error) {
-    console.error('[account-login] CloudHub request failed:', error);
+    console.error('[account-login-google] CloudHub request failed:', error);
 
     return NextResponse.json(
       {

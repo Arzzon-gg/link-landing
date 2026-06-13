@@ -7,6 +7,7 @@ import { AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { GoogleAuthButton } from '@/components/auth/GoogleAuthButton';
 import { FormField } from '@/components/FormField';
 import {
   accountLoginSchema,
@@ -80,11 +81,7 @@ export function AccountLoginForm() {
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="mb-8 text-center sm:mb-10"
       >
-        <div className="mb-4 inline-flex items-center gap-3 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.3em] text-cyan-300 shadow-[0_0_24px_rgba(34,211,238,0.12)]">
-          <span className="h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_14px_rgba(103,232,249,0.85)]" />
-          Member access
-        </div>
-        <h1 className="mt-4 font-orbitron text-4xl font-black uppercase leading-[1.02] text-white sm:text-5xl">
+        <h1 className="mt-12 font-orbitron text-4xl font-black uppercase leading-[1.02] text-white sm:text-5xl">
           Log in
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-white/46 sm:text-base">
@@ -106,6 +103,24 @@ export function AccountLoginForm() {
           <div className="pointer-events-none absolute inset-[14px] rounded-[1.5rem] border border-white/[0.055]" />
 
           <div className="relative z-10 p-8 sm:p-10">
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="mb-6 space-y-4"
+            >
+              <motion.div variants={rowVariants}>
+                <GoogleAuthButton mode="login" onError={setServerError} />
+              </motion.div>
+              <motion.div variants={rowVariants} className="flex items-center gap-4">
+                <div className="h-px flex-1 bg-white/10" />
+                <span className="font-orbitron text-[10px] font-black uppercase tracking-[0.28em] text-white/28">
+                  Or with email
+                </span>
+                <div className="h-px flex-1 bg-white/10" />
+              </motion.div>
+            </motion.div>
+
             <motion.form
               onSubmit={handleSubmit(onSubmit)}
               noValidate

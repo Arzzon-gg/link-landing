@@ -1,19 +1,7 @@
 import 'server-only';
 import { cookies } from 'next/headers';
 import { ACCOUNT_SESSION_COOKIE_NAME } from '@/lib/account-auth';
-import type { AccountLoginSession } from '@/types/auth';
-
-type CloudHubSessionPayload = {
-  userId?: number;
-  name?: string;
-  email?: string;
-  username?: string;
-  role?: string;
-  branchId?: number | null;
-  branchName?: string | null;
-  branchIds?: number[];
-  permissions?: string[];
-};
+import { parseCloudHubSession, type CloudHubAuthPayload } from '@/lib/cloudhub-auth';
 
 export async function getCurrentAccountSession() {
   const cookieStore = await cookies();
@@ -43,46 +31,16 @@ export async function getCurrentAccountSession() {
       return null;
     }
 
-    const payload = (await response.json()) as CloudHubSessionPayload;
+    const payload = (await response.json()) as CloudHubAuthPayload;
+    const parsedSession = parseCloudHubSession(payload);
 
-    if (!payload.userId || !payload.name || !payload.email || !payload.role) {
+    if (!parsedSession) {
       return null;
     }
 
-    return buildAccountSession({
-      userId: payload.userId,
-      name: payload.name,
-      email: payload.email,
-      role: payload.role,
-      branchId: payload.branchId ?? null,
-      branchName: payload.branchName ?? null,
-      branchIds: payload.branchIds ?? [],
-      permissions: payload.permissions ?? [],
-    });
+    return parsedSession.session;
   } catch (error) {
     console.error('[account-session] Failed to fetch current session:', error);
     return null;
   }
-}
-
-function buildAccountSession(payload: {
-  userId: number;
-  name: string;
-  email: string;
-  role: string;
-  branchId: number | null;
-  branchName: string | null;
-  branchIds: number[];
-  permissions: string[];
-}): AccountLoginSession {
-  return {
-    userId: payload.userId,
-    name: payload.name,
-    email: payload.email,
-    role: payload.role,
-    branchId: payload.branchId,
-    branchName: payload.branchName,
-    branchIds: payload.branchIds,
-    permissions: payload.permissions,
-  };
 }
