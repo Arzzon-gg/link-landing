@@ -23,8 +23,12 @@ import {
 } from '@/lib/account-signup-validation';
 import { getAgeFromDateOfBirth } from '@/lib/validation';
 import { cn } from '@/lib/utils';
+<<<<<<< Updated upstream
 import type { AccountLoginSession } from '@/types/auth';
 import type { AccountSignupApiResponse } from '@/types/signup';
+=======
+import type { AccountSignupApiResponse, WheelSession } from '@/types/signup';
+>>>>>>> Stashed changes
 
 const containerVariants = {
   hidden: {},
@@ -46,8 +50,10 @@ type CreatedAccountState = {
   name: string;
   email: string;
   userId?: number;
+  wheelSession?: WheelSession;
 };
 
+<<<<<<< Updated upstream
 type AccountSignupFormProps = {
   currentSession: AccountLoginSession | null;
 };
@@ -61,6 +67,27 @@ export function AccountSignupForm({ currentSession }: AccountSignupFormProps) {
 }
 
 function CreateAccountForm() {
+=======
+/**
+ * Builds the embedded wheel URL, handing the player's session to the Flutter
+ * app via query params so it opens already authenticated (no second login).
+ */
+function buildWheelUrl(session: WheelSession): string {
+  const params = new URLSearchParams({
+    token: session.token,
+    userId: String(session.userId),
+    name: session.name,
+    role: session.role,
+    branchId: String(session.branchId),
+  });
+  if (session.branchName) {
+    params.set('branchName', session.branchName);
+  }
+  return `/wheel/index.html?${params.toString()}`;
+}
+
+export function AccountSignupForm() {
+>>>>>>> Stashed changes
   const [createdAccount, setCreatedAccount] = useState<CreatedAccountState | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -111,6 +138,7 @@ function CreateAccountForm() {
         name: data.name,
         email: data.email,
         userId: result.userId,
+        wheelSession: result.wheelSession,
       });
     } catch {
       setServerError('Network error. Please check your connection and try again.');
@@ -631,6 +659,26 @@ function AccountSignupSuccess({
           <p className="mt-4 font-orbitron text-[10px] font-black uppercase tracking-[0.28em] text-white/32">
             Account ID #{createdAccount.userId}
           </p>
+        ) : null}
+
+        {createdAccount.wheelSession ? (
+          <div className="mt-8">
+            <p className="font-orbitron text-[10px] font-black uppercase tracking-[0.34em] text-pink-300">
+              Your daily spin is ready
+            </p>
+            <p className="mx-auto mt-2 max-w-md text-sm text-white/45">
+              Spin the wheel for a reward — then come back every day for another.
+            </p>
+            <div className="mx-auto mt-5 w-full max-w-lg overflow-hidden rounded-[1.6rem] border border-white/10 bg-black/50 shadow-[0_0_50px_rgba(168,85,247,0.18)]">
+              <iframe
+                src={buildWheelUrl(createdAccount.wheelSession)}
+                title="Daily spin wheel"
+                className="block h-[680px] w-full"
+                style={{ border: 0 }}
+                allow="clipboard-write"
+              />
+            </div>
+          </div>
         ) : null}
 
         <div className="mt-8 flex flex-wrap justify-center gap-4">

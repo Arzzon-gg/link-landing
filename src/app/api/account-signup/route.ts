@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { accountSignupSchema } from '@/lib/account-signup-validation';
+import type { CloudHubAuthPayload } from '@/lib/cloudhub-auth';
 import { checkRateLimit } from '@/lib/rate-limit';
+import type { WheelSession } from '@/types/signup';
+
+// New players are created without a branch, but the wheel endpoint requires one
+// (rewards are shared across branches). Fall back to the same branch the public
+// menu uses.
+const WHEEL_BRANCH_ID =
+  Number(process.env.WHEEL_BRANCH_ID ?? process.env.PUBLIC_MENU_BRANCH_ID ?? '1') || 1;
 
 type CloudHubErrorPayload = {
   message?: string;
@@ -95,11 +103,21 @@ export async function POST(req: NextRequest) {
 
     const result = (await response.json().catch(() => ({}))) as CloudHubUserPayload;
 
+    // Sign the new player in so the embedded post-signup wheel opens already
+    // authenticated. If this fails, signup still succeeds — the wheel is simply
+    // skipped on the success screen.
+    const wheelSession = await createWheelSession(
+      apiBaseUrl,
+      parsed.data.email.trim().toLowerCase(),
+      parsed.data.password
+    );
+
     return NextResponse.json(
       {
         success: true,
         message: 'Your account has been created successfully.',
         userId: result.id,
+        wheelSession,
       },
       { status: 201 }
     );
@@ -133,6 +151,46 @@ async function readCloudHubError(response: Response) {
     return json.message ?? json.detail ?? json.title ?? raw;
   } catch {
     return raw;
+  }
+}
+
+async function createWheelSession(
+  apiBaseUrl: string,
+  email: string,
+  password: string
+): Promise<WheelSession | undefined> {
+  try {
+    const response = await fetch(`${apiBaseUrl.replace(/\/+$/, '')}/auth/login`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      cache: 'no-store',
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      return undefined;
+    }
+
+    const payload = (await response.json().catch(() => ({}))) as CloudHubAuthPayload;
+
+    if (!payload.token || !payload.userId) {
+      return undefined;
+    }
+
+    return {
+      token: payload.token,
+      userId: payload.userId,
+      name: payload.name ?? '',
+      role: payload.role ?? 'player',
+      branchId: payload.branchId ?? WHEEL_BRANCH_ID,
+      branchName: payload.branchName ?? null,
+    };
+  } catch (error) {
+    console.error('[account-signup] wheel session login failed:', error);
+    return undefined;
   }
 }
 
