@@ -67,7 +67,7 @@ export function AccountLoginForm() {
       }
 
       router.refresh();
-      router.replace('/menu');
+      router.replace(result.session.profileCompleted ? '/menu' : '/signup');
     } catch {
       setServerError('Network error. Please check your connection and try again.');
     }

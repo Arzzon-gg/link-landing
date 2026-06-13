@@ -16,6 +16,14 @@ export type CloudHubAuthPayload = {
   branchName?: string | null;
   branchIds?: number[];
   permissions?: string[];
+  phone?: string | null;
+  dateOfBirth?: string | null;
+  isMarried?: boolean | null;
+  marriageDate?: string | null;
+  address?: string | null;
+  firebaseLinked?: boolean;
+  hasPassword?: boolean;
+  profileCompleted?: boolean;
 };
 
 type CloudHubErrorPayload = {
@@ -33,6 +41,14 @@ export function buildAccountSession(payload: {
   branchName: string | null;
   branchIds: number[];
   permissions: string[];
+  phone: string | null;
+  dateOfBirth: string | null;
+  isMarried: boolean | null;
+  marriageDate: string | null;
+  address: string | null;
+  firebaseLinked: boolean;
+  hasPassword: boolean;
+  profileCompleted: boolean;
 }): AccountLoginSession {
   return {
     userId: payload.userId,
@@ -43,6 +59,14 @@ export function buildAccountSession(payload: {
     branchName: payload.branchName,
     branchIds: payload.branchIds,
     permissions: payload.permissions,
+    phone: payload.phone,
+    dateOfBirth: payload.dateOfBirth,
+    isMarried: payload.isMarried,
+    marriageDate: payload.marriageDate,
+    address: payload.address,
+    firebaseLinked: payload.firebaseLinked,
+    hasPassword: payload.hasPassword,
+    profileCompleted: payload.profileCompleted,
   };
 }
 
@@ -62,8 +86,20 @@ export function parseCloudHubSession(payload: CloudHubAuthPayload) {
       branchName: payload.branchName ?? null,
       branchIds: payload.branchIds ?? [],
       permissions: payload.permissions ?? [],
+      phone: typeof payload.phone === 'string' ? payload.phone : null,
+      dateOfBirth: normalizeDateValue(payload.dateOfBirth),
+      isMarried: typeof payload.isMarried === 'boolean' ? payload.isMarried : null,
+      marriageDate: normalizeDateValue(payload.marriageDate),
+      address: typeof payload.address === 'string' ? payload.address : null,
+      firebaseLinked: !!payload.firebaseLinked,
+      hasPassword: !!payload.hasPassword,
+      profileCompleted: !!payload.profileCompleted,
     }),
   };
+}
+
+function normalizeDateValue(value: unknown) {
+  return typeof value === 'string' && value.trim() ? value : null;
 }
 
 export function createAccountSessionResponse(session: AccountLoginSession, token: string) {

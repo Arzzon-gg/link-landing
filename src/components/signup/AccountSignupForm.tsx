@@ -3,23 +3,26 @@
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  AlertCircle,
-  Eye,
-  EyeOff,
-  ShieldCheck,
-} from 'lucide-react';
-import { useState } from 'react';
+import { AlertCircle, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import type { FieldErrors, UseFormRegisterReturn } from 'react-hook-form';
 import { GoogleAuthButton } from '@/components/auth/GoogleAuthButton';
 import { FormField } from '@/components/FormField';
 import { PhoneField } from '@/components/PhoneField';
+import { COUNTRY_CODES } from '@/data/countryCodes';
+import {
+  accountProfileCompletionSchema,
+  type AccountProfileCompletionInput,
+} from '@/lib/account-profile-validation';
 import {
   accountSignupSchema,
   type AccountSignupInput,
 } from '@/lib/account-signup-validation';
 import { getAgeFromDateOfBirth } from '@/lib/validation';
 import { cn } from '@/lib/utils';
+import type { AccountLoginSession } from '@/types/auth';
 import type { AccountSignupApiResponse } from '@/types/signup';
 
 const containerVariants = {
@@ -31,7 +34,11 @@ const containerVariants = {
 
 const rowVariants = {
   hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
+  },
 };
 
 type CreatedAccountState = {
@@ -40,7 +47,19 @@ type CreatedAccountState = {
   userId?: number;
 };
 
-export function AccountSignupForm() {
+type AccountSignupFormProps = {
+  currentSession: AccountLoginSession | null;
+};
+
+export function AccountSignupForm({ currentSession }: AccountSignupFormProps) {
+  if (currentSession && !currentSession.profileCompleted) {
+    return <CompleteProfileForm session={currentSession} />;
+  }
+
+  return <CreateAccountForm />;
+}
+
+function CreateAccountForm() {
   const [createdAccount, setCreatedAccount] = useState<CreatedAccountState | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -101,6 +120,246 @@ export function AccountSignupForm() {
   }
 
   return (
+    <SignupShell
+      title="Create your account"
+      intro={null}
+      serverError={serverError}
+      setServerError={setServerError}
+      googleButton={
+        <>
+          <motion.div variants={rowVariants}>
+            <GoogleAuthButton mode="signup" onError={setServerError} />
+          </motion.div>
+          <motion.div variants={rowVariants} className="flex items-center gap-4">
+            <div className="h-px flex-1 bg-white/10" />
+            <span className="font-orbitron text-[10px] font-black uppercase tracking-[0.28em] text-white/28">
+              Or create with email
+            </span>
+            <div className="h-px flex-1 bg-white/10" />
+          </motion.div>
+        </>
+      }
+    >
+      <motion.form
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="space-y-4"
+      >
+        <motion.div variants={rowVariants}>
+          <FormField
+            label="Full Name"
+            id="name"
+            type="text"
+            placeholder="Alex Johnson"
+            autoComplete="name"
+            error={errors.name?.message}
+            {...register('name')}
+          />
+        </motion.div>
+
+        <motion.div variants={rowVariants}>
+          <FormField
+            label="Email Address"
+            id="email"
+            type="email"
+            placeholder="alex@example.com"
+            autoComplete="email"
+            error={errors.email?.message}
+            {...register('email')}
+          />
+        </motion.div>
+
+        <motion.div variants={rowVariants} className="grid gap-4 sm:grid-cols-2">
+          <PasswordField
+            label="Password"
+            id="password"
+            placeholder="Create a password"
+            autoComplete="new-password"
+            error={errors.password?.message}
+            visible={showPassword}
+            onToggle={() => setShowPassword((current) => !current)}
+            {...register('password')}
+          />
+
+          <PasswordField
+            label="Confirm Password"
+            id="confirmPassword"
+            placeholder="Repeat your password"
+            autoComplete="new-password"
+            error={errors.confirmPassword?.message}
+            visible={showConfirmPassword}
+            onToggle={() => setShowConfirmPassword((current) => !current)}
+            {...register('confirmPassword')}
+          />
+        </motion.div>
+
+        <ProfileFields
+          countryCodeReg={register('countryCode')}
+          phoneNumberReg={register('phoneNumber')}
+          dateOfBirthReg={register('dateOfBirth')}
+          addressReg={register('address')}
+          marriedReg={register('married')}
+          marriageDateReg={register('marriageDate')}
+          errors={errors}
+          watchCountryCode={watch('countryCode')}
+          dateOfBirth={dateOfBirth || ''}
+          married={married}
+          showMarriageQuestion={showMarriageQuestion}
+          showMarriageDate={showMarriageDate}
+        />
+
+        <motion.div variants={rowVariants} className="pt-2">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="button-sheen inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-gradient-to-r from-pink-600 via-fuchsia-600 to-violet-600 px-6 py-4 text-[11px] font-black uppercase tracking-[0.3em] text-white shadow-[0_0_28px_rgba(236,72,153,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_46px_rgba(236,72,153,0.58)] disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {isSubmitting ? 'Creating account...' : 'Create account'}
+          </button>
+        </motion.div>
+      </motion.form>
+    </SignupShell>
+  );
+}
+
+function CompleteProfileForm({ session }: { session: AccountLoginSession }) {
+  const [serverError, setServerError] = useState<string | null>(null);
+  const router = useRouter();
+  const defaultValues = useMemo(() => getProfileDefaultValues(session), [session]);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<AccountProfileCompletionInput>({
+    resolver: zodResolver(accountProfileCompletionSchema),
+    defaultValues,
+    shouldUnregister: true,
+  });
+
+  const dateOfBirth = watch('dateOfBirth');
+  const married = watch('married');
+  const age = getAgeFromDateOfBirth(dateOfBirth || undefined);
+  const showMarriageQuestion = age !== null && age >= 18;
+  const showMarriageDate = showMarriageQuestion && married === 'yes';
+
+  async function onSubmit(data: AccountProfileCompletionInput) {
+    setServerError(null);
+
+    try {
+      const response = await fetch('/api/account-complete-profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      const result = (await response.json()) as {
+        success: boolean;
+        message?: string;
+        profileCompleted?: boolean;
+      };
+
+      if (!response.ok || !result.success) {
+        setServerError(result.message ?? 'Something went wrong. Please try again.');
+        return;
+      }
+
+      router.refresh();
+      router.replace('/menu');
+    } catch {
+      setServerError('Network error. Please check your connection and try again.');
+    }
+  }
+
+  return (
+    <SignupShell
+      title="Complete your profile"
+      intro={
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.04 }}
+          className="mt-4 flex flex-wrap items-center justify-center gap-3"
+        >
+          <div className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.26em] text-cyan-300">
+            Google connected
+          </div>
+          <div className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-xs text-white/68">
+            {session.email}
+          </div>
+        </motion.div>
+      }
+      serverError={serverError}
+      setServerError={setServerError}
+      googleButton={null}
+    >
+      <motion.form
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="space-y-4"
+      >
+        <motion.div variants={rowVariants} className="rounded-[1.5rem] border border-white/[0.08] bg-white/[0.03] px-5 py-4">
+          <p className="font-orbitron text-[10px] font-black uppercase tracking-[0.28em] text-white/46">
+            One last step
+          </p>
+          <p className="mt-3 text-sm leading-7 text-white/48">
+            Your Google sign-in is connected. Add the remaining profile details below so your
+            CloudHub account is fully ready.
+          </p>
+        </motion.div>
+
+        <ProfileFields
+          countryCodeReg={register('countryCode')}
+          phoneNumberReg={register('phoneNumber')}
+          dateOfBirthReg={register('dateOfBirth')}
+          addressReg={register('address')}
+          marriedReg={register('married')}
+          marriageDateReg={register('marriageDate')}
+          errors={errors}
+          watchCountryCode={watch('countryCode')}
+          dateOfBirth={dateOfBirth || ''}
+          married={married}
+          showMarriageQuestion={showMarriageQuestion}
+          showMarriageDate={showMarriageDate}
+        />
+
+        <motion.div variants={rowVariants} className="pt-2">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="button-sheen inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-gradient-to-r from-cyan-500 via-sky-500 to-violet-600 px-6 py-4 text-[11px] font-black uppercase tracking-[0.3em] text-white shadow-[0_0_28px_rgba(34,211,238,0.32)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_46px_rgba(34,211,238,0.52)] disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {isSubmitting ? 'Saving profile...' : 'Complete profile'}
+          </button>
+        </motion.div>
+      </motion.form>
+    </SignupShell>
+  );
+}
+
+function SignupShell({
+  title,
+  intro,
+  googleButton,
+  serverError,
+  setServerError,
+  children,
+}: {
+  title: string;
+  intro: React.ReactNode;
+  googleButton: React.ReactNode;
+  serverError: string | null;
+  setServerError: (message: string | null) => void;
+  children: React.ReactNode;
+}) {
+  return (
     <div className="mx-auto max-w-3xl">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
@@ -108,9 +367,10 @@ export function AccountSignupForm() {
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="mb-8 text-center sm:mb-10"
       >
-        <h1 className="font-orbitron text-4xl font-black uppercase leading-[1.02] text-white sm:text-5xl mt-8">
-          Create your account
+        <h1 className="mt-8 font-orbitron text-4xl font-black uppercase leading-[1.02] text-white sm:text-5xl">
+          {title}
         </h1>
+        {intro}
       </motion.div>
 
       <motion.div
@@ -127,214 +387,174 @@ export function AccountSignupForm() {
           <div className="pointer-events-none absolute inset-[14px] rounded-[1.5rem] border border-white/[0.055]" />
 
           <div className="relative z-10 p-8 sm:p-10">
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              className="mb-6 space-y-4"
-            >
-              <motion.div variants={rowVariants}>
-                <GoogleAuthButton mode="signup" onError={setServerError} />
+            {googleButton ? (
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="mb-6 space-y-4"
+              >
+                {googleButton}
               </motion.div>
-              <motion.div variants={rowVariants} className="flex items-center gap-4">
-                <div className="h-px flex-1 bg-white/10" />
-                <span className="font-orbitron text-[10px] font-black uppercase tracking-[0.28em] text-white/28">
-                  Or create with email
-                </span>
-                <div className="h-px flex-1 bg-white/10" />
-              </motion.div>
-            </motion.div>
+            ) : null}
 
-            <motion.form
-              onSubmit={handleSubmit(onSubmit)}
-              noValidate
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              className="space-y-4"
-            >
-                <motion.div variants={rowVariants}>
-                  <FormField
-                    label="Full Name"
-                    id="name"
-                    type="text"
-                    placeholder="Alex Johnson"
-                    autoComplete="name"
-                    error={errors.name?.message}
-                    {...register('name')}
-                  />
+            <AnimatePresence>
+              {serverError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6, height: 0 }}
+                  animate={{ opacity: 1, y: 0, height: 'auto' }}
+                  exit={{ opacity: 0, y: -6, height: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="mb-4 flex items-start gap-2.5 rounded-xl border border-red-500/20 bg-red-500/[0.08] px-4 py-3"
+                >
+                  <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-400" />
+                  <p className="text-sm text-red-400">{serverError}</p>
                 </motion.div>
+              )}
+            </AnimatePresence>
 
-                <motion.div variants={rowVariants}>
-                  <FormField
-                    label="Email Address"
-                    id="email"
-                    type="email"
-                    placeholder="alex@example.com"
-                    autoComplete="email"
-                    error={errors.email?.message}
-                    {...register('email')}
-                  />
-                </motion.div>
-
-                <motion.div variants={rowVariants} className="grid gap-4 sm:grid-cols-2">
-                  <PasswordField
-                    label="Password"
-                    id="password"
-                    placeholder="Create a password"
-                    autoComplete="new-password"
-                    error={errors.password?.message}
-                    visible={showPassword}
-                    onToggle={() => setShowPassword((current) => !current)}
-                    {...register('password')}
-                  />
-
-                  <PasswordField
-                    label="Confirm Password"
-                    id="confirmPassword"
-                    placeholder="Repeat your password"
-                    autoComplete="new-password"
-                    error={errors.confirmPassword?.message}
-                    visible={showConfirmPassword}
-                    onToggle={() => setShowConfirmPassword((current) => !current)}
-                    {...register('confirmPassword')}
-                  />
-                </motion.div>
-
-                <motion.div variants={rowVariants}>
-                  <PhoneField
-                    countryCodeReg={register('countryCode')}
-                    phoneNumberReg={register('phoneNumber')}
-                    countryCodeError={errors.countryCode?.message}
-                    phoneNumberError={errors.phoneNumber?.message}
-                    selectedDial={watch('countryCode')}
-                  />
-                </motion.div>
-
-                <motion.div variants={rowVariants} className="grid gap-4 sm:grid-cols-2">
-                  <FormField
-                    label="Date of Birth"
-                    id="dateOfBirth"
-                    type="date"
-                    autoComplete="bday"
-                    error={errors.dateOfBirth?.message}
-                    {...register('dateOfBirth')}
-                  />
-
-                  <FormField
-                    label="Address"
-                    id="address"
-                    type="textarea"
-                    placeholder="Street, city, district"
-                    autoComplete="street-address"
-                    error={errors.address?.message}
-                    className="min-h-[44px]"
-                    {...register('address')}
-                  />
-                </motion.div>
-
-                <AnimatePresence initial={false}>
-                  {showMarriageQuestion && (
-                    <motion.div
-                      key="signup-marital-status"
-                      variants={rowVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="hidden"
-                      className="space-y-1.5"
-                    >
-                      <label className="block text-[11px] font-semibold tracking-widest uppercase text-slate-500">
-                        Are you married?
-                      </label>
-
-                      <div className="grid grid-cols-2 gap-3">
-                        <label
-                          className={cn(
-                            'flex h-11 cursor-pointer items-center justify-center rounded-xl border px-4 text-sm font-medium transition-all',
-                            married === 'no'
-                              ? 'border-violet-500/60 bg-violet-500/10 text-white shadow-[0_0_0_1px_rgba(139,92,246,0.2)]'
-                              : 'border-white/[0.08] bg-white/[0.04] text-slate-300 hover:border-white/[0.16] hover:bg-white/[0.06]'
-                          )}
-                        >
-                          <input type="radio" value="no" className="sr-only" {...register('married')} />
-                          No
-                        </label>
-
-                        <label
-                          className={cn(
-                            'flex h-11 cursor-pointer items-center justify-center rounded-xl border px-4 text-sm font-medium transition-all',
-                            married === 'yes'
-                              ? 'border-violet-500/60 bg-violet-500/10 text-white shadow-[0_0_0_1px_rgba(139,92,246,0.2)]'
-                              : 'border-white/[0.08] bg-white/[0.04] text-slate-300 hover:border-white/[0.16] hover:bg-white/[0.06]'
-                          )}
-                        >
-                          <input type="radio" value="yes" className="sr-only" {...register('married')} />
-                          Yes
-                        </label>
-                      </div>
-
-                      <div
-                        className={cn(
-                          'overflow-hidden transition-all duration-200',
-                          errors.married?.message ? 'max-h-8 opacity-100' : 'max-h-0 opacity-0'
-                        )}
-                      >
-                        <p className="text-xs text-red-400 pt-0.5">{errors.married?.message}</p>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                <AnimatePresence initial={false}>
-                  {showMarriageDate && (
-                    <motion.div
-                      key="signup-marriage-date"
-                      variants={rowVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="hidden"
-                    >
-                      <FormField
-                        label="Marriage Date"
-                        id="marriageDate"
-                        type="date"
-                        autoComplete="off"
-                        error={errors.marriageDate?.message}
-                        {...register('marriageDate')}
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                <AnimatePresence>
-                  {serverError && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -6, height: 0 }}
-                      animate={{ opacity: 1, y: 0, height: 'auto' }}
-                      exit={{ opacity: 0, y: -6, height: 0 }}
-                      transition={{ duration: 0.25 }}
-                      className="flex items-start gap-2.5 rounded-xl border border-red-500/20 bg-red-500/[0.08] px-4 py-3"
-                    >
-                      <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-400" />
-                      <p className="text-sm text-red-400">{serverError}</p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                <motion.div variants={rowVariants} className="pt-2">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="button-sheen inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-gradient-to-r from-pink-600 via-fuchsia-600 to-violet-600 px-6 py-4 text-[11px] font-black uppercase tracking-[0.3em] text-white shadow-[0_0_28px_rgba(236,72,153,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_46px_rgba(236,72,153,0.58)] disabled:cursor-not-allowed disabled:opacity-70"
-                  >
-                    {isSubmitting ? 'Creating account...' : 'Create account'}
-                  </button>
-                </motion.div>
-            </motion.form>
+            {children}
           </div>
         </div>
-        </motion.div>
-      </div>
+      </motion.div>
+    </div>
+  );
+}
+
+function ProfileFields({
+  countryCodeReg,
+  phoneNumberReg,
+  dateOfBirthReg,
+  addressReg,
+  marriedReg,
+  marriageDateReg,
+  errors,
+  watchCountryCode,
+  dateOfBirth,
+  married,
+  showMarriageQuestion,
+  showMarriageDate,
+}: {
+  countryCodeReg: UseFormRegisterReturn<'countryCode'>;
+  phoneNumberReg: UseFormRegisterReturn<'phoneNumber'>;
+  dateOfBirthReg: UseFormRegisterReturn<'dateOfBirth'>;
+  addressReg: UseFormRegisterReturn<'address'>;
+  marriedReg: UseFormRegisterReturn<'married'>;
+  marriageDateReg: UseFormRegisterReturn<'marriageDate'>;
+  errors: FieldErrors<AccountSignupInput> | FieldErrors<AccountProfileCompletionInput>;
+  watchCountryCode: string | undefined;
+  dateOfBirth: string;
+  married: 'yes' | 'no' | undefined;
+  showMarriageQuestion: boolean;
+  showMarriageDate: boolean;
+}) {
+  return (
+    <>
+      <motion.div variants={rowVariants}>
+        <PhoneField
+          countryCodeReg={countryCodeReg}
+          phoneNumberReg={phoneNumberReg}
+          countryCodeError={errors.countryCode?.message}
+          phoneNumberError={errors.phoneNumber?.message}
+          selectedDial={watchCountryCode}
+        />
+      </motion.div>
+
+      <motion.div variants={rowVariants} className="grid gap-4 sm:grid-cols-2">
+        <FormField
+          label="Date of Birth"
+          id="dateOfBirth"
+          type="date"
+          autoComplete="bday"
+          error={errors.dateOfBirth?.message}
+          {...dateOfBirthReg}
+        />
+
+        <FormField
+          label="Address"
+          id="address"
+          type="textarea"
+          placeholder="Street, city, district"
+          autoComplete="street-address"
+          error={errors.address?.message}
+          className="min-h-[44px]"
+          {...addressReg}
+        />
+      </motion.div>
+
+      <AnimatePresence initial={false}>
+        {showMarriageQuestion && (
+          <motion.div
+            key={`marital-status-${dateOfBirth}`}
+            variants={rowVariants}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            className="space-y-1.5"
+          >
+            <label className="block text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+              Are you married?
+            </label>
+
+            <div className="grid grid-cols-2 gap-3">
+              <label
+                className={cn(
+                  'flex h-11 cursor-pointer items-center justify-center rounded-xl border px-4 text-sm font-medium transition-all',
+                  married === 'no'
+                    ? 'border-violet-500/60 bg-violet-500/10 text-white shadow-[0_0_0_1px_rgba(139,92,246,0.2)]'
+                    : 'border-white/[0.08] bg-white/[0.04] text-slate-300 hover:border-white/[0.16] hover:bg-white/[0.06]'
+                )}
+              >
+                <input type="radio" value="no" className="sr-only" {...marriedReg} />
+                No
+              </label>
+
+              <label
+                className={cn(
+                  'flex h-11 cursor-pointer items-center justify-center rounded-xl border px-4 text-sm font-medium transition-all',
+                  married === 'yes'
+                    ? 'border-violet-500/60 bg-violet-500/10 text-white shadow-[0_0_0_1px_rgba(139,92,246,0.2)]'
+                    : 'border-white/[0.08] bg-white/[0.04] text-slate-300 hover:border-white/[0.16] hover:bg-white/[0.06]'
+                )}
+              >
+                <input type="radio" value="yes" className="sr-only" {...marriedReg} />
+                Yes
+              </label>
+            </div>
+
+            <div
+              className={cn(
+                'overflow-hidden transition-all duration-200',
+                errors.married?.message ? 'max-h-8 opacity-100' : 'max-h-0 opacity-0'
+              )}
+            >
+              <p className="pt-0.5 text-xs text-red-400">{errors.married?.message}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence initial={false}>
+        {showMarriageDate && (
+          <motion.div
+            key={`marriage-date-${married}`}
+            variants={rowVariants}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+          >
+            <FormField
+              label="Marriage Date"
+              id="marriageDate"
+              type="date"
+              autoComplete="off"
+              error={errors.marriageDate?.message}
+              {...marriageDateReg}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
@@ -454,4 +674,53 @@ function PasswordField({
       </div>
     </div>
   );
+}
+
+function getProfileDefaultValues(session: AccountLoginSession): AccountProfileCompletionInput {
+  const phoneParts = splitPhone(session.phone);
+
+  return {
+    countryCode: phoneParts.countryCode,
+    phoneNumber: phoneParts.phoneNumber,
+    dateOfBirth: toDateInputValue(session.dateOfBirth),
+    married:
+      session.isMarried === true ? 'yes' : session.isMarried === false ? 'no' : undefined,
+    marriageDate: toDateInputValue(session.marriageDate),
+    address: session.address ?? '',
+  };
+}
+
+function splitPhone(phone: string | null) {
+  if (!phone) {
+    return {
+      countryCode: '961',
+      phoneNumber: '',
+    };
+  }
+
+  const digits = phone.replace(/\D/g, '');
+  const matches = COUNTRY_CODES
+    .filter((country) => digits.startsWith(country.dial))
+    .sort((left, right) => right.dial.length - left.dial.length);
+  const match = matches[0];
+
+  if (!match) {
+    return {
+      countryCode: '961',
+      phoneNumber: digits,
+    };
+  }
+
+  return {
+    countryCode: match.dial,
+    phoneNumber: digits.slice(match.dial.length),
+  };
+}
+
+function toDateInputValue(value: string | null) {
+  if (!value) {
+    return '';
+  }
+
+  return value.slice(0, 10);
 }

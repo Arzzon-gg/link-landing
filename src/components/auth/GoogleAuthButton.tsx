@@ -42,7 +42,7 @@ export function GoogleAuthButton({ mode, onError }: GoogleAuthButtonProps) {
       }
 
       router.refresh();
-      router.replace('/menu');
+      router.replace(payload.session.profileCompleted ? '/menu' : '/signup');
     } catch (error) {
       console.error('[GoogleAuthButton] Google sign-in failed:', error);
       onError(resolveGoogleAuthErrorMessage(error));
