@@ -22,11 +22,16 @@ export default async function SignupPage() {
   return (
     <>
       <ArcadeBackground />
-      <Navbar />
-      <main className="relative px-4 pb-24 pt-24 sm:px-6 lg:px-8 lg:pb-28 lg:pt-32">
+      {/* Mobile signup is a focused screen: no top nav / sidebar, no footer. */}
+      <div className="hidden lg:block">
+        <Navbar />
+      </div>
+      <main className="relative px-4 pb-16 pt-16 sm:px-6 lg:px-8 lg:pb-28 lg:pt-32">
         <AccountSignupForm currentSession={session} />
       </main>
-      <Footer />
+      <div className="hidden lg:block">
+        <Footer />
+      </div>
     </>
   );
 }
