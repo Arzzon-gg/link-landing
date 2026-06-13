@@ -359,8 +359,12 @@ function createImageResponse(
     headers: {
       'Content-Type': contentType,
       'Content-Length': String(byteLength),
-      'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800',
-      Vary: 'Accept',
+      'Cache-Control': 'private, no-store, no-cache, max-age=0, must-revalidate',
+      'CDN-Cache-Control': 'no-store',
+      'Netlify-CDN-Cache-Control': 'no-store',
+      Pragma: 'no-cache',
+      Expires: '0',
+      Vary: 'Accept, Accept-Encoding',
       'X-Image-Cache': cacheStatus,
     },
   });
