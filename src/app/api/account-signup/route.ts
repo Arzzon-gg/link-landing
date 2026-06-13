@@ -1,4 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import {
+  ACCOUNT_SESSION_COOKIE_NAME,
+  getAccountSessionCookieOptions,
+} from '@/lib/account-auth';
 import { accountSignupSchema } from '@/lib/account-signup-validation';
 import type { CloudHubAuthPayload } from '@/lib/cloudhub-auth';
 import { checkRateLimit } from '@/lib/rate-limit';
@@ -112,7 +116,7 @@ export async function POST(req: NextRequest) {
       parsed.data.password
     );
 
-    return NextResponse.json(
+    const apiResponse = NextResponse.json(
       {
         success: true,
         message: 'Your account has been created successfully.',
@@ -121,6 +125,18 @@ export async function POST(req: NextRequest) {
       },
       { status: 201 }
     );
+
+    // Log the player in site-wide so the post-signup wheel (/spin) can read the
+    // session from the cookie, same as the Google login flow.
+    if (wheelSession) {
+      apiResponse.cookies.set(
+        ACCOUNT_SESSION_COOKIE_NAME,
+        wheelSession.token,
+        getAccountSessionCookieOptions()
+      );
+    }
+
+    return apiResponse;
   } catch (error) {
     console.error('[account-signup] CloudHub request failed:', error);
 

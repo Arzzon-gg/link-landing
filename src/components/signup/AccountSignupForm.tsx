@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, ChevronLeft, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { AlertCircle, ChevronLeft, Eye, EyeOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -23,12 +23,8 @@ import {
 } from '@/lib/account-signup-validation';
 import { getAgeFromDateOfBirth } from '@/lib/validation';
 import { cn } from '@/lib/utils';
-<<<<<<< Updated upstream
 import type { AccountLoginSession } from '@/types/auth';
 import type { AccountSignupApiResponse } from '@/types/signup';
-=======
-import type { AccountSignupApiResponse, WheelSession } from '@/types/signup';
->>>>>>> Stashed changes
 
 const containerVariants = {
   hidden: {},
@@ -46,14 +42,6 @@ const rowVariants = {
   },
 };
 
-type CreatedAccountState = {
-  name: string;
-  email: string;
-  userId?: number;
-  wheelSession?: WheelSession;
-};
-
-<<<<<<< Updated upstream
 type AccountSignupFormProps = {
   currentSession: AccountLoginSession | null;
 };
@@ -67,28 +55,7 @@ export function AccountSignupForm({ currentSession }: AccountSignupFormProps) {
 }
 
 function CreateAccountForm() {
-=======
-/**
- * Builds the embedded wheel URL, handing the player's session to the Flutter
- * app via query params so it opens already authenticated (no second login).
- */
-function buildWheelUrl(session: WheelSession): string {
-  const params = new URLSearchParams({
-    token: session.token,
-    userId: String(session.userId),
-    name: session.name,
-    role: session.role,
-    branchId: String(session.branchId),
-  });
-  if (session.branchName) {
-    params.set('branchName', session.branchName);
-  }
-  return `/wheel/index.html?${params.toString()}`;
-}
-
-export function AccountSignupForm() {
->>>>>>> Stashed changes
-  const [createdAccount, setCreatedAccount] = useState<CreatedAccountState | null>(null);
+  const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -134,19 +101,11 @@ export function AccountSignupForm() {
         return;
       }
 
-      setCreatedAccount({
-        name: data.name,
-        email: data.email,
-        userId: result.userId,
-        wheelSession: result.wheelSession,
-      });
+      // Account created and signed in — launch the wheel instead of the app.
+      router.replace('/spin');
     } catch {
       setServerError('Network error. Please check your connection and try again.');
     }
-  }
-
-  if (createdAccount) {
-    return <AccountSignupSuccess createdAccount={createdAccount} />;
   }
 
   return (
@@ -330,7 +289,7 @@ function CompleteProfileForm({ session }: { session: AccountLoginSession }) {
       }
 
       router.refresh();
-      router.replace('/menu');
+      router.replace('/spin');
     } catch {
       setServerError('Network error. Please check your connection and try again.');
     }
@@ -626,83 +585,6 @@ function ProfileFields({
         )}
       </AnimatePresence>
     </>
-  );
-}
-
-function AccountSignupSuccess({
-  createdAccount,
-}: {
-  createdAccount: CreatedAccountState;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 22 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-      className="mx-auto max-w-3xl"
-    >
-      <div className="rounded-[2rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(10,10,25,0.96),rgba(7,7,14,0.98))] p-8 text-center shadow-[0_24px_80px_rgba(0,0,0,0.38)] sm:p-10">
-        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-green-400/22 bg-green-500/10 text-green-300 shadow-[0_0_40px_rgba(74,222,128,0.18)]">
-          <ShieldCheck className="h-10 w-10" />
-        </div>
-        <p className="font-orbitron text-[10px] font-black uppercase tracking-[0.34em] text-green-300">
-          Account created
-        </p>
-        <h2 className="mt-4 font-orbitron text-3xl font-black uppercase text-white sm:text-4xl">
-          You&apos;re officially in.
-        </h2>
-        <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-white/48 sm:text-base">
-          Your account is ready for <span className="text-white">{createdAccount.email}</span>.
-        </p>
-
-        {createdAccount.userId ? (
-          <p className="mt-4 font-orbitron text-[10px] font-black uppercase tracking-[0.28em] text-white/32">
-            Account ID #{createdAccount.userId}
-          </p>
-        ) : null}
-
-        {createdAccount.wheelSession ? (
-          <div className="mt-8">
-            <p className="font-orbitron text-[10px] font-black uppercase tracking-[0.34em] text-pink-300">
-              Your daily spin is ready
-            </p>
-            <p className="mx-auto mt-2 max-w-md text-sm text-white/45">
-              Spin the wheel for a reward — then come back every day for another.
-            </p>
-            <div className="mx-auto mt-5 w-full max-w-lg overflow-hidden rounded-[1.6rem] border border-white/10 bg-black/50 shadow-[0_0_50px_rgba(168,85,247,0.18)]">
-              <iframe
-                src={buildWheelUrl(createdAccount.wheelSession)}
-                title="Daily spin wheel"
-                className="block h-[680px] w-full"
-                style={{ border: 0 }}
-                allow="clipboard-write"
-              />
-            </div>
-          </div>
-        ) : null}
-
-        <div className="mt-8 flex flex-wrap justify-center gap-4">
-          <Link
-            href="/login"
-            className="button-sheen inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 px-6 py-3 text-[11px] font-black uppercase tracking-[0.28em] text-white shadow-[0_0_24px_rgba(34,211,238,0.32)] transition-all duration-300 hover:-translate-y-0.5 hover:from-cyan-400 hover:to-violet-500 hover:shadow-[0_0_38px_rgba(34,211,238,0.5)]"
-          >
-            Log in now <span className="text-base leading-none">&gt;</span>
-          </Link>
-          <Link
-            href="/menu"
-            className="button-sheen inline-flex items-center gap-2 overflow-hidden rounded-full border border-white/20 px-6 py-3 text-[11px] font-black uppercase tracking-[0.28em] text-white/84 transition-all duration-300 hover:-translate-y-0.5 hover:border-pink-400/45 hover:text-pink-300"
-          >
-            Browse menu <span className="text-base leading-none">&gt;</span>
-          </Link>
-          <Link
-            href="/"
-            className="button-sheen inline-flex items-center gap-2 overflow-hidden rounded-full border border-white/20 px-6 py-3 text-[11px] font-black uppercase tracking-[0.28em] text-white/84 transition-all duration-300 hover:-translate-y-0.5 hover:border-cyan-400/45 hover:text-cyan-300"
-          >
-            Back home <span className="text-base leading-none">&gt;</span>
-          </Link>
-        </div>
-      </div>
-    </motion.div>
   );
 }
 

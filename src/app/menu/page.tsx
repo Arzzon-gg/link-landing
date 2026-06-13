@@ -1,21 +1,14 @@
 import type { Metadata } from 'next';
-import { PublicMenuPage, PublicMenuStatePage } from '@/components/menu/PublicMenuPage';
-import { getPublicMenu } from '@/lib/public-menu';
+import { StaticMenuPage } from '@/components/menu/StaticMenuPage';
+import { MENU_SECTIONS } from '@/data/menu';
 
 export const metadata: Metadata = {
   title: 'Menu | The Link',
   description:
-    'Explore The Link menu: signatures, fresh plates, shareables, prices, and optional customizations in a polished display-only experience.',
+    'Explore The Link menu: starters, burgers, sushi, Lebanese classics, desserts, drinks, and a full bar — with prices.',
 };
 
-export const revalidate = 300;
-
-export default async function MenuPage() {
-  const result = await getPublicMenu();
-
-  if (result.status !== 'ready') {
-    return <PublicMenuStatePage result={result} />;
-  }
-
-  return <PublicMenuPage menu={result.menu} />;
+// Static, display-only menu sourced from the venue menu (no backend / server-side menu fetch).
+export default function MenuPage() {
+  return <StaticMenuPage sections={MENU_SECTIONS} />;
 }
