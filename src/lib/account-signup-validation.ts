@@ -52,7 +52,27 @@ export const accountSignupSchema = z
       });
     }
 
-    if (data.address && data.address.length > 300) {
+    if (!data.phoneNumber) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Phone number is required',
+        path: ['phoneNumber'],
+      });
+    }
+
+    if (!data.address) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Address is required',
+        path: ['address'],
+      });
+    } else if (data.address.length < 10) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Please enter your full address (at least 10 characters)',
+        path: ['address'],
+      });
+    } else if (data.address.length > 300) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: 'Address is too long',
@@ -95,22 +115,11 @@ export const accountSignupSchema = z
     }
 
     if (!data.dateOfBirth) {
-      if (data.married) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Add your date of birth before setting marital status',
-          path: ['dateOfBirth'],
-        });
-      }
-
-      if (data.marriageDate) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Add your date of birth before setting marriage date',
-          path: ['dateOfBirth'],
-        });
-      }
-
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Date of birth is required',
+        path: ['dateOfBirth'],
+      });
       return;
     }
 

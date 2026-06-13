@@ -1,9 +1,10 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { AlertCircle, ChevronLeft, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -64,6 +65,7 @@ function CreateAccountForm() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [signupMode, setSignupMode] = useState<'chooser' | 'email'>('chooser');
 
   const {
     register,
@@ -122,105 +124,136 @@ function CreateAccountForm() {
   return (
     <SignupShell
       title="Create your account"
-      intro={null}
+      intro={
+        <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-white/48 sm:text-base">
+          Choose how you want to get started. Google is the fastest path, and email signup keeps
+          everything available for guests who prefer the classic flow.
+        </p>
+      }
       serverError={serverError}
       setServerError={setServerError}
-      googleButton={
-        <>
+      googleButton={null}
+    >
+      {signupMode === 'chooser' ? (
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-4"
+        >
           <motion.div variants={rowVariants}>
             <GoogleAuthButton mode="signup" onError={setServerError} />
           </motion.div>
-          <motion.div variants={rowVariants} className="flex items-center gap-4">
-            <div className="h-px flex-1 bg-white/10" />
-            <span className="font-orbitron text-[10px] font-black uppercase tracking-[0.28em] text-white/28">
-              Or create with email
-            </span>
-            <div className="h-px flex-1 bg-white/10" />
-          </motion.div>
-        </>
-      }
-    >
-      <motion.form
-        onSubmit={handleSubmit(onSubmit)}
-        noValidate
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="space-y-4"
-      >
-        <motion.div variants={rowVariants}>
-          <FormField
-            label="Full Name"
-            id="name"
-            type="text"
-            placeholder="Alex Johnson"
-            autoComplete="name"
-            error={errors.name?.message}
-            {...register('name')}
-          />
-        </motion.div>
 
-        <motion.div variants={rowVariants}>
-          <FormField
-            label="Email Address"
-            id="email"
-            type="email"
-            placeholder="alex@example.com"
-            autoComplete="email"
-            error={errors.email?.message}
-            {...register('email')}
-          />
-        </motion.div>
-
-        <motion.div variants={rowVariants} className="grid gap-4 sm:grid-cols-2">
-          <PasswordField
-            label="Password"
-            id="password"
-            placeholder="Create a password"
-            autoComplete="new-password"
-            error={errors.password?.message}
-            visible={showPassword}
-            onToggle={() => setShowPassword((current) => !current)}
-            {...register('password')}
-          />
-
-          <PasswordField
-            label="Confirm Password"
-            id="confirmPassword"
-            placeholder="Repeat your password"
-            autoComplete="new-password"
-            error={errors.confirmPassword?.message}
-            visible={showConfirmPassword}
-            onToggle={() => setShowConfirmPassword((current) => !current)}
-            {...register('confirmPassword')}
-          />
-        </motion.div>
-
-        <ProfileFields
-          countryCodeReg={register('countryCode')}
-          phoneNumberReg={register('phoneNumber')}
-          dateOfBirthReg={register('dateOfBirth')}
-          addressReg={register('address')}
-          marriedReg={register('married')}
-          marriageDateReg={register('marriageDate')}
-          errors={errors}
-          watchCountryCode={watch('countryCode')}
-          dateOfBirth={dateOfBirth || ''}
-          married={married}
-          showMarriageQuestion={showMarriageQuestion}
-          showMarriageDate={showMarriageDate}
-        />
-
-        <motion.div variants={rowVariants} className="pt-2">
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="button-sheen inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-gradient-to-r from-pink-600 via-fuchsia-600 to-violet-600 px-6 py-4 text-[11px] font-black uppercase tracking-[0.3em] text-white shadow-[0_0_28px_rgba(236,72,153,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_46px_rgba(236,72,153,0.58)] disabled:cursor-not-allowed disabled:opacity-70"
+          <motion.button
+            type="button"
+            variants={rowVariants}
+            onClick={() => {
+              setServerError(null);
+              setSignupMode('email');
+            }}
+            className="inline-flex w-full items-center justify-center gap-3 rounded-2xl border border-white/14 bg-white/[0.03] px-6 py-4 text-[11px] font-black uppercase tracking-[0.28em] text-white/84 transition-all duration-300 hover:-translate-y-0.5 hover:border-cyan-400/40 hover:bg-cyan-400/[0.05] hover:text-cyan-200"
           >
-            {isSubmitting ? 'Creating account...' : 'Create account'}
-          </button>
+            Sign up with email
+          </motion.button>
         </motion.div>
-      </motion.form>
+      ) : (
+        <motion.form
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-4"
+        >
+          <motion.div variants={rowVariants} className="flex justify-start">
+            <button
+              type="button"
+              onClick={() => {
+                setServerError(null);
+                setSignupMode('chooser');
+              }}
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[10px] font-black uppercase tracking-[0.24em] text-white/54 transition-all duration-300 hover:border-white/20 hover:text-white/84"
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+              Back
+            </button>
+          </motion.div>
+
+          <motion.div variants={rowVariants}>
+            <FormField
+              label="Full Name"
+              id="name"
+              type="text"
+              placeholder="Alex Johnson"
+              autoComplete="name"
+              error={errors.name?.message}
+              {...register('name')}
+            />
+          </motion.div>
+
+          <motion.div variants={rowVariants}>
+            <FormField
+              label="Email Address"
+              id="email"
+              type="email"
+              placeholder="alex@example.com"
+              autoComplete="email"
+              error={errors.email?.message}
+              {...register('email')}
+            />
+          </motion.div>
+
+          <motion.div variants={rowVariants} className="grid gap-4 sm:grid-cols-2">
+            <PasswordField
+              label="Password"
+              id="password"
+              placeholder="Create a password"
+              autoComplete="new-password"
+              error={errors.password?.message}
+              visible={showPassword}
+              onToggle={() => setShowPassword((current) => !current)}
+              {...register('password')}
+            />
+
+            <PasswordField
+              label="Confirm Password"
+              id="confirmPassword"
+              placeholder="Repeat your password"
+              autoComplete="new-password"
+              error={errors.confirmPassword?.message}
+              visible={showConfirmPassword}
+              onToggle={() => setShowConfirmPassword((current) => !current)}
+              {...register('confirmPassword')}
+            />
+          </motion.div>
+
+          <ProfileFields
+            countryCodeReg={register('countryCode')}
+            phoneNumberReg={register('phoneNumber')}
+            dateOfBirthReg={register('dateOfBirth')}
+            addressReg={register('address')}
+            marriedReg={register('married')}
+            marriageDateReg={register('marriageDate')}
+            errors={errors}
+            watchCountryCode={watch('countryCode')}
+            dateOfBirth={dateOfBirth || ''}
+            married={married}
+            showMarriageQuestion={showMarriageQuestion}
+            showMarriageDate={showMarriageDate}
+          />
+
+          <motion.div variants={rowVariants} className="pt-2">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="button-sheen inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-gradient-to-r from-pink-600 via-fuchsia-600 to-violet-600 px-6 py-4 text-[11px] font-black uppercase tracking-[0.3em] text-white shadow-[0_0_28px_rgba(236,72,153,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_46px_rgba(236,72,153,0.58)] disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {isSubmitting ? 'Creating account...' : 'Create account'}
+            </button>
+          </motion.div>
+        </motion.form>
+      )}
     </SignupShell>
   );
 }
@@ -367,6 +400,16 @@ function SignupShell({
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="mb-8 text-center sm:mb-10"
       >
+        <div className="mx-auto flex w-fit items-center justify-center rounded-[1.75rem] border border-white/10 bg-white/[0.04] px-5 py-4 shadow-[0_18px_45px_rgba(0,0,0,0.28)]">
+          <Image
+            src="/images/ZlinkLogo.png"
+            alt="The Link logo"
+            width={126}
+            height={48}
+            priority
+            className="h-10 w-auto object-contain sm:h-12"
+          />
+        </div>
         <h1 className="mt-8 font-orbitron text-4xl font-black uppercase leading-[1.02] text-white sm:text-5xl">
           {title}
         </h1>
