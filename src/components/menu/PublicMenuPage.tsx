@@ -5,17 +5,25 @@ import {
   buildMenuCategoryAnchor,
   getMenuItemTeaser,
   resolvePublicMenuImageUrl,
+  type PublicMenuBranchOption,
   type PublicMenuLoadResult,
 } from '@/lib/public-menu';
 import type { PublicMenuData } from '@/types/menu';
+import { BranchSelector } from './BranchSelector';
 import { MenuCategoryNav } from './MenuCategoryNav';
 import { PublicMenuItemCard } from './PublicMenuItemCard';
 
 interface PublicMenuPageProps {
   menu: PublicMenuData;
+  branches: PublicMenuBranchOption[];
+  selectedBranchId: number | null;
 }
 
-export function PublicMenuPage({ menu }: PublicMenuPageProps) {
+export function PublicMenuPage({
+  menu,
+  branches,
+  selectedBranchId,
+}: PublicMenuPageProps) {
   return (
     <div className="relative">
       <section className="relative flex min-h-[300px] items-center justify-center overflow-hidden px-4 pt-16 sm:min-h-[340px] sm:px-6 lg:min-h-[380px] lg:px-8 lg:pt-20">
@@ -62,6 +70,20 @@ export function PublicMenuPage({ menu }: PublicMenuPageProps) {
                 <span className="text-base leading-none">&gt;</span>
               </a>
             </StaggerItem>
+
+            {branches.length > 1 ? (
+              <StaggerItem>
+                <div className="flex flex-col items-center gap-2">
+                  <BranchSelector
+                    branches={branches}
+                    selectedBranchId={selectedBranchId}
+                  />
+                  <span className="text-[11px] uppercase tracking-[0.24em] text-white/40">
+                    Now viewing {menu.branch.name}
+                  </span>
+                </div>
+              </StaggerItem>
+            ) : null}
           </StaggerGroup>
         </div>
       </section>
@@ -97,28 +119,42 @@ export function PublicMenuPage({ menu }: PublicMenuPageProps) {
                   className="scroll-mt-28"
                 >
                   <FadeIn className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
-                      <div className="mb-2 flex items-center gap-3">
-                        <span
-                          className="h-2.5 w-2.5 rounded-full shadow-[0_0_18px_rgba(255,255,255,0.25)]"
-                          style={{
-                            backgroundColor:
-                              index % 4 === 0
-                                ? '#ec4899'
-                                : index % 4 === 1
-                                  ? '#06b6d4'
-                                  : index % 4 === 2
-                                    ? '#8b5cf6'
-                                    : '#39ff14',
-                          }}
+                    <div className="flex items-center gap-4">
+                      {resolvePublicMenuImageUrl(category.imageUrl) ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={
+                            resolvePublicMenuImageUrl(category.imageUrl) ??
+                            undefined
+                          }
+                          alt={category.name}
+                          loading="lazy"
+                          className="h-16 w-16 flex-shrink-0 rounded-2xl border border-white/10 object-cover shadow-[0_0_24px_rgba(0,0,0,0.45)] sm:h-20 sm:w-20"
                         />
-                        <span className="font-orbitron text-[10px] font-black uppercase tracking-[0.3em] text-white/46">
-                          {category.items.length} dishes
-                        </span>
+                      ) : null}
+                      <div>
+                        <div className="mb-2 flex items-center gap-3">
+                          <span
+                            className="h-2.5 w-2.5 rounded-full shadow-[0_0_18px_rgba(255,255,255,0.25)]"
+                            style={{
+                              backgroundColor:
+                                index % 4 === 0
+                                  ? '#ec4899'
+                                  : index % 4 === 1
+                                    ? '#06b6d4'
+                                    : index % 4 === 2
+                                      ? '#8b5cf6'
+                                      : '#39ff14',
+                            }}
+                          />
+                          <span className="font-orbitron text-[10px] font-black uppercase tracking-[0.3em] text-white/46">
+                            {category.items.length} dishes
+                          </span>
+                        </div>
+                        <h3 className="font-orbitron text-2xl font-black uppercase text-white sm:text-3xl">
+                          {category.name}
+                        </h3>
                       </div>
-                      <h3 className="font-orbitron text-2xl font-black uppercase text-white sm:text-3xl">
-                        {category.name}
-                      </h3>
                     </div>
 
                     <p className="max-w-lg text-sm leading-7 text-white/38">
@@ -175,8 +211,12 @@ export function PublicMenuPage({ menu }: PublicMenuPageProps) {
 
 export function PublicMenuStatePage({
   result,
+  branches = [],
+  selectedBranchId = null,
 }: {
   result: Extract<PublicMenuLoadResult, { status: 'unconfigured' | 'error' }>;
+  branches?: PublicMenuBranchOption[];
+  selectedBranchId?: number | null;
 }) {
   const isConfigurationIssue = result.status === 'unconfigured';
 
@@ -200,6 +240,15 @@ export function PublicMenuStatePage({
             <p className="mt-5 max-w-2xl text-sm leading-7 text-white/48 sm:text-base">
               {result.message}
             </p>
+
+            {branches.length > 1 ? (
+              <div className="mt-6">
+                <BranchSelector
+                  branches={branches}
+                  selectedBranchId={selectedBranchId}
+                />
+              </div>
+            ) : null}
 
             <div className="mt-8 flex flex-wrap gap-4">
               <Link
