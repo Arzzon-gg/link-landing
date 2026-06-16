@@ -24,33 +24,17 @@ export function EventCard({ event }: EventCardProps) {
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/55 to-transparent" />
 
       <div className="relative aspect-[16/10] w-full overflow-hidden">
-        {imageBroken ? (
-          <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[radial-gradient(circle_at_50%_35%,rgba(236,72,153,0.28),transparent_45%),linear-gradient(160deg,#0f1020_0%,#090914_55%,#050509_100%)] px-6 text-center">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-white/[0.06] font-orbitron text-2xl font-black tracking-[0.18em] text-white shadow-[0_0_30px_rgba(139,92,246,0.2)]">
-              {event.name
-                .trim()
-                .split(/\s+/)
-                .slice(0, 2)
-                .map((part) => part.charAt(0).toUpperCase())
-                .join('')}
-            </div>
-            <p className="text-sm text-white/40">Image coming soon</p>
-          </div>
-        ) : (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={event.imageUrl}
-              alt={event.name}
-              loading="lazy"
-              decoding="async"
-              draggable={false}
-              className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-              onError={() => setImageBroken(true)}
-            />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#020209]/72 via-transparent to-transparent" />
-          </>
-        )}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={imageBroken || !event.imageUrl ? '/images/birthday.png' : event.imageUrl}
+          alt={event.name}
+          loading="lazy"
+          decoding="async"
+          draggable={false}
+          className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+          onError={() => setImageBroken(true)}
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#020209]/72 via-transparent to-transparent" />
       </div>
 
       <div className="relative p-5 sm:p-6">
