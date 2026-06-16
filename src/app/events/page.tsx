@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { EventsPage } from '@/components/events/EventsPage';
 import { getEvents } from '@/lib/events';
+import { getPublicBranches } from '@/lib/public-menu';
 
 export const metadata: Metadata = {
   title: 'Events | The Link',
@@ -10,8 +11,28 @@ export const metadata: Metadata = {
 
 export const revalidate = 300;
 
-export default async function EventsRoute() {
-  const result = await getEvents();
+export default async function EventsRoute({
+  searchParams,
+}: {
+  searchParams: Promise<{ branch?: string }>;
+}) {
+  const { branch } = await searchParams;
+  const requestedBranchId = Number(branch);
+  const selectedBranchId =
+    Number.isFinite(requestedBranchId) && requestedBranchId > 0
+      ? requestedBranchId
+      : null;
 
-  return <EventsPage result={result} />;
+  const [result, branches] = await Promise.all([
+    getEvents(selectedBranchId ?? 0),
+    getPublicBranches(),
+  ]);
+
+  return (
+    <EventsPage
+      result={result}
+      branches={branches}
+      selectedBranchId={selectedBranchId}
+    />
+  );
 }

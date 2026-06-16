@@ -2,16 +2,23 @@
 
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
-import type { PublicMenuBranchOption } from '@/lib/public-menu';
+
+export interface BranchOption {
+  id: number;
+  name: string;
+  location: string;
+}
 
 interface BranchSelectorProps {
-  branches: PublicMenuBranchOption[];
+  branches: BranchOption[];
   selectedBranchId: number | null;
+  basePath?: string;
 }
 
 export function BranchSelector({
   branches,
   selectedBranchId,
+  basePath = '/menu',
 }: BranchSelectorProps) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -34,7 +41,7 @@ export function BranchSelector({
           onChange={(event) => {
             const next = event.target.value;
             startTransition(() => {
-              router.push(`/menu?branch=${next}`, { scroll: false });
+              router.push(`${basePath}?branch=${next}`, { scroll: false });
             });
           }}
           className="cursor-pointer appearance-none rounded-full bg-transparent py-1 pl-1 pr-7 text-sm font-semibold text-white outline-none disabled:opacity-60"

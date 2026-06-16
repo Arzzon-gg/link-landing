@@ -42,7 +42,15 @@ function extractErrorMessage(error: unknown): string {
   return 'The events list could not be loaded right now.';
 }
 
-export async function getEvents(): Promise<EventsLoadResult> {
+function normalizeBranchId(branchId?: number): number {
+  if (typeof branchId !== 'number' || !Number.isFinite(branchId) || branchId < 0) {
+    return 0;
+  }
+
+  return branchId;
+}
+
+export async function getEvents(branchId?: number): Promise<EventsLoadResult> {
   const apiBaseUrl = CLOUDHUB_BASE_URL.trim();
 
   if (!apiBaseUrl) {
@@ -53,10 +61,12 @@ export async function getEvents(): Promise<EventsLoadResult> {
     };
   }
 
+  const effectiveBranchId = normalizeBranchId(branchId);
+
   try {
     const normalizedBase = apiBaseUrl.replace(/\/+$/, '');
     const response = await fetch(
-      `${normalizedBase}/packages?branchId=0&page=1&pageSize=50`,
+      `${normalizedBase}/packages?branchId=${effectiveBranchId}&page=1&pageSize=50`,
       {
         method: 'GET',
         headers: { Accept: 'application/json' },
@@ -76,7 +86,7 @@ export async function getEvents(): Promise<EventsLoadResult> {
 
     return {
       status: 'ready',
-      events: data.items as EventPackage[],
+      events: data.items.filter((event) => !event.isHiddenForBranch) as EventPackage[],
     };
   } catch (error) {
     return {

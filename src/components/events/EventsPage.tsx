@@ -1,17 +1,34 @@
 import Link from 'next/link';
 import { CalendarX, PartyPopper, RefreshCw } from 'lucide-react';
+import { BranchSelector } from '@/components/menu/BranchSelector';
+import type { PublicMenuBranchOption } from '@/lib/public-menu';
 import { FadeIn, StaggerGroup, StaggerItem } from '@/components/Reveal';
 import type { EventsLoadResult } from '@/types/events';
 import { EventCard } from './EventCard';
 
 interface EventsPageProps {
   result: EventsLoadResult;
+  branches: PublicMenuBranchOption[];
+  selectedBranchId: number | null;
 }
 
-export function EventsPage({ result }: EventsPageProps) {
+export function EventsPage({
+  result,
+  branches,
+  selectedBranchId,
+}: EventsPageProps) {
   const isReady = result.status === 'ready';
   const events = isReady ? result.events : [];
   const isEmpty = isReady && events.length === 0;
+
+  const selectedBranch =
+    selectedBranchId != null
+      ? branches.find((branch) => branch.id === selectedBranchId)
+      : null;
+
+  const branchLabel = selectedBranch
+    ? selectedBranch.name
+    : 'All branches';
 
   return (
     <div className="relative">
@@ -42,6 +59,21 @@ export function EventsPage({ result }: EventsPageProps) {
               From birthdays to group gatherings, browse ready-made packages built for
               unforgettable moments inside the arcade atmosphere.
             </p>
+
+            {branches.length > 1 ? (
+              <FadeIn delay={0.1}>
+                <div className="flex flex-col items-center gap-2">
+                  <BranchSelector
+                    branches={branches}
+                    selectedBranchId={selectedBranchId}
+                    basePath="/events"
+                  />
+                  <span className="text-[11px] uppercase tracking-[0.24em] text-white/40">
+                    Now viewing {branchLabel}
+                  </span>
+                </div>
+              </FadeIn>
+            ) : null}
           </FadeIn>
         </div>
       </section>
@@ -95,11 +127,14 @@ export function EventsPage({ result }: EventsPageProps) {
                     No packages yet
                   </p>
                   <h3 className="mt-3 font-orbitron text-2xl font-black uppercase text-white sm:text-3xl">
-                    The party lineup is being refreshed.
+                    {selectedBranch
+                      ? `No events for ${selectedBranch.name}.`
+                      : 'The party lineup is being refreshed.'}
                   </h3>
                   <p className="mx-auto mt-4 max-w-lg text-sm leading-7 text-white/46">
-                    New event packages will appear here as soon as they are published. Check
-                    back soon for birthdays, group deals, and special celebrations.
+                    {selectedBranch
+                      ? 'This branch does not have any published event packages right now. Switch branches or check back later.'
+                      : 'New event packages will appear here as soon as they are published. Check back soon for birthdays, group deals, and special celebrations.'}
                   </p>
                 </div>
               </div>
