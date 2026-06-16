@@ -111,12 +111,7 @@ function CreateAccountForm() {
   return (
     <SignupShell
       title="Create your account"
-      intro={
-        <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-white/48 sm:text-base">
-          Choose how you want to get started. Google is the fastest path, and email signup keeps
-          everything available for guests who prefer the classic flow.
-        </p>
-      }
+      intro={null}
       serverError={serverError}
       setServerError={setServerError}
       googleButton={null}
@@ -143,6 +138,20 @@ function CreateAccountForm() {
           >
             Sign up with email
           </motion.button>
+
+          {/* Login path for mobile, where the nav (with LOG IN) is hidden. */}
+          <motion.p
+            variants={rowVariants}
+            className="pt-1 text-center text-sm text-white/45 lg:hidden"
+          >
+            Already have an account?{' '}
+            <Link
+              href="/login"
+              className="font-semibold text-cyan-300 transition-colors hover:text-cyan-200"
+            >
+              Log in
+            </Link>
+          </motion.p>
         </motion.div>
       ) : (
         <motion.form
@@ -387,16 +396,20 @@ function SignupShell({
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="mb-8 text-center sm:mb-10"
       >
-        <div className="mx-auto flex w-fit items-center justify-center rounded-[1.75rem] border border-white/10 bg-white/[0.04] px-5 py-4 shadow-[0_18px_45px_rgba(0,0,0,0.28)]">
+        <Link
+          href="/"
+          aria-label="The Link — home"
+          className="mx-auto flex w-fit items-center justify-center rounded-[1.75rem] border border-white/10 bg-white/[0.04] px-6 py-5 shadow-[0_18px_45px_rgba(0,0,0,0.28)] transition-transform duration-300 hover:scale-[1.02]"
+        >
           <Image
             src="/images/ZlinkLogo.png"
             alt="The Link logo"
-            width={126}
-            height={48}
+            width={400}
+            height={154}
             priority
-            className="h-10 w-auto object-contain sm:h-12"
+            className="h-28 w-auto object-contain sm:h-32 lg:h-24"
           />
-        </div>
+        </Link>
         <h1 className="mt-8 font-orbitron text-4xl font-black uppercase leading-[1.02] text-white sm:text-5xl">
           {title}
         </h1>

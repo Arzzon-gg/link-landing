@@ -20,6 +20,7 @@ export interface PublicMenuItem {
 export interface PublicMenuCategory {
   id: number;
   name: string;
+  imageUrl: string | null;
   sortOrder: number;
   items: PublicMenuItem[];
 }

@@ -47,6 +47,7 @@ const menuItemSchema = z.object({
 const menuCategorySchema = z.object({
   id: z.number(),
   name: z.string(),
+  imageUrl: z.string().nullable().optional(),
   sortOrder: z.number(),
   items: z.array(menuItemSchema).default([]),
 });
@@ -78,6 +79,7 @@ type RawMenuItem = {
 type RawMenuCategory = {
   id: number;
   name: string;
+  imageUrl?: string | null;
   sortOrder: number;
   items?: RawMenuItem[];
 };
@@ -101,6 +103,12 @@ export type PublicMenuLoadResult =
       status: 'unconfigured' | 'error';
       message: string;
     };
+
+export interface PublicMenuBranchOption {
+  id: number;
+  name: string;
+  location: string;
+}
 
 function getPublicMenuConfig(): PublicMenuConfig {
   const apiBaseUrl = CLOUDHUB_BASE_URL.trim();
@@ -180,11 +188,22 @@ async function requestJson<T>(
 }
 
 async function listBranches(apiBaseUrl: string) {
+  // Prefer live branches, but `/branches/live` is empty when no edge node has
+  // registered — fall back to the full list so branch names still resolve.
   try {
-    return await requestJson(apiBaseUrl, '/branches/live', z.array(branchSchema));
+    const live = await requestJson(
+      apiBaseUrl,
+      '/branches/live',
+      z.array(branchSchema),
+    );
+    if (live.length > 0) {
+      return live;
+    }
   } catch {
-    return requestJson(apiBaseUrl, '/branches', z.array(branchSchema));
+    // fall through to the full list
   }
+
+  return requestJson(apiBaseUrl, '/branches', z.array(branchSchema));
 }
 
 async function getConfiguredBranch(
@@ -261,12 +280,47 @@ function sanitizeCategories(
     .map((category) => ({
       id: category.id,
       name: category.name,
+      imageUrl: category.imageUrl ?? null,
       sortOrder: category.sortOrder,
       items: sanitizeItems(category.items),
     }));
 }
 
-export async function getPublicMenu(): Promise<PublicMenuLoadResult> {
+// Branches a visitor can pick from the public menu dropdown. The shared catalog
+// sentinel (id 0) is never a real location, so it is filtered out.
+export async function getPublicBranches(): Promise<PublicMenuBranchOption[]> {
+  const apiBaseUrl = CLOUDHUB_BASE_URL.trim();
+
+  if (!apiBaseUrl) {
+    return [];
+  }
+
+  try {
+    // The dropdown lists every branch (a menu is available regardless of edge
+    // connectivity), so use the full list rather than only live branches.
+    const branches = await requestJson(
+      apiBaseUrl,
+      '/branches',
+      z.array(branchSchema),
+    );
+    return branches
+      .filter((branch) => branch.id > 0)
+      .map((branch) => ({
+        id: branch.id,
+        name: branch.name,
+        location: branch.location ?? '',
+      }))
+      .sort((left, right) => left.name.localeCompare(right.name));
+  } catch {
+    return [];
+  }
+}
+
+// requestedBranchId (e.g. from the ?branch= dropdown) overrides the configured
+// default branch when it is a valid positive id.
+export async function getPublicMenu(
+  requestedBranchId?: number,
+): Promise<PublicMenuLoadResult> {
   const config = getPublicMenuConfig();
 
   if (!config.ok) {
@@ -276,12 +330,19 @@ export async function getPublicMenu(): Promise<PublicMenuLoadResult> {
     };
   }
 
+  const branchId =
+    typeof requestedBranchId === 'number' &&
+    Number.isFinite(requestedBranchId) &&
+    requestedBranchId > 0
+      ? requestedBranchId
+      : config.branchId;
+
   try {
     const [branch, menu] = await Promise.all([
-      getConfiguredBranch(config.apiBaseUrl, config.branchId),
+      getConfiguredBranch(config.apiBaseUrl, branchId),
       requestJson(
         config.apiBaseUrl,
-        `/restaurant/public/menu?branchId=${config.branchId}`,
+        `/restaurant/public/menu?branchId=${branchId}`,
         menuResponseSchema,
       ),
     ]);
