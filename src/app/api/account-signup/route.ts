@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { v4 as uuidv4 } from 'uuid';
 import {
   ACCOUNT_SESSION_COOKIE_NAME,
   getAccountSessionCookieOptions,
@@ -6,6 +7,7 @@ import {
 import { accountSignupSchema } from '@/lib/account-signup-validation';
 import type { CloudHubAuthPayload } from '@/lib/cloudhub-auth';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { appendRegistration } from '@/lib/sheets';
 import type { WheelSession } from '@/types/signup';
 
 // New players are created without a branch, but the wheel endpoint requires one
@@ -116,12 +118,33 @@ export async function POST(req: NextRequest) {
       parsed.data.password
     );
 
+    // Save the signup to Google Sheets, just like the standalone register page.
+    // This happens after the backend user is created; a Sheets failure is logged
+    // and reported in the response but does not break the signup flow.
+    let sheetsSaved = false;
+    let sheetsError: string | undefined;
+
+    if (!process.env.GOOGLE_SHEET_ID) {
+      sheetsError = 'GOOGLE_SHEET_ID is not configured.';
+      console.error('[account-signup] Google Sheets skipped:', sheetsError);
+    } else {
+      try {
+        await appendRegistration(buildSignupRow(parsed.data));
+        sheetsSaved = true;
+      } catch (error) {
+        sheetsError = error instanceof Error ? error.message : 'Unknown Google Sheets error.';
+        console.error('[account-signup] Google Sheets append failed:', sheetsError);
+      }
+    }
+
     const apiResponse = NextResponse.json(
       {
         success: true,
         message: 'Your account has been created successfully.',
         userId: result.id,
         wheelSession,
+        sheetsSaved,
+        sheetsError,
       },
       { status: 201 }
     );
@@ -208,6 +231,27 @@ async function createWheelSession(
     console.error('[account-signup] wheel session login failed:', error);
     return undefined;
   }
+}
+
+function buildSignupRow(data: ReturnType<typeof accountSignupSchema.parse>): string[] {
+  const normalizedPhoneDigits = data.phoneNumber.replace(/\D/g, '');
+  const phone = normalizedPhoneDigits ? `+${data.countryCode}${normalizedPhoneDigits}` : '';
+  const maritalStatus = data.married === 'yes' ? 'Yes' : data.married === 'no' ? 'No' : '';
+  const anniversary = data.married === 'yes' ? String(data.marriageDate ?? '') : '';
+
+  // Column order matches the sheet header:
+  // Submission ID | Created At | Name | Email | Phone | Address | DateOfBirth | Married | AnniversaryDate
+  return [
+    uuidv4(),
+    new Date().toISOString(),
+    data.name.trim(),
+    data.email.trim().toLowerCase(),
+    phone,
+    data.address.trim(),
+    String(data.dateOfBirth),
+    maritalStatus,
+    anniversary,
+  ];
 }
 
 function buildCloudHubUserPayload(data: ReturnType<typeof accountSignupSchema.parse>) {
