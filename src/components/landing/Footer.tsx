@@ -15,6 +15,7 @@ const quickLinks = [
   { label: 'Activities', href: '/#activities' },
   { label: 'Food & Drinks', href: '/#food' },
   { label: 'Birthdays', href: '/#birthdays' },
+  { label: 'Events', href: '/events' },
   { label: 'Offers', href: '/#offers' },
   { label: 'Gallery', href: '/#gallery' },
   { label: 'About', href: '/#about' },

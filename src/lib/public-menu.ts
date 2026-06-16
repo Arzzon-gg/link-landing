@@ -399,7 +399,7 @@ export function buildMenuCategoryAnchor(categoryName: string, categoryId: number
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 
-  return `menu-category-${slug || categoryId}`;
+  return `menu-category-${slug || categoryId}-${categoryId}`;
 }
 
 export function getMenuItemTeaser(description?: string | null) {
