@@ -55,6 +55,7 @@ const menuCategorySchema = z.object({
 const menuResponseSchema = z.object({
   generatedAtUtc: z.string(),
   categories: z.array(menuCategorySchema).default([]),
+  uncategorizedItems: z.array(menuItemSchema).default([]),
 });
 
 type CloudHubBranch = z.infer<typeof branchSchema>;
@@ -353,6 +354,7 @@ export async function getPublicMenu(
         branch,
         generatedAtUtc: menu.generatedAtUtc,
         categories: sanitizeCategories(menu.categories ?? []),
+        uncategorizedItems: sanitizeItems(menu.uncategorizedItems ?? []),
       },
     };
   } catch (error) {

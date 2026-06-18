@@ -102,15 +102,26 @@ export function PublicMenuPage({
 
           <FadeIn>
             <MenuCategoryNav
-              categories={menu.categories.map((category) => ({
-                id: buildMenuCategoryAnchor(category.name, category.id),
-                name: category.name,
-                itemCount: category.items.length,
-              }))}
+              categories={[
+                ...menu.categories.map((category) => ({
+                  id: buildMenuCategoryAnchor(category.name, category.id),
+                  name: category.name,
+                  itemCount: category.items.length,
+                })),
+                ...(menu.uncategorizedItems.length
+                  ? [
+                      {
+                        id: 'menu-category-uncategorized',
+                        name: 'Uncategorized',
+                        itemCount: menu.uncategorizedItems.length,
+                      },
+                    ]
+                  : []),
+              ]}
             />
           </FadeIn>
 
-          {menu.categories.length ? (
+          {menu.categories.length || menu.uncategorizedItems.length ? (
             <div className="space-y-16">
               {menu.categories.map((category, index) => (
                 <section
@@ -187,6 +198,51 @@ export function PublicMenuPage({
                   )}
                 </section>
               ))}
+
+              {menu.uncategorizedItems.length ? (
+                <section
+                  id="menu-category-uncategorized"
+                  className="scroll-mt-28"
+                >
+                  <FadeIn className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                    <div className="flex items-center gap-4">
+                      <div>
+                        <div className="mb-2 flex items-center gap-3">
+                          <span
+                            className="h-2.5 w-2.5 rounded-full shadow-[0_0_18px_rgba(255,255,255,0.25)]"
+                            style={{ backgroundColor: '#39ff14' }}
+                          />
+                          <span className="font-orbitron text-[10px] font-black uppercase tracking-[0.3em] text-white/46">
+                            {menu.uncategorizedItems.length} dishes
+                          </span>
+                        </div>
+                        <h3 className="font-orbitron text-2xl font-black uppercase text-white sm:text-3xl">
+                          Uncategorized
+                        </h3>
+                      </div>
+                    </div>
+
+                    <p className="max-w-lg text-sm leading-7 text-white/38">
+                      Dishes that haven't been assigned to a category yet.
+                    </p>
+                  </FadeIn>
+
+                  <StaggerGroup className="grid gap-6 md:grid-cols-2 xl:grid-cols-3" stagger={0.1} amount={0.08}>
+                    {menu.uncategorizedItems.map((item, itemIndex) => (
+                      <StaggerItem key={item.id}>
+                        <PublicMenuItemCard
+                          item={item}
+                          category="Uncategorized"
+                          imageUrl={resolvePublicMenuImageUrl(item.imageUrl)}
+                          priceLabel={formatCurrency(item.basePrice)}
+                          teaser={getMenuItemTeaser(item.description)}
+                          priorityImage={false}
+                        />
+                      </StaggerItem>
+                    ))}
+                  </StaggerGroup>
+                </section>
+              ) : null}
             </div>
           ) : (
             <FadeIn>

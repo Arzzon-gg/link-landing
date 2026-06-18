@@ -35,4 +35,5 @@ export interface PublicMenuData {
   branch: PublicMenuBranch;
   generatedAtUtc: string;
   categories: PublicMenuCategory[];
+  uncategorizedItems: PublicMenuItem[];
 }
