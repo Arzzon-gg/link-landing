@@ -377,10 +377,6 @@ export function resolvePublicMenuImageUrl(imageUrl?: string | null) {
     return imageUrl;
   }
 
-  if (/^https?:\/\//i.test(imageUrl)) {
-    return imageUrl;
-  }
-
   const config = getPublicMenuConfig();
 
   if (!config.ok) {
@@ -388,9 +384,32 @@ export function resolvePublicMenuImageUrl(imageUrl?: string | null) {
   }
 
   const normalizedBase = config.apiBaseUrl.replace(/\/+$/, '');
-  const normalizedPath = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
 
-  return `${normalizedBase}${normalizedPath}`;
+  // Backend images are served over HTTP, but the landing site is HTTPS.
+  // Proxy them through our own origin so browsers do not block mixed content.
+  if (imageUrl.startsWith('/')) {
+    const fullUrl = `${normalizedBase}${imageUrl}`;
+    const params = new URLSearchParams({ url: fullUrl });
+    return `/api/proxy-image?${params.toString()}`;
+  }
+
+  if (/^https?:\/\//i.test(imageUrl)) {
+    const backendUrl = new URL(normalizedBase);
+    const requestedUrl = new URL(imageUrl);
+
+    if (requestedUrl.origin === backendUrl.origin) {
+      const params = new URLSearchParams({ url: imageUrl });
+      return `/api/proxy-image?${params.toString()}`;
+    }
+
+    // External HTTPS images can be served directly.
+    return imageUrl;
+  }
+
+  const normalizedPath = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
+  const fullUrl = `${normalizedBase}${normalizedPath}`;
+  const params = new URLSearchParams({ url: fullUrl });
+  return `/api/proxy-image?${params.toString()}`;
 }
 
 export function buildMenuCategoryAnchor(categoryName: string, categoryId: number) {

@@ -67,10 +67,12 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    if (
-      requestedUrl.origin !== backendUrl.origin ||
-      !requestedUrl.pathname.startsWith('/restaurant-images/')
-    ) {
+    const isBackendOrigin = requestedUrl.origin === backendUrl.origin;
+    const isAllowedPath =
+      requestedUrl.pathname.startsWith('/restaurant-images/') ||
+      requestedUrl.pathname.startsWith('/package-images/');
+
+    if (!isBackendOrigin || !isAllowedPath) {
       return NextResponse.json(
         { error: 'Invalid image source' },
         { status: 403 }

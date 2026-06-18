@@ -27,21 +27,45 @@ const MENU_IMAGE_SIZES = '(min-width: 1280px) 31vw, (min-width: 768px) 45vw, 92v
 const MENU_IMAGE_QUALITY = 70;
 
 function buildMenuImageUrl(url: string, width = MENU_IMAGE_WIDTHS[MENU_IMAGE_WIDTHS.length - 1]) {
-  if (/^https?:\/\//i.test(url)) {
-    const params = new URLSearchParams({
-      url,
-      w: String(width),
-      q: String(MENU_IMAGE_QUALITY),
-    });
-
-    return `/api/proxy-image?${params.toString()}`;
+  // External HTTPS images can be served directly.
+  if (/^https:\/\//i.test(url)) {
+    return url;
   }
 
-  return url;
+  // Insecure backend images (and proxy URLs that may already have been produced
+  // server-side) are routed through /api/proxy-image so the browser does not
+  // block them as mixed content on the HTTPS landing site.
+  const params = new URLSearchParams();
+
+  if (url.startsWith('/api/proxy-image?')) {
+    const queryIndex = url.indexOf('?');
+    const existing = new URLSearchParams(url.slice(queryIndex + 1));
+    const sourceUrl = existing.get('url');
+
+    if (!sourceUrl) {
+      return url;
+    }
+
+    params.set('url', sourceUrl);
+  } else if (/^http:\/\//i.test(url)) {
+    params.set('url', url);
+  } else {
+    return url;
+  }
+
+  params.set('w', String(width));
+  params.set('q', String(MENU_IMAGE_QUALITY));
+
+  return `/api/proxy-image?${params.toString()}`;
 }
 
 function buildMenuImageSet(url: string) {
-  if (!/^https?:\/\//i.test(url)) {
+  // Responsive srcSets only make sense for proxied/backend images; external
+  // HTTPS images are served directly and skip the proxy sizes.
+  const isProxyCandidate =
+    /^http:\/\//i.test(url) || url.startsWith('/api/proxy-image?');
+
+  if (!isProxyCandidate) {
     return undefined;
   }
 

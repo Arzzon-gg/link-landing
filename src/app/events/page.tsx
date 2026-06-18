@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { EventsPage } from '@/components/events/EventsPage';
 import { getEvents } from '@/lib/events';
-import { getPublicBranches } from '@/lib/public-menu';
+import { getPublicBranches, resolvePublicMenuImageUrl } from '@/lib/public-menu';
 
 export const metadata: Metadata = {
   title: 'Events | The Link',
@@ -28,9 +28,20 @@ export default async function EventsRoute({
     getPublicBranches(),
   ]);
 
+  const resolvedResult =
+    result.status === 'ready'
+      ? {
+          ...result,
+          events: result.events.map((event) => ({
+            ...event,
+            imageUrl: resolvePublicMenuImageUrl(event.imageUrl) ?? event.imageUrl,
+          })),
+        }
+      : result;
+
   return (
     <EventsPage
-      result={result}
+      result={resolvedResult}
       branches={branches}
       selectedBranchId={selectedBranchId}
     />
