@@ -4,7 +4,7 @@ import { getEvents } from '@/lib/events';
 import { getPublicBranches, resolvePublicMenuImageUrl } from '@/lib/public-menu';
 
 export const metadata: Metadata = {
-  title: 'Events | The Link',
+  title: 'Packages | The Link',
   description:
     'Browse party and event packages at The Link Diner & Bowling. Birthdays, group gatherings, and celebrations with prices and capacity.',
 };

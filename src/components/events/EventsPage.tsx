@@ -49,9 +49,9 @@ export function EventsPage({
             </div>
 
             <h1 className="font-orbitron text-4xl font-black uppercase leading-[1.02] text-white sm:text-5xl lg:text-6xl">
-              Events &
+              Party
               <span className="block bg-gradient-to-r from-pink-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">
-                party packages.
+                packages.
               </span>
             </h1>
 
@@ -66,7 +66,7 @@ export function EventsPage({
                   <BranchSelector
                     branches={branches}
                     selectedBranchId={selectedBranchId}
-                    basePath="/events"
+                    basePath="/packages"
                   />
                   <span className="text-[11px] uppercase tracking-[0.24em] text-white/40">
                     Now viewing {branchLabel}
@@ -98,7 +98,7 @@ export function EventsPage({
                     <RefreshCw size={26} className="text-pink-300" />
                   </div>
                   <p className="font-orbitron text-[10px] font-black uppercase tracking-[0.3em] text-pink-400">
-                    Could not load events
+                    Could not load packages
                   </p>
                   <h3 className="mt-3 font-orbitron text-2xl font-black uppercase text-white sm:text-3xl">
                     Something went wrong on our end.
@@ -107,7 +107,7 @@ export function EventsPage({
                     {result.message}
                   </p>
                   <Link
-                    href="/events"
+                    href="/packages"
                     className="button-sheen mt-7 inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-pink-600 to-violet-600 px-7 py-3.5 text-[11px] font-black uppercase tracking-[0.28em] text-white shadow-[0_0_30px_rgba(236,72,153,0.38)] transition-all duration-300 hover:-translate-y-0.5 hover:from-pink-500 hover:to-violet-500 hover:shadow-[0_0_48px_rgba(236,72,153,0.58)]"
                   >
                     Try again
@@ -128,7 +128,7 @@ export function EventsPage({
                   </p>
                   <h3 className="mt-3 font-orbitron text-2xl font-black uppercase text-white sm:text-3xl">
                     {selectedBranch
-                      ? `No events for ${selectedBranch.name}.`
+                      ? `No packages for ${selectedBranch.name}.`
                       : 'The party lineup is being refreshed.'}
                   </h3>
                   <p className="mx-auto mt-4 max-w-lg text-sm leading-7 text-white/46">

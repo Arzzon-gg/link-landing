@@ -12,7 +12,7 @@ import type { AccountLoginSession } from '@/types/auth';
 const navLinks = [
   { label: 'HOME', href: '/#home', activePath: '/' },
   { label: 'MENU', href: '/menu', activePath: '/menu' },
-  { label: 'EVENTS', href: '/events', activePath: '/events' },
+  { label: 'PACKAGES', href: '/packages', activePath: '/packages' },
 ];
 
 type NavbarClientProps = {
