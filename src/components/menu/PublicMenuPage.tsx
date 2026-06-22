@@ -61,17 +61,7 @@ export function PublicMenuPage({
               </p>
             </StaggerItem>
 
-            <StaggerItem>
-              <a
-                href="#menu-categories"
-                className="button-sheen inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-pink-600 to-fuchsia-600 px-7 py-3.5 text-[11px] font-black uppercase tracking-[0.28em] text-white shadow-[0_0_30px_rgba(236,72,153,0.38)] transition-all duration-300 hover:-translate-y-0.5 hover:from-pink-500 hover:to-fuchsia-500 hover:shadow-[0_0_48px_rgba(236,72,153,0.58)]"
-              >
-                Explore the menu
-                <span className="text-base leading-none">&gt;</span>
-              </a>
-            </StaggerItem>
-
-            {branches.length > 1 ? (
+{branches.length > 1 ? (
               <StaggerItem>
                 <BranchSelector
                   branches={branches}
@@ -135,7 +125,7 @@ export function PublicMenuPage({
                           }
                           alt={category.name}
                           loading="lazy"
-                          className="h-16 w-16 flex-shrink-0 rounded-2xl border border-white/10 object-cover shadow-[0_0_24px_rgba(0,0,0,0.45)] sm:h-20 sm:w-20"
+                          className="h-24 w-24 flex-shrink-0 rounded-2xl border border-white/10 object-cover shadow-[0_0_28px_rgba(0,0,0,0.50)] sm:h-32 sm:w-32"
                         />
                       ) : null}
                       <div>
@@ -165,7 +155,7 @@ export function PublicMenuPage({
                   </FadeIn>
 
                   {category.items.length ? (
-                    <StaggerGroup className="grid gap-6 md:grid-cols-2 xl:grid-cols-3" stagger={0.1} amount={0.08}>
+                    <StaggerGroup className="grid gap-2 lg:grid-cols-2" stagger={0.05} amount={0.08}>
                       {category.items.map((item, itemIndex) => (
                         <StaggerItem key={item.id}>
                           <PublicMenuItemCard
@@ -217,8 +207,8 @@ export function PublicMenuPage({
                     </p>
                   </FadeIn>
 
-                  <StaggerGroup className="grid gap-6 md:grid-cols-2 xl:grid-cols-3" stagger={0.1} amount={0.08}>
-                    {menu.uncategorizedItems.map((item, itemIndex) => (
+                  <StaggerGroup className="grid gap-2 lg:grid-cols-2" stagger={0.05} amount={0.08}>
+                    {menu.uncategorizedItems.map((item) => (
                       <StaggerItem key={item.id}>
                         <PublicMenuItemCard
                           item={item}

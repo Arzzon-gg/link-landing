@@ -54,10 +54,10 @@ export function MenuCategoryNav({ categories }: MenuCategoryNavProps) {
           <a
             key={category.id}
             href={`#${category.id}`}
-            className={`button-sheen group relative min-w-max overflow-hidden rounded-full border px-5 py-3 text-left backdrop-blur-sm transition-all duration-300 ${
+            className={`button-sheen group relative min-w-max overflow-hidden rounded-full border px-4 py-2 text-left backdrop-blur-sm transition-all duration-300 ${
               isActive
-                ? 'border-cyan-400/40 bg-[#0d1322] shadow-[0_0_30px_rgba(34,211,238,0.16)]'
-                : 'border-white/10 bg-[#0a0a17]/92 hover:-translate-y-0.5 hover:border-cyan-400/35 hover:bg-[#0c1020] hover:shadow-[0_0_28px_rgba(34,211,238,0.14)]'
+                ? 'border-cyan-400/40 bg-[#0d1322] shadow-[0_0_24px_rgba(34,211,238,0.14)]'
+                : 'border-white/10 bg-[#0a0a17]/92 hover:-translate-y-0.5 hover:border-cyan-400/35 hover:bg-[#0c1020] hover:shadow-[0_0_22px_rgba(34,211,238,0.12)]'
             }`}
           >
             {isActive && !reduceMotion ? (
@@ -68,10 +68,10 @@ export function MenuCategoryNav({ categories }: MenuCategoryNavProps) {
               />
             ) : null}
 
-            <span className="relative block font-orbitron text-[11px] font-black uppercase tracking-[0.28em] text-white/86 transition-colors group-hover:text-cyan-300">
+            <span className="relative block font-orbitron text-[10px] font-black uppercase tracking-[0.24em] text-white/86 transition-colors group-hover:text-cyan-300">
               {category.name}
             </span>
-            <span className="relative mt-1 block text-xs text-white/38">
+            <span className="relative mt-0.5 block text-[11px] text-white/38">
               {category.itemCount} {category.itemCount === 1 ? 'dish' : 'dishes'}
             </span>
           </a>

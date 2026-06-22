@@ -6,7 +6,6 @@ import type {
   PublicMenuCategory,
   PublicMenuData,
   PublicMenuItem,
-  PublicMenuModifier,
 } from '@/types/menu';
 
 const CLOUDHUB_BASE_URL =
@@ -25,14 +24,6 @@ const branchSchema = z.object({
   location: z.string().nullable().optional(),
 });
 
-const menuModifierSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  additionalPrice: z.number(),
-  isAvailable: z.boolean(),
-  sortOrder: z.number().optional(),
-});
-
 const menuItemSchema = z.object({
   id: z.number(),
   name: z.string(),
@@ -41,7 +32,6 @@ const menuItemSchema = z.object({
   isAvailable: z.boolean(),
   sortOrder: z.number(),
   imageUrl: z.string().nullable().optional(),
-  modifiers: z.array(menuModifierSchema).default([]),
 });
 
 const menuCategorySchema = z.object({
@@ -60,13 +50,6 @@ const menuResponseSchema = z.object({
 
 type CloudHubBranch = z.infer<typeof branchSchema>;
 type CloudHubMenuResponse = z.infer<typeof menuResponseSchema>;
-type RawMenuModifier = {
-  id: number;
-  name: string;
-  additionalPrice: number;
-  isAvailable: boolean;
-  sortOrder?: number;
-};
 type RawMenuItem = {
   id: number;
   name: string;
@@ -75,7 +58,6 @@ type RawMenuItem = {
   isAvailable: boolean;
   sortOrder: number;
   imageUrl?: string | null;
-  modifiers?: RawMenuModifier[];
 };
 type RawMenuCategory = {
   id: number;
@@ -233,19 +215,6 @@ async function getConfiguredBranch(
   };
 }
 
-function sortModifiers(modifiers: PublicMenuModifier[]) {
-  return modifiers.slice().sort((left, right) => {
-    const leftOrder = left.sortOrder ?? Number.MAX_SAFE_INTEGER;
-    const rightOrder = right.sortOrder ?? Number.MAX_SAFE_INTEGER;
-
-    if (leftOrder !== rightOrder) {
-      return leftOrder - rightOrder;
-    }
-
-    return left.name.localeCompare(right.name);
-  });
-}
-
 function sanitizeItems(
   items: RawMenuItem[] = [],
 ): PublicMenuItem[] {
@@ -260,15 +229,6 @@ function sanitizeItems(
       isAvailable: item.isAvailable,
       sortOrder: item.sortOrder,
       imageUrl: item.imageUrl ?? null,
-      modifiers: sortModifiers(
-        (item.modifiers ?? []).map((modifier) => ({
-          id: modifier.id,
-          name: modifier.name,
-          additionalPrice: modifier.additionalPrice,
-          isAvailable: modifier.isAvailable,
-          sortOrder: modifier.sortOrder,
-        })),
-      ),
     }));
 }
 

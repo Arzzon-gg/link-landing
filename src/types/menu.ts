@@ -1,11 +1,3 @@
-export interface PublicMenuModifier {
-  id: number;
-  name: string;
-  additionalPrice: number;
-  isAvailable: boolean;
-  sortOrder?: number;
-}
-
 export interface PublicMenuItem {
   id: number;
   name: string;
@@ -14,7 +6,6 @@ export interface PublicMenuItem {
   isAvailable: boolean;
   sortOrder: number;
   imageUrl: string | null;
-  modifiers: PublicMenuModifier[];
 }
 
 export interface PublicMenuCategory {
