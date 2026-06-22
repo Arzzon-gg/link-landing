@@ -1,12 +1,12 @@
 import 'server-only';
 
 import { z } from 'zod';
-import type { EventPackage, EventsLoadResult } from '@/types/events';
+import type { Package, PackagesLoadResult } from '@/types/packages';
 
 const CLOUDHUB_BASE_URL =
   process.env.CLOUDHUB_API_URL ?? process.env.NEXT_PUBLIC_CLOUDHUB_API_URL ?? '';
 
-const eventPackageSchema = z.object({
+const packageSchema = z.object({
   id: z.number(),
   branchId: z.number(),
   branchName: z.string(),
@@ -20,26 +20,26 @@ const eventPackageSchema = z.object({
   isHiddenForBranch: z.boolean(),
 });
 
-const eventsResponseSchema = z.object({
-  items: z.array(eventPackageSchema).default([]),
+const packagesResponseSchema = z.object({
+  items: z.array(packageSchema).default([]),
   page: z.number().default(1),
   pageSize: z.number().default(20),
   totalCount: z.number().default(0),
   hasMore: z.boolean().default(false),
 });
 
-export type CloudHubEventPackage = z.infer<typeof eventPackageSchema>;
+export type CloudHubPackage = z.infer<typeof packageSchema>;
 
 function extractErrorMessage(error: unknown): string {
   if (error instanceof z.ZodError) {
-    return `Invalid event data received from CloudHub: ${error.errors.map((e) => e.message).join(', ')}`;
+    return `Invalid package data received from CloudHub: ${error.errors.map((e) => e.message).join(', ')}`;
   }
 
   if (error instanceof Error) {
     return error.message;
   }
 
-  return 'The events list could not be loaded right now.';
+  return 'The packages list could not be loaded right now.';
 }
 
 function normalizeBranchId(branchId?: number): number {
@@ -50,14 +50,14 @@ function normalizeBranchId(branchId?: number): number {
   return branchId;
 }
 
-export async function getEvents(branchId?: number): Promise<EventsLoadResult> {
+export async function getPackages(branchId?: number): Promise<PackagesLoadResult> {
   const apiBaseUrl = CLOUDHUB_BASE_URL.trim();
 
   if (!apiBaseUrl) {
     return {
       status: 'unconfigured',
       message:
-        'Events are not configured yet. Add CLOUDHUB_API_URL on the server to enable event listings.',
+        'Packages are not configured yet. Add CLOUDHUB_API_URL on the server to enable package listings.',
     };
   }
 
@@ -82,11 +82,11 @@ export async function getEvents(branchId?: number): Promise<EventsLoadResult> {
       throw new Error(detail);
     }
 
-    const data = eventsResponseSchema.parse(await response.json());
+    const data = packagesResponseSchema.parse(await response.json());
 
     return {
       status: 'ready',
-      events: data.items.filter((event) => !event.isHiddenForBranch) as EventPackage[],
+      packages: data.items.filter((pkg) => !pkg.isHiddenForBranch) as Package[],
     };
   } catch (error) {
     return {

@@ -3,23 +3,23 @@ import { CalendarX, PartyPopper, RefreshCw } from 'lucide-react';
 import { BranchSelector } from '@/components/menu/BranchSelector';
 import type { PublicMenuBranchOption } from '@/lib/public-menu';
 import { FadeIn, StaggerGroup, StaggerItem } from '@/components/Reveal';
-import type { EventsLoadResult } from '@/types/events';
-import { EventCard } from './EventCard';
+import type { PackagesLoadResult } from '@/types/packages';
+import { PackageCard } from './PackageCard';
 
-interface EventsPageProps {
-  result: EventsLoadResult;
+interface PackagesPageProps {
+  result: PackagesLoadResult;
   branches: PublicMenuBranchOption[];
   selectedBranchId: number | null;
 }
 
-export function EventsPage({
+export function PackagesPage({
   result,
   branches,
   selectedBranchId,
-}: EventsPageProps) {
+}: PackagesPageProps) {
   const isReady = result.status === 'ready';
-  const events = isReady ? result.events : [];
-  const isEmpty = isReady && events.length === 0;
+  const packages = isReady ? result.packages : [];
+  const isEmpty = isReady && packages.length === 0;
 
   const selectedBranch =
     selectedBranchId != null
@@ -124,8 +124,8 @@ export function EventsPage({
                   </h3>
                   <p className="mx-auto mt-4 max-w-lg text-sm leading-7 text-white/46">
                     {selectedBranch
-                      ? 'This branch does not have any published event packages right now. Switch branches or check back later.'
-                      : 'New event packages will appear here as soon as they are published. Check back soon for birthdays, group deals, and special celebrations.'}
+                      ? 'This branch does not have any published packages right now. Switch branches or check back later.'
+                      : 'New packages will appear here as soon as they are published. Check back soon for birthdays, group deals, and special celebrations.'}
                   </p>
                 </div>
               </div>
@@ -137,9 +137,9 @@ export function EventsPage({
               stagger={0.1}
               amount={0.08}
             >
-              {events.map((event) => (
-                <StaggerItem key={event.id}>
-                  <EventCard event={event} />
+              {packages.map((pkg) => (
+                <StaggerItem key={pkg.id}>
+                  <PackageCard pkg={pkg} />
                 </StaggerItem>
               ))}
             </StaggerGroup>

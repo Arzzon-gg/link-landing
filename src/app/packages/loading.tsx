@@ -1,5 +1,5 @@
-import { EventsPageLoading } from '@/components/events/EventsPageLoading';
+import { PackagesPageLoading } from '@/components/packages/PackagesPageLoading';
 
 export default function Loading() {
-  return <EventsPageLoading />;
+  return <PackagesPageLoading />;
 }

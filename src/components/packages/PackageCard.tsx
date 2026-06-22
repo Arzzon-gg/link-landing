@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { Users } from 'lucide-react';
-import type { EventPackage } from '@/types/events';
+import type { Package } from '@/types/packages';
 
-interface EventCardProps {
-  event: EventPackage;
+interface PackageCardProps {
+  pkg: Package;
 }
 
 function formatCurrency(amount: number) {
@@ -16,7 +16,7 @@ function formatCurrency(amount: number) {
   }).format(amount);
 }
 
-export function EventCard({ event }: EventCardProps) {
+export function PackageCard({ pkg }: PackageCardProps) {
   const [imageBroken, setImageBroken] = useState(false);
 
   return (
@@ -26,8 +26,8 @@ export function EventCard({ event }: EventCardProps) {
       <div className="relative aspect-[16/10] w-full overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={imageBroken || !event.imageUrl ? '/images/birthday.png' : event.imageUrl}
-          alt={event.name}
+          src={imageBroken || !pkg.imageUrl ? '/images/birthday.png' : pkg.imageUrl}
+          alt={pkg.name}
           loading="lazy"
           decoding="async"
           draggable={false}
@@ -40,21 +40,21 @@ export function EventCard({ event }: EventCardProps) {
       <div className="relative p-5 sm:p-6">
         <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
           <h3 className="font-orbitron text-lg font-black uppercase leading-tight text-white sm:text-xl">
-            {event.name}
+            {pkg.name}
           </h3>
           <span className="shrink-0 rounded-full border border-pink-400/25 bg-pink-500/10 px-3 py-1.5 font-orbitron text-xs font-black uppercase tracking-wider text-pink-300 shadow-[0_0_18px_rgba(236,72,153,0.12)]">
-            {formatCurrency(event.price)}
+            {formatCurrency(pkg.price)}
           </span>
         </div>
 
         <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-400/18 bg-cyan-400/8 px-3 py-1.5 text-xs font-medium text-cyan-300">
           <Users size={14} className="text-cyan-300/80" />
-          <span>Fits up to {event.capacity} people</span>
+          <span>Fits up to {pkg.capacity} people</span>
         </div>
 
-        {event.description ? (
+        {pkg.description ? (
           <p className="line-clamp-3 text-sm leading-7 text-white/46">
-            {event.description}
+            {pkg.description}
           </p>
         ) : (
           <p className="text-sm italic text-white/32">No description available.</p>

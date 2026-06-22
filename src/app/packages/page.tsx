@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import { EventsPage } from '@/components/events/EventsPage';
-import { getEvents } from '@/lib/events';
+import { PackagesPage } from '@/components/packages/PackagesPage';
+import { getPackages } from '@/lib/packages';
 import { getPublicBranches, resolvePublicMenuImageUrl } from '@/lib/public-menu';
 
 export const metadata: Metadata = {
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export const revalidate = 300;
 
-export default async function EventsRoute({
+export default async function PackagesRoute({
   searchParams,
 }: {
   searchParams: Promise<{ branch?: string }>;
@@ -25,7 +25,7 @@ export default async function EventsRoute({
       : null;
 
   const [result, branches] = await Promise.all([
-    getEvents(selectedBranchId ?? 0),
+    getPackages(selectedBranchId ?? 0),
     getPublicBranches(),
   ]);
 
@@ -37,15 +37,15 @@ export default async function EventsRoute({
     result.status === 'ready'
       ? {
           ...result,
-          events: result.events.map((event) => ({
-            ...event,
-            imageUrl: resolvePublicMenuImageUrl(event.imageUrl) ?? event.imageUrl,
+          packages: result.packages.map((pkg) => ({
+            ...pkg,
+            imageUrl: resolvePublicMenuImageUrl(pkg.imageUrl) ?? pkg.imageUrl,
           })),
         }
       : result;
 
   return (
-    <EventsPage
+    <PackagesPage
       result={resolvedResult}
       branches={branches}
       selectedBranchId={selectedBranchId}

@@ -2,7 +2,7 @@ function SkeletonBlock({ className }: { className: string }) {
   return <div className={`menu-shimmer rounded-[inherit] ${className}`} />;
 }
 
-export function EventsPageLoading() {
+export function PackagesPageLoading() {
   return (
     <div className="px-4 pb-24 pt-24 sm:px-6 lg:px-8 lg:pt-28">
       <div className="mx-auto max-w-7xl space-y-10">

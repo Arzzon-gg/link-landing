@@ -1,4 +1,4 @@
-export interface EventPackage {
+export interface Package {
   id: number;
   branchId: number;
   branchName: string;
@@ -12,10 +12,10 @@ export interface EventPackage {
   isHiddenForBranch: boolean;
 }
 
-export type EventsLoadResult =
+export type PackagesLoadResult =
   | {
       status: 'ready';
-      events: EventPackage[];
+      packages: Package[];
     }
   | {
       status: 'unconfigured' | 'error';
