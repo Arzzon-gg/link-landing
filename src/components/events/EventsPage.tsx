@@ -26,10 +26,6 @@ export function EventsPage({
       ? branches.find((branch) => branch.id === selectedBranchId)
       : null;
 
-  const branchLabel = selectedBranch
-    ? selectedBranch.name
-    : 'All branches';
-
   return (
     <div className="relative">
       <section className="relative flex min-h-[300px] items-center justify-center overflow-hidden px-4 pt-16 sm:min-h-[340px] sm:px-6 lg:min-h-[380px] lg:px-8 lg:pt-20">
@@ -62,16 +58,11 @@ export function EventsPage({
 
             {branches.length > 1 ? (
               <FadeIn delay={0.1}>
-                <div className="flex flex-col items-center gap-2">
-                  <BranchSelector
-                    branches={branches}
-                    selectedBranchId={selectedBranchId}
-                    basePath="/packages"
-                  />
-                  <span className="text-[11px] uppercase tracking-[0.24em] text-white/40">
-                    Now viewing {branchLabel}
-                  </span>
-                </div>
+                <BranchSelector
+                  branches={branches}
+                  selectedBranchId={selectedBranchId}
+                  basePath="/packages"
+                />
               </FadeIn>
             ) : null}
           </FadeIn>
@@ -141,6 +132,7 @@ export function EventsPage({
             </FadeIn>
           ) : (
             <StaggerGroup
+              key={String(selectedBranchId ?? 'all')}
               className="grid gap-6 md:grid-cols-2 xl:grid-cols-3"
               stagger={0.1}
               amount={0.08}

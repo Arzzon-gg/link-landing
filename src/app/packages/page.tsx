@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 import { EventsPage } from '@/components/events/EventsPage';
 import { getEvents } from '@/lib/events';
 import { getPublicBranches, resolvePublicMenuImageUrl } from '@/lib/public-menu';
@@ -27,6 +28,10 @@ export default async function EventsRoute({
     getEvents(selectedBranchId ?? 0),
     getPublicBranches(),
   ]);
+
+  if (!selectedBranchId && branches.length > 0) {
+    redirect(`/packages?branch=${branches[0].id}`);
+  }
 
   const resolvedResult =
     result.status === 'ready'
