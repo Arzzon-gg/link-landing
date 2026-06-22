@@ -73,15 +73,10 @@ export function PublicMenuPage({
 
             {branches.length > 1 ? (
               <StaggerItem>
-                <div className="flex flex-col items-center gap-2">
-                  <BranchSelector
-                    branches={branches}
-                    selectedBranchId={selectedBranchId}
-                  />
-                  <span className="text-[11px] uppercase tracking-[0.24em] text-white/40">
-                    Now viewing {menu.branch.name}
-                  </span>
-                </div>
+                <BranchSelector
+                  branches={branches}
+                  selectedBranchId={selectedBranchId}
+                />
               </StaggerItem>
             ) : null}
           </StaggerGroup>
@@ -167,11 +162,6 @@ export function PublicMenuPage({
                         </h3>
                       </div>
                     </div>
-
-                    <p className="max-w-lg text-sm leading-7 text-white/38">
-                      Flip any card for deeper detail without stretching the whole grid
-                      vertically.
-                    </p>
                   </FadeIn>
 
                   {category.items.length ? (

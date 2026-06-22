@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 import {
   PublicMenuPage,
   PublicMenuStatePage,
@@ -30,6 +31,10 @@ export default async function MenuPage({
     getPublicMenu(selectedBranchId),
     getPublicBranches(),
   ]);
+
+  if (!selectedBranchId && branches.length > 0) {
+    redirect(`/menu?branch=${branches[0].id}`);
+  }
 
   if (result.status === 'ready') {
     return (
