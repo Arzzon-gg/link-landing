@@ -9,7 +9,7 @@ interface PublicMenuItemCardProps {
   category: string;
   imageUrl?: string | null;
   priceLabel: string;
-  teaser: string;
+  teaser: string | null;
   priorityImage?: boolean;
 }
 
@@ -20,26 +20,35 @@ export function PublicMenuItemCard({
   teaser,
   priorityImage = false,
 }: PublicMenuItemCardProps) {
+  const hasImage = !!imageUrl;
+
   return (
-    <div className="group flex items-center gap-4 rounded-2xl border border-white/[0.07] bg-[linear-gradient(90deg,rgba(10,10,25,0.96),rgba(7,7,14,0.98))] px-4 py-3.5 transition-all duration-200 hover:border-white/[0.13] hover:bg-[linear-gradient(90deg,rgba(12,12,28,0.98),rgba(9,9,18,0.99))] sm:gap-5 sm:px-5 sm:py-4">
-      {/* Thumbnail */}
-      <div className="relative h-[3.75rem] w-[3.75rem] shrink-0 overflow-hidden rounded-xl border border-white/[0.08] bg-[#080810] sm:h-[4.25rem] sm:w-[4.25rem]">
-        <MenuItemImage
-          src={imageUrl}
-          alt={item.name}
-          title={item.name}
-          priority={priorityImage}
-        />
-      </div>
+    <div className="group flex items-center gap-4 rounded-2xl border border-white/[0.07] bg-[linear-gradient(90deg,rgba(10,10,25,0.96),rgba(7,7,14,0.98))] px-4 py-3 transition-all duration-200 hover:border-white/[0.13] hover:bg-[linear-gradient(90deg,rgba(12,12,28,0.98),rgba(9,9,18,0.99))] sm:gap-5 sm:px-5">
+      {/* Thumbnail — only when image exists */}
+      {hasImage ? (
+        <div className="relative h-[3.25rem] w-[3.25rem] shrink-0 overflow-hidden rounded-xl border border-white/[0.08] bg-[#080810] sm:h-[3.75rem] sm:w-[3.75rem]">
+          <MenuItemImage
+            src={imageUrl}
+            alt={item.name}
+            title={item.name}
+            priority={priorityImage}
+          />
+        </div>
+      ) : null}
 
       {/* Name + teaser */}
       <div className="min-w-0 flex-1">
-        <h4 className="truncate font-orbitron text-[13px] font-black uppercase leading-tight text-white sm:text-sm">
+        <h4 className={cn(
+          'truncate font-orbitron font-black uppercase leading-tight text-white',
+          teaser ? 'text-[13px] sm:text-sm' : 'text-sm sm:text-[15px]',
+        )}>
           {item.name}
         </h4>
-        <p className="mt-1 line-clamp-1 text-xs leading-5 text-white/42 sm:text-[13px]">
-          {teaser}
-        </p>
+        {teaser ? (
+          <p className="mt-0.5 line-clamp-1 text-xs leading-5 text-white/42 sm:text-[13px]">
+            {teaser}
+          </p>
+        ) : null}
       </div>
 
       {/* Price + availability */}

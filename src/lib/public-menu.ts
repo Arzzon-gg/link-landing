@@ -387,7 +387,7 @@ export function getMenuItemTeaser(description?: string | null) {
   const normalized = description?.trim();
 
   if (!normalized) {
-    return 'Signature dish.';
+    return null;
   }
 
   if (normalized.length <= 68) {
