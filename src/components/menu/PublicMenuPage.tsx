@@ -114,8 +114,7 @@ export function PublicMenuPage({
                   id={buildMenuCategoryAnchor(category.name, category.id)}
                   className="scroll-mt-28"
                 >
-                  <FadeIn className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                    <div className="flex items-center gap-4">
+                  <FadeIn className="mb-7 flex items-center gap-4">
                       {resolvePublicMenuImageUrl(category.imageUrl) ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -151,7 +150,6 @@ export function PublicMenuPage({
                           {category.name}
                         </h3>
                       </div>
-                    </div>
                   </FadeIn>
 
                   {category.items.length ? (

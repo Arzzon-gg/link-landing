@@ -45,7 +45,7 @@ export function MenuCategoryNav({ categories }: MenuCategoryNavProps) {
   return (
     <nav
       aria-label="Menu categories"
-      className="sticky top-16 z-20 -mx-1 mb-10 flex gap-3 overflow-x-auto px-1 py-2 sm:top-20"
+      className="sticky top-16 z-20 -mx-4 mb-10 flex gap-3 overflow-x-auto bg-[#020209]/88 px-4 py-3 backdrop-blur-md sm:-mx-6 sm:top-20 sm:px-6 lg:-mx-8 lg:px-8"
     >
       {categories.map((category) => {
         const isActive = category.id === activeId;
