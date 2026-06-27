@@ -74,6 +74,7 @@ function CreateAccountForm() {
       dateOfBirth: '',
       marriageDate: '',
       address: '',
+      note: '',
     },
     shouldUnregister: true,
   });
@@ -229,6 +230,7 @@ function CreateAccountForm() {
             phoneNumberReg={register('phoneNumber')}
             dateOfBirthReg={register('dateOfBirth')}
             addressReg={register('address')}
+            noteReg={register('note')}
             marriedReg={register('married')}
             marriageDateReg={register('marriageDate')}
             errors={errors}
@@ -349,6 +351,7 @@ function CompleteProfileForm({ session }: { session: AccountLoginSession }) {
           phoneNumberReg={register('phoneNumber')}
           dateOfBirthReg={register('dateOfBirth')}
           addressReg={register('address')}
+          noteReg={register('note')}
           marriedReg={register('married')}
           marriageDateReg={register('marriageDate')}
           errors={errors}
@@ -469,6 +472,7 @@ function ProfileFields({
   phoneNumberReg,
   dateOfBirthReg,
   addressReg,
+  noteReg,
   marriedReg,
   marriageDateReg,
   errors,
@@ -482,6 +486,7 @@ function ProfileFields({
   phoneNumberReg: UseFormRegisterReturn<'phoneNumber'>;
   dateOfBirthReg: UseFormRegisterReturn<'dateOfBirth'>;
   addressReg: UseFormRegisterReturn<'address'>;
+  noteReg: UseFormRegisterReturn<'note'>;
   marriedReg: UseFormRegisterReturn<'married'>;
   marriageDateReg: UseFormRegisterReturn<'marriageDate'>;
   errors: FieldErrors<AccountSignupInput> | FieldErrors<AccountProfileCompletionInput>;
@@ -522,6 +527,19 @@ function ProfileFields({
           error={errors.address?.message}
           className="min-h-[44px]"
           {...addressReg}
+        />
+      </motion.div>
+
+      <motion.div variants={rowVariants}>
+        <FormField
+          label="Note (optional)"
+          id="note"
+          type="textarea"
+          placeholder="Anything you'd like us to know"
+          autoComplete="off"
+          error={errors.note?.message}
+          className="min-h-[44px]"
+          {...noteReg}
         />
       </motion.div>
 
@@ -673,6 +691,7 @@ function getProfileDefaultValues(session: AccountLoginSession): AccountProfileCo
       session.isMarried === true ? 'yes' : session.isMarried === false ? 'no' : undefined,
     marriageDate: toDateInputValue(session.marriageDate),
     address: session.address ?? '',
+    note: session.note ?? '',
   };
 }
 

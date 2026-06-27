@@ -12,6 +12,7 @@ export interface AccountLoginSession {
   isMarried: boolean | null;
   marriageDate: string | null;
   address: string | null;
+  note: string | null;
   firebaseLinked: boolean;
   hasPassword: boolean;
   profileCompleted: boolean;

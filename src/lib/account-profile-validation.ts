@@ -16,6 +16,13 @@ export const accountProfileCompletionSchema = z
     married: z.enum(['yes', 'no']).optional(),
     marriageDate: optionalTrimmedString,
     address: optionalTrimmedString,
+    // Optional free-text note. No content requirement; just length-capped.
+    note: z
+      .string()
+      .trim()
+      .max(1000, 'Note is too long')
+      .optional()
+      .transform((value) => value ?? ''),
   })
   .superRefine((data, ctx) => {
     if (!data.phoneNumber) {

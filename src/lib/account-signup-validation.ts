@@ -42,6 +42,14 @@ export const accountSignupSchema = z
     marriageDate: optionalTrimmedString,
 
     address: optionalTrimmedString,
+
+    // Optional free-text note. No content requirement; just length-capped.
+    note: z
+      .string()
+      .trim()
+      .max(1000, 'Note is too long')
+      .optional()
+      .transform((value) => value ?? ''),
   })
   .superRefine((data, ctx) => {
     if (data.password !== data.confirmPassword) {

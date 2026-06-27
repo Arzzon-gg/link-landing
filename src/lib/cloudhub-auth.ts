@@ -21,6 +21,7 @@ export type CloudHubAuthPayload = {
   isMarried?: boolean | null;
   marriageDate?: string | null;
   address?: string | null;
+  note?: string | null;
   firebaseLinked?: boolean;
   hasPassword?: boolean;
   profileCompleted?: boolean;
@@ -46,6 +47,7 @@ export function buildAccountSession(payload: {
   isMarried: boolean | null;
   marriageDate: string | null;
   address: string | null;
+  note: string | null;
   firebaseLinked: boolean;
   hasPassword: boolean;
   profileCompleted: boolean;
@@ -64,6 +66,7 @@ export function buildAccountSession(payload: {
     isMarried: payload.isMarried,
     marriageDate: payload.marriageDate,
     address: payload.address,
+    note: payload.note,
     firebaseLinked: payload.firebaseLinked,
     hasPassword: payload.hasPassword,
     profileCompleted: payload.profileCompleted,
@@ -91,6 +94,7 @@ export function parseCloudHubSession(payload: CloudHubAuthPayload) {
       isMarried: typeof payload.isMarried === 'boolean' ? payload.isMarried : null,
       marriageDate: normalizeDateValue(payload.marriageDate),
       address: typeof payload.address === 'string' ? payload.address : null,
+      note: typeof payload.note === 'string' ? payload.note : null,
       firebaseLinked: !!payload.firebaseLinked,
       hasPassword: !!payload.hasPassword,
       profileCompleted: !!payload.profileCompleted,

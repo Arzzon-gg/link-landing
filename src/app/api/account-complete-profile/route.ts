@@ -165,6 +165,7 @@ function buildCloudHubProfilePayload(data: AccountProfileCompletionInput) {
     isMarried,
     marriageDate: data.married === 'yes' ? toIsoDateOrNull(data.marriageDate) : null,
     address: data.address.trim() ? data.address.trim() : null,
+    note: data.note.trim() ? data.note.trim() : null,
     branchId: null,
   };
 }

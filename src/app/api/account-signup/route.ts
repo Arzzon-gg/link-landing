@@ -240,7 +240,7 @@ function buildSignupRow(data: ReturnType<typeof accountSignupSchema.parse>): str
   const anniversary = data.married === 'yes' ? String(data.marriageDate ?? '') : '';
 
   // Column order matches the sheet header:
-  // Submission ID | Created At | Name | Email | Phone | Address | DateOfBirth | Married | AnniversaryDate
+  // Submission ID | Created At | Name | Email | Phone | Address | DateOfBirth | Married | AnniversaryDate | Note
   return [
     uuidv4(),
     new Date().toISOString(),
@@ -251,6 +251,7 @@ function buildSignupRow(data: ReturnType<typeof accountSignupSchema.parse>): str
     String(data.dateOfBirth),
     maritalStatus,
     anniversary,
+    data.note.trim(),
   ];
 }
 
@@ -269,6 +270,7 @@ function buildCloudHubUserPayload(data: ReturnType<typeof accountSignupSchema.pa
     isMarried,
     marriageDate: data.married === 'yes' ? toIsoDateOrNull(data.marriageDate) : null,
     address: data.address.trim() ? data.address.trim() : null,
+    note: data.note.trim() ? data.note.trim() : null,
   };
 }
 
