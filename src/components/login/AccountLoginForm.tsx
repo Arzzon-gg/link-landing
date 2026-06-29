@@ -67,7 +67,9 @@ export function AccountLoginForm() {
       }
 
       router.refresh();
-      router.replace(result.session.profileCompleted ? '/menu' : '/signup');
+      // After a successful login, send the player to the daily spin wheel.
+      // Profiles that still need completing go to /signup first.
+      router.replace(result.session.profileCompleted ? '/spin' : '/signup');
     } catch {
       setServerError('Network error. Please check your connection and try again.');
     }

@@ -42,14 +42,9 @@ export function GoogleAuthButton({ mode, onError }: GoogleAuthButtonProps) {
       }
 
       router.refresh();
-      // After signup, launch the wheel instead of the app; login keeps going to the app.
-      router.replace(
-        payload.session.profileCompleted
-          ? mode === 'signup'
-            ? '/spin'
-            : '/menu'
-          : '/signup'
-      );
+      // After both login and signup, launch the daily spin wheel. Profiles that
+      // still need completing go to /signup first.
+      router.replace(payload.session.profileCompleted ? '/spin' : '/signup');
     } catch (error) {
       console.error('[GoogleAuthButton] Google sign-in failed:', error);
       onError(resolveGoogleAuthErrorMessage(error));
