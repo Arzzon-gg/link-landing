@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { ACCOUNT_SESSION_COOKIE_NAME } from '@/lib/account-auth';
 import { getCurrentAccountSession } from '@/lib/account-session';
 import { buildWheelUrl } from '@/lib/wheel';
+import { SpinWheelFrame } from './SpinWheelFrame';
 
 export const metadata: Metadata = {
   title: 'Daily Spin | The Link',
@@ -32,13 +33,7 @@ export default async function SpinPage() {
 
   return (
     <main className="fixed inset-0 bg-black">
-      <iframe
-        src={wheelUrl}
-        title="Daily spin wheel"
-        className="h-full w-full"
-        style={{ border: 0 }}
-        allow="clipboard-write"
-      />
+      <SpinWheelFrame wheelUrl={wheelUrl} />
     </main>
   );
 }
