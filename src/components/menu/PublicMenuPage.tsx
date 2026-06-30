@@ -8,7 +8,10 @@ import {
   type PublicMenuBranchOption,
   type PublicMenuLoadResult,
 } from '@/lib/public-menu';
-import type { PublicMenuData } from '@/types/menu';
+import type {
+  PublicMenuCategory,
+  PublicMenuData,
+} from '@/types/menu';
 import { BranchSelector } from './BranchSelector';
 import { MenuCategoryNav } from './MenuCategoryNav';
 import { PublicMenuItemCard } from './PublicMenuItemCard';
@@ -24,6 +27,23 @@ export function PublicMenuPage({
   branches,
   selectedBranchId,
 }: PublicMenuPageProps) {
+  const categoryAccentIndex = new Map(
+    menu.categories.map((category, index) => [category.id, index]),
+  );
+  const knownSectionIds = new Set(menu.sections.map((section) => section.id));
+  const visibleSections = menu.sections
+    .map((section) => ({
+      ...section,
+      categories: menu.categories.filter(
+        (category) => category.sectionId === section.id,
+      ),
+    }))
+    .filter((section) => section.categories.length > 0);
+  const standaloneCategories = menu.categories.filter(
+    (category) =>
+      category.sectionId == null || !knownSectionIds.has(category.sectionId),
+  );
+
   return (
     <div className="relative">
       <section className="relative flex min-h-[300px] items-center justify-center overflow-hidden px-4 pt-16 sm:min-h-[340px] sm:px-6 lg:min-h-[380px] lg:px-8 lg:pt-20">
@@ -108,73 +128,42 @@ export function PublicMenuPage({
 
           {menu.categories.length || menu.uncategorizedItems.length ? (
             <div className="space-y-16">
-              {menu.categories.map((category, index) => (
-                <section
-                  key={category.id}
-                  id={buildMenuCategoryAnchor(category.name, category.id)}
-                  className="scroll-mt-28"
-                >
-                  <FadeIn className="mb-7 flex items-center gap-4">
-                      {resolvePublicMenuImageUrl(category.imageUrl) ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={
-                            resolvePublicMenuImageUrl(category.imageUrl) ??
-                            undefined
-                          }
-                          alt={category.name}
-                          loading="lazy"
-                          className="h-24 w-24 flex-shrink-0 rounded-2xl border border-white/10 object-cover shadow-[0_0_28px_rgba(0,0,0,0.50)] sm:h-32 sm:w-32"
-                        />
-                      ) : null}
+              {visibleSections.map((section) => (
+                <section key={section.id} className="space-y-10">
+                  <FadeIn className="rounded-[2rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(12,12,28,0.96),rgba(7,7,14,0.98))] px-6 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.24)] sm:px-8">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                       <div>
-                        <div className="mb-2 flex items-center gap-3">
-                          <span
-                            className="h-2.5 w-2.5 rounded-full shadow-[0_0_18px_rgba(255,255,255,0.25)]"
-                            style={{
-                              backgroundColor:
-                                index % 4 === 0
-                                  ? '#ec4899'
-                                  : index % 4 === 1
-                                    ? '#06b6d4'
-                                    : index % 4 === 2
-                                      ? '#8b5cf6'
-                                      : '#39ff14',
-                            }}
-                          />
-                          <span className="font-orbitron text-[10px] font-black uppercase tracking-[0.3em] text-white/46">
-                            {category.items.length} dishes
-                          </span>
-                        </div>
-                        <h3 className="font-orbitron text-2xl font-black uppercase text-white sm:text-3xl">
-                          {category.name}
-                        </h3>
+                        <p className="font-orbitron text-[10px] font-black uppercase tracking-[0.3em] text-cyan-300">
+                          Menu section
+                        </p>
+                        <h2 className="mt-3 font-orbitron text-3xl font-black uppercase text-white">
+                          {section.name}
+                        </h2>
                       </div>
+                      <p className="text-sm leading-7 text-white/42">
+                        {section.categories.length} categories published in this lineup.
+                      </p>
+                    </div>
                   </FadeIn>
 
-                  {category.items.length ? (
-                    <StaggerGroup className="grid gap-2 lg:grid-cols-2" stagger={0.05} amount={0.08}>
-                      {category.items.map((item, itemIndex) => (
-                        <StaggerItem key={item.id}>
-                          <PublicMenuItemCard
-                            item={item}
-                            category={category.name}
-                            imageUrl={resolvePublicMenuImageUrl(item.imageUrl)}
-                            priceLabel={formatCurrency(item.basePrice)}
-                            teaser={getMenuItemTeaser(item.description)}
-                            priorityImage={index === 0 && itemIndex < 3}
-                          />
-                        </StaggerItem>
-                      ))}
-                    </StaggerGroup>
-                  ) : (
-                    <FadeIn>
-                      <div className="rounded-[1.6rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(10,10,25,0.95),rgba(7,7,14,0.96))] p-8 text-white/48">
-                        No dishes are published in this category yet.
-                      </div>
-                    </FadeIn>
-                  )}
+                  <div className="space-y-16">
+                    {section.categories.map((category) => (
+                      <MenuCategorySection
+                        key={category.id}
+                        category={category}
+                        accentIndex={categoryAccentIndex.get(category.id) ?? 0}
+                      />
+                    ))}
+                  </div>
                 </section>
+              ))}
+
+              {standaloneCategories.map((category) => (
+                <MenuCategorySection
+                  key={category.id}
+                  category={category}
+                  accentIndex={categoryAccentIndex.get(category.id) ?? 0}
+                />
               ))}
 
               {menu.uncategorizedItems.length ? (
@@ -240,6 +229,80 @@ export function PublicMenuPage({
         </div>
       </section>
     </div>
+  );
+}
+
+function MenuCategorySection({
+  category,
+  accentIndex,
+}: {
+  category: PublicMenuCategory;
+  accentIndex: number;
+}) {
+  const accentColor =
+    accentIndex % 4 === 0
+      ? '#ec4899'
+      : accentIndex % 4 === 1
+        ? '#06b6d4'
+        : accentIndex % 4 === 2
+          ? '#8b5cf6'
+          : '#39ff14';
+  const categoryImageUrl = resolvePublicMenuImageUrl(category.imageUrl);
+
+  return (
+    <section
+      id={buildMenuCategoryAnchor(category.name, category.id)}
+      className="scroll-mt-28"
+    >
+      <FadeIn className="mb-7 flex items-center gap-4">
+        {categoryImageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={categoryImageUrl}
+            alt={category.name}
+            loading="lazy"
+            className="h-24 w-24 flex-shrink-0 rounded-2xl border border-white/10 object-cover shadow-[0_0_28px_rgba(0,0,0,0.50)] sm:h-32 sm:w-32"
+          />
+        ) : null}
+        <div>
+          <div className="mb-2 flex items-center gap-3">
+            <span
+              className="h-2.5 w-2.5 rounded-full shadow-[0_0_18px_rgba(255,255,255,0.25)]"
+              style={{ backgroundColor: accentColor }}
+            />
+            <span className="font-orbitron text-[10px] font-black uppercase tracking-[0.3em] text-white/46">
+              {category.items.length} dishes
+            </span>
+          </div>
+          <h3 className="font-orbitron text-2xl font-black uppercase text-white sm:text-3xl">
+            {category.name}
+          </h3>
+        </div>
+      </FadeIn>
+
+      {category.items.length ? (
+        <StaggerGroup className="grid gap-2 lg:grid-cols-2" stagger={0.05} amount={0.08}>
+          {category.items.map((item, itemIndex) => (
+            <StaggerItem key={item.id}>
+              <PublicMenuItemCard
+                item={item}
+                category={category.name}
+                imageUrl={resolvePublicMenuImageUrl(item.imageUrl)}
+                priceLabel={formatCurrency(item.basePrice)}
+                teaser={getMenuItemTeaser(item.description)}
+                priorityImage={accentIndex === 0 && itemIndex < 3}
+              />
+            </StaggerItem>
+          ))}
+        </StaggerGroup>
+      ) : (
+        <FadeIn>
+          <div className="rounded-[1.6rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(10,10,25,0.95),rgba(7,7,14,0.96))] p-8 text-white/48">
+            No dishes are published in this category yet.
+          </div>
+        </FadeIn>
+      )}
+    </section>
   );
 }
 

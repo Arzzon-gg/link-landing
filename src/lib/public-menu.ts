@@ -6,6 +6,7 @@ import type {
   PublicMenuCategory,
   PublicMenuData,
   PublicMenuItem,
+  PublicMenuSection,
 } from '@/types/menu';
 
 const CLOUDHUB_BASE_URL =
@@ -39,11 +40,19 @@ const menuCategorySchema = z.object({
   name: z.string(),
   imageUrl: z.string().nullable().optional(),
   sortOrder: z.number(),
+  sectionId: z.number().nullable().optional(),
   items: z.array(menuItemSchema).default([]),
+});
+
+const menuSectionSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  sortOrder: z.number(),
 });
 
 const menuResponseSchema = z.object({
   generatedAtUtc: z.string(),
+  sections: z.array(menuSectionSchema).default([]),
   categories: z.array(menuCategorySchema).default([]),
   uncategorizedItems: z.array(menuItemSchema).default([]),
 });
@@ -64,6 +73,7 @@ type RawMenuCategory = {
   name: string;
   imageUrl?: string | null;
   sortOrder: number;
+  sectionId?: number | null;
   items?: RawMenuItem[];
 };
 type PublicMenuConfig =
@@ -243,7 +253,21 @@ function sanitizeCategories(
       name: category.name,
       imageUrl: category.imageUrl ?? null,
       sortOrder: category.sortOrder,
+      sectionId: category.sectionId ?? null,
       items: sanitizeItems(category.items),
+    }));
+}
+
+function sanitizeSections(
+  sections: CloudHubMenuResponse['sections'] = [],
+): PublicMenuSection[] {
+  return sections
+    .slice()
+    .sort((left, right) => left.sortOrder - right.sortOrder)
+    .map((section) => ({
+      id: section.id,
+      name: section.name,
+      sortOrder: section.sortOrder,
     }));
 }
 
@@ -313,6 +337,7 @@ export async function getPublicMenu(
       menu: {
         branch,
         generatedAtUtc: menu.generatedAtUtc,
+        sections: sanitizeSections(menu.sections ?? []),
         categories: sanitizeCategories(menu.categories ?? []),
         uncategorizedItems: sanitizeItems(menu.uncategorizedItems ?? []),
       },

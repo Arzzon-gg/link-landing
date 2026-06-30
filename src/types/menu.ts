@@ -13,7 +13,14 @@ export interface PublicMenuCategory {
   name: string;
   imageUrl: string | null;
   sortOrder: number;
+  sectionId: number | null;
   items: PublicMenuItem[];
+}
+
+export interface PublicMenuSection {
+  id: number;
+  name: string;
+  sortOrder: number;
 }
 
 export interface PublicMenuBranch {
@@ -25,6 +32,7 @@ export interface PublicMenuBranch {
 export interface PublicMenuData {
   branch: PublicMenuBranch;
   generatedAtUtc: string;
+  sections: PublicMenuSection[];
   categories: PublicMenuCategory[];
   uncategorizedItems: PublicMenuItem[];
 }
