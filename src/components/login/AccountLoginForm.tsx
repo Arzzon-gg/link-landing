@@ -156,6 +156,15 @@ export function AccountLoginForm() {
                 />
               </motion.div>
 
+              <motion.div variants={rowVariants} className="-mt-1 flex justify-end">
+                <Link
+                  href="/forgot-password"
+                  className="text-xs font-medium text-cyan-300/80 transition-colors hover:text-cyan-200"
+                >
+                  Forgot password?
+                </Link>
+              </motion.div>
+
               <AnimatePresence>
                 {serverError && (
                   <motion.div
