@@ -22,7 +22,15 @@ const quickLinks = [
   { label: 'Contact', href: '/#contact' },
 ];
 
-const usefulInfo = ['About Us', 'FAQs', 'Blog', 'Careers', 'Privacy Policy', 'Terms & Conditions'];
+const usefulInfo = [
+  { label: 'About Us', href: '/#about' },
+  { label: 'FAQs', href: '#' },
+  { label: 'Blog', href: '#' },
+  { label: 'Careers', href: '#' },
+  { label: 'Privacy Policy', href: '/privacy' },
+  { label: 'Delete Account', href: '/delete-account' },
+  { label: 'Terms & Conditions', href: '#' },
+];
 
 export function Footer() {
   return (
@@ -112,12 +120,12 @@ export function Footer() {
               </h4>
               <ul className="space-y-2.5">
                 {usefulInfo.map((item) => (
-                  <li key={item}>
+                  <li key={item.label}>
                     <Link
-                      href="#"
+                      href={item.href}
                       className="text-xs text-white/38 transition-all duration-200 hover:translate-x-1 hover:text-white/78"
                     >
-                      {item}
+                      {item.label}
                     </Link>
                   </li>
                 ))}
