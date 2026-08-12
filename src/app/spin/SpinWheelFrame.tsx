@@ -58,7 +58,12 @@ export function SpinWheelFrame({ wheelUrl, isGuest = false }: SpinWheelFrameProp
         style={{ border: 0 }}
         allow="clipboard-write"
       />
-      {guestFinished && <GuestClaimPrompt reward={guestReward} />}
+      {guestFinished && (
+        <GuestClaimPrompt
+          reward={guestReward}
+          onDismiss={() => setGuestFinished(false)}
+        />
+      )}
     </div>
   );
 }

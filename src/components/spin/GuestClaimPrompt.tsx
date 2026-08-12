@@ -12,6 +12,12 @@ export type GuestWheelReward = {
 
 type GuestClaimPromptProps = {
   reward: GuestWheelReward | null;
+  /**
+   * Returns to the wheel. Guest spins cost nothing, so this prompt must be
+   * escapable — without it the nudge would consume the very spin the guest is
+   * being told they didn't get.
+   */
+  onDismiss?: () => void;
 };
 
 /**
@@ -19,7 +25,7 @@ type GuestClaimPromptProps = {
  * never saved to an account, so this replaces the normal /menu redirect with a
  * signup/login nudge instead of silently dropping whatever they won.
  */
-export function GuestClaimPrompt({ reward }: GuestClaimPromptProps) {
+export function GuestClaimPrompt({ reward, onDismiss }: GuestClaimPromptProps) {
   const won = reward?.isWinning && reward.label;
 
   return (
@@ -68,9 +74,19 @@ export function GuestClaimPrompt({ reward }: GuestClaimPromptProps) {
           </Link>
         </div>
 
+        {onDismiss && (
+          <button
+            type="button"
+            onClick={onDismiss}
+            className="mt-5 block w-full text-xs text-white/34 transition-colors hover:text-white/60"
+          >
+            Keep spinning
+          </button>
+        )}
+
         <Link
           href="/menu"
-          className="mt-5 block text-xs text-white/34 transition-colors hover:text-white/60"
+          className="mt-3 block text-xs text-white/34 transition-colors hover:text-white/60"
         >
           Just browse the menu instead
         </Link>
