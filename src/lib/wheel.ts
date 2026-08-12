@@ -28,3 +28,16 @@ export function buildWheelUrl(session: WheelLaunchSession): string {
   }
   return `/wheel/index.html?${params.toString()}`;
 }
+
+/**
+ * Builds the embedded wheel URL for an unauthenticated guest preview — no
+ * token, so the Flutter module talks to CloudHub's public wheel endpoints and
+ * nothing spun is claimable until the player signs up or logs in.
+ */
+export function buildGuestWheelUrl(branchId: number = WHEEL_BRANCH_ID): string {
+  const params = new URLSearchParams({
+    guest: 'true',
+    branchId: String(branchId),
+  });
+  return `/wheel/index.html?${params.toString()}`;
+}

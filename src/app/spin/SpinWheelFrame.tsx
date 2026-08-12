@@ -1,19 +1,25 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { GuestClaimPrompt, type GuestWheelReward } from '@/components/spin/GuestClaimPrompt';
 
 type SpinWheelFrameProps = {
   wheelUrl: string;
+  /** Unauthenticated preview — nothing spun is claimable, see spin/page.tsx. */
+  isGuest?: boolean;
 };
 
 /**
  * Hosts the embedded Flutter wheel and listens for its "spin finished" signal.
- * Once the player finishes a spin (or closes the wheel), it posts a
- * `link-wheel:finished` message and we move them straight to the menu.
+ * A logged-in player is moved straight to the menu. A guest instead sees a
+ * sign-up/log-in prompt — their spin was never saved, so there's nothing to
+ * carry over to /menu.
  */
-export function SpinWheelFrame({ wheelUrl }: SpinWheelFrameProps) {
+export function SpinWheelFrame({ wheelUrl, isGuest = false }: SpinWheelFrameProps) {
   const router = useRouter();
+  const [guestReward, setGuestReward] = useState<GuestWheelReward | null>(null);
+  const [guestFinished, setGuestFinished] = useState(false);
 
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
@@ -29,21 +35,30 @@ export function SpinWheelFrame({ wheelUrl }: SpinWheelFrameProps) {
         typeof data === 'object' &&
         (data as { type?: unknown }).type === 'link-wheel:finished'
       ) {
+        if (isGuest) {
+          const reward = (data as { reward?: GuestWheelReward }).reward ?? null;
+          setGuestReward(reward);
+          setGuestFinished(true);
+          return;
+        }
         router.replace('/menu');
       }
     }
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [router]);
+  }, [router, isGuest]);
 
   return (
-    <iframe
-      src={wheelUrl}
-      title="Daily spin wheel"
-      className="h-full w-full"
-      style={{ border: 0 }}
-      allow="clipboard-write"
-    />
+    <div className="relative h-full w-full">
+      <iframe
+        src={wheelUrl}
+        title="Daily spin wheel"
+        className="h-full w-full"
+        style={{ border: 0 }}
+        allow="clipboard-write"
+      />
+      {guestFinished && <GuestClaimPrompt reward={guestReward} />}
+    </div>
   );
 }
