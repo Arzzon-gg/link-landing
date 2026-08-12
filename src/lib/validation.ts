@@ -49,8 +49,8 @@ export const registrationSchema = z
     address: z
       .string()
       .trim()
-      .min(10, 'Please enter your full address (at least 10 characters)')
-      .max(300, 'Address is too long'),
+      .max(300, 'Address is too long')
+      .optional(),
 
     // Date of birth as an ISO date string (YYYY-MM-DD)
     dateOfBirth: z.string().min(1, 'Date of birth is required'),
@@ -104,37 +104,6 @@ export const registrationSchema = z
     if (age > 120) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Please enter a valid date of birth', path: ['dateOfBirth'] });
       return;
-    }
-
-    if (age > 19) {
-      if (!data.married) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Please select whether you are married',
-          path: ['married'],
-        });
-        return;
-      }
-
-      if (data.married === 'yes') {
-        if (!data.anniversaryDate) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: 'Please enter your anniversary date',
-            path: ['anniversaryDate'],
-          });
-          return;
-        }
-
-        const anniversary = new Date(data.anniversaryDate);
-        if (Number.isNaN(anniversary.getTime())) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: 'Please enter a valid date',
-            path: ['anniversaryDate'],
-          });
-        }
-      }
     }
   });
 

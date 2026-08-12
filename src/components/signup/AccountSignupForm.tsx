@@ -21,7 +21,6 @@ import {
   accountSignupSchema,
   type AccountSignupInput,
 } from '@/lib/account-signup-validation';
-import { getAgeFromDateOfBirth } from '@/lib/validation';
 import { cn } from '@/lib/utils';
 import type { AccountLoginSession } from '@/types/auth';
 import type { AccountSignupApiResponse } from '@/types/signup';
@@ -72,18 +71,11 @@ function CreateAccountForm() {
       countryCode: '961',
       phoneNumber: '',
       dateOfBirth: '',
-      marriageDate: '',
       address: '',
       note: '',
     },
     shouldUnregister: true,
   });
-
-  const dateOfBirth = watch('dateOfBirth');
-  const married = watch('married');
-  const age = getAgeFromDateOfBirth(dateOfBirth || undefined);
-  const showMarriageQuestion = age !== null && age >= 18;
-  const showMarriageDate = showMarriageQuestion && married === 'yes';
 
   async function onSubmit(data: AccountSignupInput) {
     setServerError(null);
@@ -241,14 +233,8 @@ function CreateAccountForm() {
             dateOfBirthReg={register('dateOfBirth')}
             addressReg={register('address')}
             noteReg={register('note')}
-            marriedReg={register('married')}
-            marriageDateReg={register('marriageDate')}
             errors={errors}
             watchCountryCode={watch('countryCode')}
-            dateOfBirth={dateOfBirth || ''}
-            married={married}
-            showMarriageQuestion={showMarriageQuestion}
-            showMarriageDate={showMarriageDate}
           />
 
           <motion.div variants={rowVariants} className="pt-2">
@@ -281,12 +267,6 @@ function CompleteProfileForm({ session }: { session: AccountLoginSession }) {
     defaultValues,
     shouldUnregister: true,
   });
-
-  const dateOfBirth = watch('dateOfBirth');
-  const married = watch('married');
-  const age = getAgeFromDateOfBirth(dateOfBirth || undefined);
-  const showMarriageQuestion = age !== null && age >= 18;
-  const showMarriageDate = showMarriageQuestion && married === 'yes';
 
   async function onSubmit(data: AccountProfileCompletionInput) {
     setServerError(null);
@@ -362,14 +342,8 @@ function CompleteProfileForm({ session }: { session: AccountLoginSession }) {
           dateOfBirthReg={register('dateOfBirth')}
           addressReg={register('address')}
           noteReg={register('note')}
-          marriedReg={register('married')}
-          marriageDateReg={register('marriageDate')}
           errors={errors}
           watchCountryCode={watch('countryCode')}
-          dateOfBirth={dateOfBirth || ''}
-          married={married}
-          showMarriageQuestion={showMarriageQuestion}
-          showMarriageDate={showMarriageDate}
         />
 
         <motion.div variants={rowVariants} className="pt-2">
@@ -483,28 +457,16 @@ function ProfileFields({
   dateOfBirthReg,
   addressReg,
   noteReg,
-  marriedReg,
-  marriageDateReg,
   errors,
   watchCountryCode,
-  dateOfBirth,
-  married,
-  showMarriageQuestion,
-  showMarriageDate,
 }: {
   countryCodeReg: UseFormRegisterReturn<'countryCode'>;
   phoneNumberReg: UseFormRegisterReturn<'phoneNumber'>;
   dateOfBirthReg: UseFormRegisterReturn<'dateOfBirth'>;
   addressReg: UseFormRegisterReturn<'address'>;
   noteReg: UseFormRegisterReturn<'note'>;
-  marriedReg: UseFormRegisterReturn<'married'>;
-  marriageDateReg: UseFormRegisterReturn<'marriageDate'>;
   errors: FieldErrors<AccountSignupInput> | FieldErrors<AccountProfileCompletionInput>;
   watchCountryCode: string | undefined;
-  dateOfBirth: string;
-  married: 'yes' | 'no' | undefined;
-  showMarriageQuestion: boolean;
-  showMarriageDate: boolean;
 }) {
   return (
     <>
@@ -529,7 +491,7 @@ function ProfileFields({
         />
 
         <FormField
-          label="Address"
+          label="Address (optional)"
           id="address"
           type="textarea"
           placeholder="Street, city, district"
@@ -552,79 +514,6 @@ function ProfileFields({
           {...noteReg}
         />
       </motion.div>
-
-      <AnimatePresence initial={false}>
-        {showMarriageQuestion && (
-          <motion.div
-            key={`marital-status-${dateOfBirth}`}
-            variants={rowVariants}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            className="space-y-1.5"
-          >
-            <label className="block text-[11px] font-semibold uppercase tracking-widest text-slate-500">
-              Are you married?
-            </label>
-
-            <div className="grid grid-cols-2 gap-3">
-              <label
-                className={cn(
-                  'flex h-11 cursor-pointer items-center justify-center rounded-xl border px-4 text-sm font-medium transition-all',
-                  married === 'no'
-                    ? 'border-violet-500/60 bg-violet-500/10 text-white shadow-[0_0_0_1px_rgba(139,92,246,0.2)]'
-                    : 'border-white/[0.08] bg-white/[0.04] text-slate-300 hover:border-white/[0.16] hover:bg-white/[0.06]'
-                )}
-              >
-                <input type="radio" value="no" className="sr-only" {...marriedReg} />
-                No
-              </label>
-
-              <label
-                className={cn(
-                  'flex h-11 cursor-pointer items-center justify-center rounded-xl border px-4 text-sm font-medium transition-all',
-                  married === 'yes'
-                    ? 'border-violet-500/60 bg-violet-500/10 text-white shadow-[0_0_0_1px_rgba(139,92,246,0.2)]'
-                    : 'border-white/[0.08] bg-white/[0.04] text-slate-300 hover:border-white/[0.16] hover:bg-white/[0.06]'
-                )}
-              >
-                <input type="radio" value="yes" className="sr-only" {...marriedReg} />
-                Yes
-              </label>
-            </div>
-
-            <div
-              className={cn(
-                'overflow-hidden transition-all duration-200',
-                errors.married?.message ? 'max-h-8 opacity-100' : 'max-h-0 opacity-0'
-              )}
-            >
-              <p className="pt-0.5 text-xs text-red-400">{errors.married?.message}</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence initial={false}>
-        {showMarriageDate && (
-          <motion.div
-            key={`marriage-date-${married}`}
-            variants={rowVariants}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-          >
-            <FormField
-              label="Marriage Date"
-              id="marriageDate"
-              type="date"
-              autoComplete="off"
-              error={errors.marriageDate?.message}
-              {...marriageDateReg}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }
@@ -697,8 +586,6 @@ function getProfileDefaultValues(session: AccountLoginSession): AccountProfileCo
     countryCode: phoneParts.countryCode,
     phoneNumber: phoneParts.phoneNumber,
     dateOfBirth: toDateInputValue(session.dateOfBirth),
-    married:
-      session.isMarried === true ? 'yes' : session.isMarried === false ? 'no' : undefined,
     marriageDate: toDateInputValue(session.marriageDate),
     address: session.address ?? '',
     note: session.note ?? '',

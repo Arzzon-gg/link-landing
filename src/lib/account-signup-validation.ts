@@ -68,19 +68,7 @@ export const accountSignupSchema = z
       });
     }
 
-    if (!data.address) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Address is required',
-        path: ['address'],
-      });
-    } else if (data.address.length < 10) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Please enter your full address (at least 10 characters)',
-        path: ['address'],
-      });
-    } else if (data.address.length > 300) {
+    if (data.address && data.address.length > 300) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: 'Address is too long',
@@ -158,72 +146,6 @@ export const accountSignupSchema = z
         path: ['dateOfBirth'],
       });
       return;
-    }
-
-    if (age >= 18 && !data.married) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Please select whether you are married',
-        path: ['married'],
-      });
-      return;
-    }
-
-    if (age < 18 && data.married === 'yes') {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Only users aged 18 or older can be marked as married',
-        path: ['married'],
-      });
-    }
-
-    if (data.married === 'yes') {
-      if (!data.marriageDate) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Marriage date is required when you are married',
-          path: ['marriageDate'],
-        });
-        return;
-      }
-
-      const marriageDate = new Date(`${data.marriageDate}T00:00:00.000Z`);
-      const dateOfBirth = new Date(`${data.dateOfBirth}T00:00:00.000Z`);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      if (Number.isNaN(marriageDate.getTime())) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Please enter a valid date',
-          path: ['marriageDate'],
-        });
-        return;
-      }
-
-      if (marriageDate > today) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Marriage date cannot be in the future',
-          path: ['marriageDate'],
-        });
-      }
-
-      if (marriageDate < dateOfBirth) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Marriage date cannot be before date of birth',
-          path: ['marriageDate'],
-        });
-      }
-    }
-
-    if (data.married === 'no' && data.marriageDate) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Marriage date must be empty when you are not married',
-        path: ['marriageDate'],
-      });
     }
   });
 

@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
     name,
     email,
     phone,
-    address,
+    address ?? '',
     String(dateOfBirth),
     maritalStatus,
     anniversary,

@@ -9,7 +9,6 @@ import { AlertCircle } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import {
-  getAgeFromDateOfBirth,
   registrationSchema,
   type RegistrationInput,
 } from '@/lib/validation';
@@ -45,12 +44,6 @@ export function RegistrationForm() {
     defaultValues: { countryCode: '961' },
     shouldUnregister: true,
   });
-
-  const dateOfBirth = watch('dateOfBirth');
-  const married = watch('married');
-  const age = getAgeFromDateOfBirth(dateOfBirth);
-  const showMarriageQuestion = age !== null && age > 19;
-  const showAnniversaryDate = showMarriageQuestion && married === 'yes';
 
   async function onSubmit(data: RegistrationInput) {
     setServerError(null);
@@ -147,80 +140,6 @@ export function RegistrationForm() {
               />
             </motion.div>
 
-            <AnimatePresence initial={false}>
-              {showMarriageQuestion && (
-                <motion.div
-                  key="marital-status"
-                  variants={rowVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="hidden"
-                  className="space-y-1.5"
-                >
-                  <label className="block text-[11px] font-semibold tracking-widest uppercase text-slate-500">
-                    Are you married?
-                  </label>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <label
-                      className={cn(
-                        'flex h-11 cursor-pointer items-center justify-center rounded-xl border px-4 text-sm font-medium transition-all',
-                        married === 'no'
-                          ? 'border-violet-500/60 bg-violet-500/10 text-white shadow-[0_0_0_1px_rgba(139,92,246,0.2)]'
-                          : 'border-white/[0.08] bg-white/[0.04] text-slate-300 hover:border-white/[0.16] hover:bg-white/[0.06]'
-                      )}
-                    >
-                      <input type="radio" value="no" className="sr-only" {...register('married')} />
-                      No
-                    </label>
-
-                    <label
-                      className={cn(
-                        'flex h-11 cursor-pointer items-center justify-center rounded-xl border px-4 text-sm font-medium transition-all',
-                        married === 'yes'
-                          ? 'border-violet-500/60 bg-violet-500/10 text-white shadow-[0_0_0_1px_rgba(139,92,246,0.2)]'
-                          : 'border-white/[0.08] bg-white/[0.04] text-slate-300 hover:border-white/[0.16] hover:bg-white/[0.06]'
-                      )}
-                    >
-                      <input type="radio" value="yes" className="sr-only" {...register('married')} />
-                      Yes
-                    </label>
-                  </div>
-
-                  <div
-                    className={cn(
-                      'overflow-hidden transition-all duration-200',
-                      errors.married?.message ? 'max-h-8 opacity-100' : 'max-h-0 opacity-0'
-                    )}
-                  >
-                    <p className="text-xs text-red-400 pt-0.5">{errors.married?.message}</p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <AnimatePresence initial={false}>
-              {showAnniversaryDate && (
-                <motion.div
-                  key="anniversary-date"
-                  variants={rowVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="hidden"
-                >
-                  <FormField
-                    label="Anniversary Date"
-                    id="anniversaryDate"
-                    type="date"
-                    placeholder=""
-                    autoComplete="off"
-                    error={errors.anniversaryDate?.message}
-                    {...register('anniversaryDate')}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-
             {/* Email */}
             <motion.div variants={rowVariants}>
               <FormField
@@ -248,7 +167,7 @@ export function RegistrationForm() {
             {/* Address */}
             <motion.div variants={rowVariants}>
               <FormField
-                label="Address"
+                label="Address (optional)"
                 id="address"
                 type="textarea"
                 placeholder="Street, City, State, Country"
