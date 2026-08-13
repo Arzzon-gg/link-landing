@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertCircle, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { FormField } from '@/components/FormField';
@@ -160,6 +160,7 @@ export function ForgotPasswordForm() {
                     disabled={submitting}
                     className="button-sheen inline-flex items-center justify-center gap-2 overflow-hidden rounded-2xl bg-gradient-to-r from-cyan-500 via-sky-500 to-violet-600 px-6 py-4 text-[11px] font-black uppercase tracking-[0.3em] text-white shadow-[0_0_28px_rgba(34,211,238,0.32)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_46px_rgba(34,211,238,0.52)] disabled:cursor-not-allowed disabled:opacity-70 sm:min-w-[220px]"
                   >
+                    {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
                     {submitting ? 'Sending...' : 'Send reset link'}
                   </button>
                 </motion.div>
