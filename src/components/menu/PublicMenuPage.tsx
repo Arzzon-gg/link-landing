@@ -1,20 +1,18 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import { FadeIn, StaggerGroup, StaggerItem } from '@/components/Reveal';
+import Image from "next/image";
+import Link from "next/link";
+import { FadeIn, StaggerGroup, StaggerItem } from "@/components/Reveal";
 import {
   buildMenuCategoryAnchor,
   getMenuItemTeaser,
   resolvePublicMenuImageUrl,
   type PublicMenuBranchOption,
   type PublicMenuLoadResult,
-} from '@/lib/public-menu';
-import type {
-  PublicMenuCategory,
-  PublicMenuData,
-} from '@/types/menu';
-import { BranchSelector } from './BranchSelector';
-import { MenuCategoryNav } from './MenuCategoryNav';
-import { PublicMenuItemCard } from './PublicMenuItemCard';
+} from "@/lib/public-menu";
+import type { PublicMenuCategory, PublicMenuData } from "@/types/menu";
+import { BranchSelector } from "./BranchSelector";
+import { MenuCategoryNav } from "./MenuCategoryNav";
+import { PublicMenuItemCard } from "./PublicMenuItemCard";
+import { PromotionsCarousel } from "@/components/PromotionsCarousel";
 
 interface PublicMenuPageProps {
   menu: PublicMenuData;
@@ -63,8 +61,11 @@ export function PublicMenuPage({
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#020209] via-transparent to-[#020209]/45" />
 
         <div className="relative z-10 mx-auto max-w-3xl py-10 text-center sm:py-14">
-
-          <StaggerGroup className="space-y-6" delayChildren={0.06} stagger={0.1}>
+          <StaggerGroup
+            className="space-y-6"
+            delayChildren={0.06}
+            stagger={0.1}
+          >
             <StaggerItem>
               <h1 className="font-orbitron text-4xl font-black uppercase leading-[1.02] text-white sm:text-5xl lg:text-6xl">
                 Eat inside the
@@ -76,12 +77,12 @@ export function PublicMenuPage({
 
             <StaggerItem>
               <p className="mx-auto max-w-2xl text-sm leading-7 text-white/48 sm:text-base">
-                Browse bold plates, comfort favorites, and colorful signatures in a display
-                that feels as electric as the venue itself.
+                Browse bold plates, comfort favorites, and colorful signatures
+                in a display that feels as electric as the venue itself.
               </p>
             </StaggerItem>
 
-{branches.length > 1 ? (
+            {branches.length > 1 ? (
               <StaggerItem>
                 <BranchSelector
                   branches={branches}
@@ -92,6 +93,8 @@ export function PublicMenuPage({
           </StaggerGroup>
         </div>
       </section>
+
+      <PromotionsCarousel promotions={menu.promotions} placement="menu" />
 
       <section id="menu-categories" className="px-4 pb-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
@@ -116,8 +119,8 @@ export function PublicMenuPage({
                 ...(menu.uncategorizedItems.length
                   ? [
                       {
-                        id: 'menu-category-uncategorized',
-                        name: 'Uncategorized',
+                        id: "menu-category-uncategorized",
+                        name: "Uncategorized",
                         itemCount: menu.uncategorizedItems.length,
                       },
                     ]
@@ -141,7 +144,8 @@ export function PublicMenuPage({
                         </h2>
                       </div>
                       <p className="text-sm leading-7 text-white/42">
-                        {section.categories.length} categories published in this lineup.
+                        {section.categories.length} categories published in this
+                        lineup.
                       </p>
                     </div>
                   </FadeIn>
@@ -177,7 +181,7 @@ export function PublicMenuPage({
                         <div className="mb-2 flex items-center gap-3">
                           <span
                             className="h-2.5 w-2.5 rounded-full shadow-[0_0_18px_rgba(255,255,255,0.25)]"
-                            style={{ backgroundColor: '#39ff14' }}
+                            style={{ backgroundColor: "#39ff14" }}
                           />
                           <span className="font-orbitron text-[10px] font-black uppercase tracking-[0.3em] text-white/46">
                             {menu.uncategorizedItems.length} dishes
@@ -194,7 +198,11 @@ export function PublicMenuPage({
                     </p>
                   </FadeIn>
 
-                  <StaggerGroup className="grid gap-2 lg:grid-cols-2" stagger={0.05} amount={0.08}>
+                  <StaggerGroup
+                    className="grid gap-2 lg:grid-cols-2"
+                    stagger={0.05}
+                    amount={0.08}
+                  >
                     {menu.uncategorizedItems.map((item) => (
                       <StaggerItem key={item.id}>
                         <PublicMenuItemCard
@@ -221,7 +229,8 @@ export function PublicMenuPage({
                   The kitchen lineup is being refreshed.
                 </h3>
                 <p className="mt-4 max-w-2xl text-sm leading-7 text-white/46">
-                  A public menu will appear here as soon as this branch publishes its dishes.
+                  A public menu will appear here as soon as this branch
+                  publishes its dishes.
                 </p>
               </div>
             </FadeIn>
@@ -241,12 +250,12 @@ function MenuCategorySection({
 }) {
   const accentColor =
     accentIndex % 4 === 0
-      ? '#ec4899'
+      ? "#ec4899"
       : accentIndex % 4 === 1
-        ? '#06b6d4'
+        ? "#06b6d4"
         : accentIndex % 4 === 2
-          ? '#8b5cf6'
-          : '#39ff14';
+          ? "#8b5cf6"
+          : "#39ff14";
   const categoryImageUrl = resolvePublicMenuImageUrl(category.imageUrl);
 
   return (
@@ -281,7 +290,11 @@ function MenuCategorySection({
       </FadeIn>
 
       {category.items.length ? (
-        <StaggerGroup className="grid gap-2 lg:grid-cols-2" stagger={0.05} amount={0.08}>
+        <StaggerGroup
+          className="grid gap-2 lg:grid-cols-2"
+          stagger={0.05}
+          amount={0.08}
+        >
           {category.items.map((item, itemIndex) => (
             <StaggerItem key={item.id}>
               <PublicMenuItemCard
@@ -311,11 +324,11 @@ export function PublicMenuStatePage({
   branches = [],
   selectedBranchId = null,
 }: {
-  result: Extract<PublicMenuLoadResult, { status: 'unconfigured' | 'error' }>;
+  result: Extract<PublicMenuLoadResult, { status: "unconfigured" | "error" }>;
   branches?: PublicMenuBranchOption[];
   selectedBranchId?: number | null;
 }) {
-  const isConfigurationIssue = result.status === 'unconfigured';
+  const isConfigurationIssue = result.status === "unconfigured";
 
   return (
     <div className="px-4 pb-24 pt-24 sm:px-6 lg:px-8 lg:pt-28">
@@ -331,8 +344,8 @@ export function PublicMenuStatePage({
 
             <h1 className="font-orbitron text-3xl font-black uppercase text-white sm:text-4xl">
               {isConfigurationIssue
-                ? 'The branch menu is not configured yet.'
-                : 'The branch menu could not be loaded right now.'}
+                ? "The branch menu is not configured yet."
+                : "The branch menu could not be loaded right now."}
             </h1>
             <p className="mt-5 max-w-2xl text-sm leading-7 text-white/48 sm:text-base">
               {result.message}
@@ -371,9 +384,9 @@ export function PublicMenuStatePage({
 }
 
 function formatCurrency(amount: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
     minimumFractionDigits: 2,
   }).format(amount);
 }

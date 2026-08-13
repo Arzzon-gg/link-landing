@@ -35,4 +35,12 @@ export interface PublicMenuData {
   sections: PublicMenuSection[];
   categories: PublicMenuCategory[];
   uncategorizedItems: PublicMenuItem[];
+  promotions: PublicPromotion[];
+}
+
+export interface PublicPromotion {
+  id: number;
+  imageUrl: string;
+  altText: string | null;
+  sortOrder: number;
 }

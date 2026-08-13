@@ -1,14 +1,19 @@
-import { ArcadeBackground } from '@/components/ArcadeBackground';
-import { Navbar } from '@/components/landing/Navbar';
-import { Hero } from '@/components/landing/Hero';
-import { Features } from '@/components/landing/Features';
-import { CallToAction } from '@/components/landing/CallToAction';
-import { DailySpinSection } from '@/components/landing/DailySpinSection';
-import { FeaturesBar } from '@/components/landing/FeaturesBar';
-import { Offers } from '@/components/landing/Offers';
-import { Footer } from '@/components/landing/Footer';
+import { ArcadeBackground } from "@/components/ArcadeBackground";
+import { Navbar } from "@/components/landing/Navbar";
+import { Hero } from "@/components/landing/Hero";
+import { Features } from "@/components/landing/Features";
+import { CallToAction } from "@/components/landing/CallToAction";
+import { DailySpinSection } from "@/components/landing/DailySpinSection";
+import { FeaturesBar } from "@/components/landing/FeaturesBar";
+import { Offers } from "@/components/landing/Offers";
+import { Footer } from "@/components/landing/Footer";
+import { PromotionsCarousel } from "@/components/PromotionsCarousel";
+import { getPublicMenu } from "@/lib/public-menu";
 
-export default function LandingPage() {
+export const dynamic = "force-dynamic";
+
+export default async function LandingPage() {
+  const promotionsResult = await getPublicMenu();
   return (
     <>
       <ArcadeBackground />
@@ -20,6 +25,12 @@ export default function LandingPage() {
         <CallToAction />
         <FeaturesBar />
         <Offers />
+        {promotionsResult.status === "ready" ? (
+          <PromotionsCarousel
+            promotions={promotionsResult.menu.promotions}
+            placement="home"
+          />
+        ) : null}
       </main>
       <Footer />
     </>

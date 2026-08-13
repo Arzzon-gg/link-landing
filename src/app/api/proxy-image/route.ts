@@ -25,8 +25,9 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const imageUrl = searchParams.get('url');
+    const imagePath = searchParams.get('path');
 
-    if (!imageUrl) {
+    if (!imageUrl && !imagePath) {
       return NextResponse.json(
         { error: 'Missing image URL parameter' },
         { status: 400 }
@@ -59,7 +60,9 @@ export async function GET(req: NextRequest) {
 
     try {
       backendUrl = new URL(apiUrl);
-      requestedUrl = new URL(imageUrl);
+      requestedUrl = imagePath
+        ? new URL(imagePath, backendUrl)
+        : new URL(imageUrl!);
     } catch {
       return NextResponse.json(
         { error: 'Invalid image source' },

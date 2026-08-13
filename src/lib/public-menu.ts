@@ -1,23 +1,26 @@
-import 'server-only';
+import "server-only";
 
-import { z } from 'zod';
+import { z } from "zod";
 import type {
   PublicMenuBranch,
   PublicMenuCategory,
   PublicMenuData,
   PublicMenuItem,
   PublicMenuSection,
-} from '@/types/menu';
+  PublicPromotion,
+} from "@/types/menu";
 
 const CLOUDHUB_BASE_URL =
-  process.env.CLOUDHUB_API_URL ?? process.env.NEXT_PUBLIC_CLOUDHUB_API_URL ?? '';
+  process.env.CLOUDHUB_API_URL ??
+  process.env.NEXT_PUBLIC_CLOUDHUB_API_URL ??
+  "";
 const RESTAURANT_PUBLIC_MENU_TOKEN =
-  process.env.RESTAURANT_PUBLIC_MENU_TOKEN ?? '';
-const CONFIGURED_BRANCH_ID = Number(process.env.PUBLIC_MENU_BRANCH_ID ?? '');
+  process.env.RESTAURANT_PUBLIC_MENU_TOKEN ?? "";
+const CONFIGURED_BRANCH_ID = Number(process.env.PUBLIC_MENU_BRANCH_ID ?? "");
 const DEFAULT_BRANCH_NAME =
-  process.env.PUBLIC_MENU_BRANCH_NAME ?? 'The Link Beirut';
+  process.env.PUBLIC_MENU_BRANCH_NAME ?? "The Link Beirut";
 const DEFAULT_BRANCH_LOCATION =
-  process.env.PUBLIC_MENU_BRANCH_LOCATION ?? 'City Center, Beirut';
+  process.env.PUBLIC_MENU_BRANCH_LOCATION ?? "City Center, Beirut";
 
 const branchSchema = z.object({
   id: z.number(),
@@ -55,6 +58,16 @@ const menuResponseSchema = z.object({
   sections: z.array(menuSectionSchema).default([]),
   categories: z.array(menuCategorySchema).default([]),
   uncategorizedItems: z.array(menuItemSchema).default([]),
+  promotions: z
+    .array(
+      z.object({
+        id: z.number(),
+        imageUrl: z.string(),
+        altText: z.string().nullable().optional(),
+        sortOrder: z.number(),
+      }),
+    )
+    .default([]),
 });
 
 type CloudHubBranch = z.infer<typeof branchSchema>;
@@ -76,6 +89,12 @@ type RawMenuCategory = {
   sectionId?: number | null;
   items?: RawMenuItem[];
 };
+type RawPromotion = {
+  id: number;
+  imageUrl: string;
+  altText?: string | null;
+  sortOrder: number;
+};
 type PublicMenuConfig =
   | {
       ok: true;
@@ -89,11 +108,11 @@ type PublicMenuConfig =
 
 export type PublicMenuLoadResult =
   | {
-      status: 'ready';
+      status: "ready";
       menu: PublicMenuData;
     }
   | {
-      status: 'unconfigured' | 'error';
+      status: "unconfigured" | "error";
       message: string;
     };
 
@@ -110,7 +129,7 @@ function getPublicMenuConfig(): PublicMenuConfig {
     return {
       ok: false,
       message:
-        'The public menu is not configured yet. Add CLOUDHUB_API_URL on the server to enable menu sync.',
+        "The public menu is not configured yet. Add CLOUDHUB_API_URL on the server to enable menu sync.",
     };
   }
 
@@ -118,7 +137,7 @@ function getPublicMenuConfig(): PublicMenuConfig {
     return {
       ok: false,
       message:
-        'The public menu branch is missing. Set PUBLIC_MENU_BRANCH_ID on the server to publish one branch menu.',
+        "The public menu branch is missing. Set PUBLIC_MENU_BRANCH_ID on the server to publish one branch menu.",
     };
   }
 
@@ -131,17 +150,17 @@ function getPublicMenuConfig(): PublicMenuConfig {
 
 function buildHeaders() {
   const headers = new Headers();
-  headers.set('Accept', 'application/json');
+  headers.set("Accept", "application/json");
 
   if (RESTAURANT_PUBLIC_MENU_TOKEN) {
-    headers.set('Authorization', `Bearer ${RESTAURANT_PUBLIC_MENU_TOKEN}`);
+    headers.set("Authorization", `Bearer ${RESTAURANT_PUBLIC_MENU_TOKEN}`);
   }
 
   return headers;
 }
 
 async function extractErrorMessage(response: Response) {
-  const raw = await response.text().catch(() => '');
+  const raw = await response.text().catch(() => "");
 
   if (!raw) {
     return `Request failed with status ${response.status}.`;
@@ -165,9 +184,9 @@ async function requestJson<T>(
   path: string,
   schema: z.ZodSchema<T>,
 ): Promise<T> {
-  const normalizedBase = apiBaseUrl.replace(/\/+$/, '');
+  const normalizedBase = apiBaseUrl.replace(/\/+$/, "");
   const response = await fetch(`${normalizedBase}${path}`, {
-    method: 'GET',
+    method: "GET",
     headers: buildHeaders(),
     next: { revalidate: 300 },
   });
@@ -186,7 +205,7 @@ async function listBranches(apiBaseUrl: string) {
   try {
     const live = await requestJson(
       apiBaseUrl,
-      '/branches/live',
+      "/branches/live",
       z.array(branchSchema),
     );
     if (live.length > 0) {
@@ -196,7 +215,7 @@ async function listBranches(apiBaseUrl: string) {
     // fall through to the full list
   }
 
-  return requestJson(apiBaseUrl, '/branches', z.array(branchSchema));
+  return requestJson(apiBaseUrl, "/branches", z.array(branchSchema));
 }
 
 async function getConfiguredBranch(
@@ -211,7 +230,7 @@ async function getConfiguredBranch(
       return {
         id: selectedBranch.id,
         name: selectedBranch.name,
-        location: selectedBranch.location ?? '',
+        location: selectedBranch.location ?? "",
       };
     }
   } catch {
@@ -225,9 +244,7 @@ async function getConfiguredBranch(
   };
 }
 
-function sanitizeItems(
-  items: RawMenuItem[] = [],
-): PublicMenuItem[] {
+function sanitizeItems(items: RawMenuItem[] = []): PublicMenuItem[] {
   return items
     .slice()
     .sort((left, right) => left.sortOrder - right.sortOrder)
@@ -259,7 +276,7 @@ function sanitizeCategories(
 }
 
 function sanitizeSections(
-  sections: CloudHubMenuResponse['sections'] = [],
+  sections: CloudHubMenuResponse["sections"] = [],
 ): PublicMenuSection[] {
   return sections
     .slice()
@@ -268,6 +285,22 @@ function sanitizeSections(
       id: section.id,
       name: section.name,
       sortOrder: section.sortOrder,
+    }));
+}
+
+function sanitizePromotions(
+  promotions: RawPromotion[] = [],
+): PublicPromotion[] {
+  return promotions
+    .slice()
+    .sort(
+      (left, right) => left.sortOrder - right.sortOrder || left.id - right.id,
+    )
+    .map((promotion) => ({
+      id: promotion.id,
+      imageUrl: promotion.imageUrl,
+      altText: promotion.altText ?? null,
+      sortOrder: promotion.sortOrder,
     }));
 }
 
@@ -285,7 +318,7 @@ export async function getPublicBranches(): Promise<PublicMenuBranchOption[]> {
     // connectivity), so use the full list rather than only live branches.
     const branches = await requestJson(
       apiBaseUrl,
-      '/branches',
+      "/branches",
       z.array(branchSchema),
     );
     return branches
@@ -293,7 +326,7 @@ export async function getPublicBranches(): Promise<PublicMenuBranchOption[]> {
       .map((branch) => ({
         id: branch.id,
         name: branch.name,
-        location: branch.location ?? '',
+        location: branch.location ?? "",
       }))
       .sort((left, right) => left.name.localeCompare(right.name));
   } catch {
@@ -310,13 +343,13 @@ export async function getPublicMenu(
 
   if (!config.ok) {
     return {
-      status: 'unconfigured',
+      status: "unconfigured",
       message: config.message,
     };
   }
 
   const branchId =
-    typeof requestedBranchId === 'number' &&
+    typeof requestedBranchId === "number" &&
     Number.isFinite(requestedBranchId) &&
     requestedBranchId > 0
       ? requestedBranchId
@@ -333,23 +366,24 @@ export async function getPublicMenu(
     ]);
 
     return {
-      status: 'ready',
+      status: "ready",
       menu: {
         branch,
         generatedAtUtc: menu.generatedAtUtc,
         sections: sanitizeSections(menu.sections ?? []),
         categories: sanitizeCategories(menu.categories ?? []),
         uncategorizedItems: sanitizeItems(menu.uncategorizedItems ?? []),
+        promotions: sanitizePromotions(menu.promotions ?? []),
       },
     };
   } catch (error) {
     const message =
       error instanceof Error
         ? error.message
-        : 'The public menu could not be loaded right now.';
+        : "The public menu could not be loaded right now.";
 
     return {
-      status: 'error',
+      status: "error",
       message,
     };
   }
@@ -360,7 +394,7 @@ export function resolvePublicMenuImageUrl(imageUrl?: string | null) {
     return null;
   }
 
-  if (imageUrl.startsWith('/images/')) {
+  if (imageUrl.startsWith("/images/")) {
     return imageUrl;
   }
 
@@ -370,11 +404,11 @@ export function resolvePublicMenuImageUrl(imageUrl?: string | null) {
     return null;
   }
 
-  const normalizedBase = config.apiBaseUrl.replace(/\/+$/, '');
+  const normalizedBase = config.apiBaseUrl.replace(/\/+$/, "");
 
   // Backend images are served over HTTP, but the landing site is HTTPS.
   // Proxy them through our own origin so browsers do not block mixed content.
-  if (imageUrl.startsWith('/')) {
+  if (imageUrl.startsWith("/")) {
     const fullUrl = `${normalizedBase}${imageUrl}`;
     const params = new URLSearchParams({ url: fullUrl });
     return `/api/proxy-image?${params.toString()}`;
@@ -393,17 +427,20 @@ export function resolvePublicMenuImageUrl(imageUrl?: string | null) {
     return imageUrl;
   }
 
-  const normalizedPath = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
+  const normalizedPath = imageUrl.startsWith("/") ? imageUrl : `/${imageUrl}`;
   const fullUrl = `${normalizedBase}${normalizedPath}`;
   const params = new URLSearchParams({ url: fullUrl });
   return `/api/proxy-image?${params.toString()}`;
 }
 
-export function buildMenuCategoryAnchor(categoryName: string, categoryId: number) {
+export function buildMenuCategoryAnchor(
+  categoryName: string,
+  categoryId: number,
+) {
   const slug = categoryName
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
   return `menu-category-${slug || categoryId}-${categoryId}`;
 }
