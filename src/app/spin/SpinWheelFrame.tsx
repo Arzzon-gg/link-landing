@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { GuestClaimPrompt, type GuestWheelReward } from '@/components/spin/GuestClaimPrompt';
+import { RouteLoading } from '@/components/RouteLoading';
 
 type SpinWheelFrameProps = {
   wheelUrl: string;
@@ -20,6 +21,7 @@ export function SpinWheelFrame({ wheelUrl, isGuest = false }: SpinWheelFrameProp
   const router = useRouter();
   const [guestReward, setGuestReward] = useState<GuestWheelReward | null>(null);
   const [guestFinished, setGuestFinished] = useState(false);
+  const [wheelLoaded, setWheelLoaded] = useState(false);
 
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
@@ -51,13 +53,15 @@ export function SpinWheelFrame({ wheelUrl, isGuest = false }: SpinWheelFrameProp
 
   return (
     <div className="relative h-full w-full">
-      <iframe
-        src={wheelUrl}
-        title="Daily spin wheel"
-        className="h-full w-full"
-        style={{ border: 0 }}
-        allow="clipboard-write"
-      />
+        <iframe
+          src={wheelUrl}
+          title="Daily spin wheel"
+          className="h-full w-full"
+          style={{ border: 0 }}
+          allow="clipboard-write"
+          onLoad={() => setWheelLoaded(true)}
+        />
+      {!wheelLoaded && <RouteLoading label="Loading your daily spin" overlay />}
       {guestFinished && (
         <GuestClaimPrompt
           reward={guestReward}
