@@ -70,7 +70,7 @@ export function NavbarClient({ session }: NavbarClientProps) {
                 alt="The Link Diner & Bowling logo"
                 width={100}
                 height={40}
-                className="object-contain"
+                className="h-auto w-[84px] object-contain lg:w-[100px]"
               />
             </div>
           </Link>
