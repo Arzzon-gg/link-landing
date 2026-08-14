@@ -5,7 +5,6 @@ import { Features } from "@/components/landing/Features";
 import { CallToAction } from "@/components/landing/CallToAction";
 import { DailySpinSection } from "@/components/landing/DailySpinSection";
 import { FeaturesBar } from "@/components/landing/FeaturesBar";
-import { Offers } from "@/components/landing/Offers";
 import { Footer } from "@/components/landing/Footer";
 import { PromotionsCarousel } from "@/components/PromotionsCarousel";
 import { getPublicMenu } from "@/lib/public-menu";
@@ -24,7 +23,6 @@ export default async function LandingPage() {
         <DailySpinSection />
         <CallToAction />
         <FeaturesBar />
-        <Offers />
         {promotionsResult.status === "ready" ? (
           <PromotionsCarousel
             promotions={promotionsResult.menu.promotions}
