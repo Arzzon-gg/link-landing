@@ -95,7 +95,7 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#020209]/36 via-transparent to-[#020209]/58" />
       <div className="hero-light-sweep pointer-events-none absolute inset-0 opacity-70" />
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 py-20 sm:px-6 lg:px-8 lg:py-28">
         <div className="max-w-[580px]">
           <StaggerGroup className="space-y-6" delayChildren={0.08} stagger={0.1}>
             <StaggerItem>
