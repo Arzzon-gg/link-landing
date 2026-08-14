@@ -168,9 +168,9 @@ export function NavbarClient({ session }: NavbarClientProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-            className="border-t border-white/10 bg-[#02020f]/98 px-6 py-6 backdrop-blur-sm lg:hidden"
+            className="absolute inset-x-0 top-full max-h-[calc(100dvh-4rem)] overflow-y-auto rounded-b-[1.75rem] border-t border-white/10 bg-[rgba(2,2,15,0.99)] px-6 py-7 shadow-[0_24px_60px_rgba(0,0,0,0.7)] lg:hidden"
           >
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-3">
               {navLinks.map((link, index) => (
                 <motion.div
                   key={link.href}
@@ -182,7 +182,12 @@ export function NavbarClient({ session }: NavbarClientProps) {
                   <Link
                     href={link.href}
                     onClick={() => setMobileOpen(false)}
-                    className="text-sm font-bold uppercase tracking-[0.15em] text-white/65 transition-colors hover:text-white"
+                    className={cn(
+                      'block rounded-xl px-3 py-3 text-sm font-bold uppercase tracking-[0.18em] transition-colors',
+                      isActive(link.activePath)
+                        ? 'bg-white/[0.08] text-white'
+                        : 'text-white/65 hover:bg-white/[0.05] hover:text-white'
+                    )}
                   >
                     {link.label}
                   </Link>
@@ -194,7 +199,7 @@ export function NavbarClient({ session }: NavbarClientProps) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ delay: 0.12, duration: 0.22 }}
-                className="grid gap-3"
+                className="mt-3 grid gap-3 border-t border-white/10 pt-5"
               >
                 {isSignedIn ? (
                   <>
