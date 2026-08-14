@@ -97,13 +97,6 @@ export function Hero() {
 
       <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <div className="max-w-[580px]">
-          <FadeIn delay={0.05}>
-            <div className="mb-4 inline-flex items-center gap-3 rounded-full border border-white/12 bg-white/[0.03] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.34em] text-white/58 shadow-[0_0_32px_rgba(6,182,212,0.08)] backdrop-blur-sm">
-              <span className="h-2 w-2 rounded-full bg-green-400 shadow-[0_0_14px_rgba(74,222,128,0.85)]" />
-              Beirut's social arcade
-            </div>
-          </FadeIn>
-
           <StaggerGroup className="space-y-6" delayChildren={0.08} stagger={0.1}>
             <StaggerItem>
               <div className="space-y-1">
@@ -135,7 +128,7 @@ export function Hero() {
                   CREATE YOUR ACCOUNT <span className="text-base leading-none">&gt;</span>
                 </Link>
                 <Link
-                  href="#activities"
+                  href="/packages"
                   className="button-sheen inline-flex items-center gap-2 overflow-hidden rounded-full border border-white/40 bg-white/[0.02] px-7 py-3.5 text-[11px] font-black uppercase tracking-widest text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-cyan-300 hover:bg-white/[0.06] hover:shadow-[0_0_28px_rgba(34,211,238,0.18)]"
                 >
                   EXPLORE ACTIVITIES <span className="text-base leading-none">&gt;</span>
@@ -144,22 +137,6 @@ export function Hero() {
             </StaggerItem>
           </StaggerGroup>
 
-          <StaggerGroup
-            className="mt-10 flex flex-wrap gap-x-4 gap-y-3 sm:gap-x-7"
-            delayChildren={0.28}
-            stagger={0.08}
-          >
-            {badges.map((badge) => (
-              <StaggerItem key={badge.label}>
-                <div className="group flex items-center gap-2 rounded-full border border-white/8 bg-white/[0.03] px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-white/60 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-cyan-400/30 hover:bg-white/[0.05] hover:text-white">
-                  <span className="text-cyan-300 transition-transform duration-300 group-hover:scale-110">
-                    {badge.icon}
-                  </span>
-                  {badge.label}
-                </div>
-              </StaggerItem>
-            ))}
-          </StaggerGroup>
         </div>
       </div>
     </section>

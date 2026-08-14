@@ -128,7 +128,7 @@ export function Features() {
 
         <FadeIn className="mt-10 text-center" delay={0.08}>
           <Link
-            href="#activities"
+            href="/packages"
             className="button-sheen inline-block overflow-hidden border border-white/20 px-8 py-3 text-[11px] font-black uppercase tracking-[0.28em] text-white/75 transition-all duration-300 hover:-translate-y-0.5 hover:border-cyan-300/60 hover:bg-white/[0.03] hover:text-white hover:shadow-[0_0_28px_rgba(34,211,238,0.18)]"
           >
             VIEW ALL ACTIVITIES

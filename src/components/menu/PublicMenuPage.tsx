@@ -44,7 +44,7 @@ export function PublicMenuPage({
 
   return (
     <div className="relative">
-      <section className="relative flex min-h-[300px] items-center justify-center overflow-hidden px-4 pt-16 sm:min-h-[340px] sm:px-6 lg:min-h-[380px] lg:px-8 lg:pt-20">
+      <section className="relative flex min-h-[380px] items-center justify-center overflow-hidden px-4 pt-16 sm:min-h-[440px] sm:px-6 lg:min-h-[520px] lg:px-8 lg:pt-20">
         <Image
           src="/images/hero-menu.png"
           alt=""
@@ -73,13 +73,6 @@ export function PublicMenuPage({
                   arcade atmosphere.
                 </span>
               </h1>
-            </StaggerItem>
-
-            <StaggerItem>
-              <p className="mx-auto max-w-2xl text-sm leading-7 text-white/48 sm:text-base">
-                Browse bold plates, comfort favorites, and colorful signatures
-                in a display that feels as electric as the venue itself.
-              </p>
             </StaggerItem>
 
             {branches.length > 1 ? (
@@ -136,16 +129,12 @@ export function PublicMenuPage({
                   <FadeIn className="rounded-[2rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(12,12,28,0.96),rgba(7,7,14,0.98))] px-6 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.24)] sm:px-8">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                       <div>
-                        <p className="font-orbitron text-[10px] font-black uppercase tracking-[0.3em] text-cyan-300">
-                          Menu section
-                        </p>
-                        <h2 className="mt-3 font-orbitron text-3xl font-black uppercase text-white">
+                        <h2 className="font-orbitron text-3xl font-black uppercase text-white">
                           {section.name}
                         </h2>
                       </div>
-                      <p className="text-sm leading-7 text-white/42">
-                        {section.categories.length} categories published in this
-                        lineup.
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/42">
+                        {section.categories.length} categories
                       </p>
                     </div>
                   </FadeIn>

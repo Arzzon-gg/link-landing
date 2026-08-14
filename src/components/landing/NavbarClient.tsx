@@ -26,7 +26,6 @@ export function NavbarClient({ session }: NavbarClientProps) {
   const pathname = usePathname();
   const router = useRouter();
   const isSignupPage = pathname === '/signup';
-  const isLoginPage = pathname === '/login';
   const isSignedIn = !!session;
 
   useEffect(() => {
@@ -130,8 +129,8 @@ export function NavbarClient({ session }: NavbarClientProps) {
                   href="/login"
                   className={cn(
                     'button-sheen inline-flex overflow-hidden rounded-full border px-5 py-2.5 text-[11px] font-black uppercase tracking-widest transition-all duration-300',
-                    isLoginPage
-                      ? 'border-cyan-400/28 bg-cyan-400/10 text-cyan-300 shadow-[0_0_20px_rgba(34,211,238,0.14)]'
+                    isSignupPage
+                      ? 'border-cyan-300/40 bg-gradient-to-r from-cyan-500 via-sky-500 to-violet-600 text-white shadow-[0_0_28px_rgba(34,211,238,0.42)] hover:-translate-y-0.5 hover:shadow-[0_0_40px_rgba(34,211,238,0.62)]'
                       : 'border-white/16 bg-white/[0.03] text-white/78 hover:-translate-y-0.5 hover:border-cyan-400/35 hover:text-cyan-300 hover:shadow-[0_0_26px_rgba(34,211,238,0.16)]'
                   )}
                 >
@@ -232,8 +231,8 @@ export function NavbarClient({ session }: NavbarClientProps) {
                       onClick={() => setMobileOpen(false)}
                       className={cn(
                         'button-sheen inline-flex w-full justify-center overflow-hidden rounded-full border px-5 py-3 text-center text-sm font-black uppercase tracking-widest transition-all duration-300',
-                        isLoginPage
-                          ? 'border-cyan-400/28 bg-cyan-400/10 text-cyan-300'
+                        isSignupPage
+                          ? 'border-cyan-300/40 bg-gradient-to-r from-cyan-500 via-sky-500 to-violet-600 text-white shadow-[0_0_26px_rgba(34,211,238,0.4)]'
                           : 'border-white/16 bg-white/[0.03] text-white/84'
                       )}
                     >
@@ -244,7 +243,7 @@ export function NavbarClient({ session }: NavbarClientProps) {
                       onClick={() => setMobileOpen(false)}
                       className={cn(
                         'button-sheen inline-flex w-full justify-center overflow-hidden rounded-full px-5 py-3 text-center text-sm font-black uppercase tracking-widest',
-                        isSignupPage
+                        !isSignupPage
                           ? 'border border-white/16 bg-white/[0.04] text-white'
                           : 'bg-gradient-to-r from-pink-600 to-violet-600 text-white shadow-[0_0_20px_rgba(236,72,153,0.35)]'
                       )}
