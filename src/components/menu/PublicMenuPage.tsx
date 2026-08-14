@@ -43,7 +43,7 @@ export function PublicMenuPage({
   );
 
   return (
-    <div className="relative">
+    <div className="relative min-w-0 overflow-x-clip">
       <section className="relative flex min-h-[380px] items-center justify-center overflow-hidden px-4 pt-16 sm:min-h-[440px] sm:px-6 lg:min-h-[520px] lg:px-8 lg:pt-20">
         <Image
           src="/images/hero-menu.png"
@@ -90,7 +90,7 @@ export function PublicMenuPage({
       <PromotionsCarousel promotions={menu.promotions} placement="menu" />
 
       <section id="menu-categories" className="px-4 pb-24 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
+        <div className="mx-auto min-w-0 max-w-7xl">
           <FadeIn className="mb-10 text-center">
             <div className="flex items-center justify-center gap-5">
               <div className="h-px w-16 bg-gradient-to-r from-transparent to-cyan-400/60 sm:w-24" />
@@ -125,7 +125,7 @@ export function PublicMenuPage({
           {menu.categories.length || menu.uncategorizedItems.length ? (
             <div className="space-y-16">
               {visibleSections.map((section) => (
-                <section key={section.id} className="space-y-10">
+                <section key={section.id} className="min-w-0 space-y-10">
                   <FadeIn className="rounded-[2rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(12,12,28,0.96),rgba(7,7,14,0.98))] px-6 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.24)] sm:px-8">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                       <div>
@@ -193,7 +193,7 @@ export function PublicMenuPage({
                     amount={0.08}
                   >
                     {menu.uncategorizedItems.map((item) => (
-                      <StaggerItem key={item.id}>
+                      <StaggerItem key={item.id} className="min-w-0">
                         <PublicMenuItemCard
                           item={item}
                           category="Uncategorized"
@@ -250,7 +250,7 @@ function MenuCategorySection({
   return (
     <section
       id={buildMenuCategoryAnchor(category.name, category.id)}
-      className="scroll-mt-28"
+      className="min-w-0 scroll-mt-28"
     >
       <FadeIn className="mb-7 flex items-center gap-4">
         {categoryImageUrl ? (
@@ -262,7 +262,7 @@ function MenuCategorySection({
             className="h-24 w-24 flex-shrink-0 rounded-2xl border border-white/10 object-cover shadow-[0_0_28px_rgba(0,0,0,0.50)] sm:h-32 sm:w-32"
           />
         ) : null}
-        <div>
+          <div className="min-w-0">
           <div className="mb-2 flex items-center gap-3">
             <span
               className="h-2.5 w-2.5 rounded-full shadow-[0_0_18px_rgba(255,255,255,0.25)]"
@@ -285,7 +285,7 @@ function MenuCategorySection({
           amount={0.08}
         >
           {category.items.map((item, itemIndex) => (
-            <StaggerItem key={item.id}>
+            <StaggerItem key={item.id} className="min-w-0">
               <PublicMenuItemCard
                 item={item}
                 category={category.name}
