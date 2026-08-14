@@ -84,7 +84,7 @@ export function Hero() {
         src="/images/hero.png"
         alt="The Link Diner & Bowling arcade experience"
         fill
-        className="scale-[1.02] object-cover object-center"
+        className="scale-[1.02] object-cover object-[38%_center] lg:object-center"
         priority
       />
 
