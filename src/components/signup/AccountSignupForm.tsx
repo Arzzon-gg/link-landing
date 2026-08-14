@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, ChevronLeft, Eye, EyeOff } from 'lucide-react';
+import { AlertCircle, ChevronLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -243,6 +243,7 @@ function CreateAccountForm() {
               disabled={isSubmitting}
               className="button-sheen inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-gradient-to-r from-pink-600 via-fuchsia-600 to-violet-600 px-6 py-4 text-[11px] font-black uppercase tracking-[0.3em] text-white shadow-[0_0_28px_rgba(236,72,153,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_46px_rgba(236,72,153,0.58)] disabled:cursor-not-allowed disabled:opacity-70"
             >
+              {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
               {isSubmitting ? 'Creating account...' : 'Create account'}
             </button>
           </motion.div>
@@ -352,6 +353,7 @@ function CompleteProfileForm({ session }: { session: AccountLoginSession }) {
             disabled={isSubmitting}
             className="button-sheen inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-gradient-to-r from-cyan-500 via-sky-500 to-violet-600 px-6 py-4 text-[11px] font-black uppercase tracking-[0.3em] text-white shadow-[0_0_28px_rgba(34,211,238,0.32)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_46px_rgba(34,211,238,0.52)] disabled:cursor-not-allowed disabled:opacity-70"
           >
+            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
             {isSubmitting ? 'Saving profile...' : 'Complete profile'}
           </button>
         </motion.div>
