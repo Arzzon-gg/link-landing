@@ -26,6 +26,8 @@ const branchSchema = z.object({
   id: z.number(),
   name: z.string(),
   location: z.string().nullable().optional(),
+  latitude: z.number().nullable().optional(),
+  longitude: z.number().nullable().optional(),
 });
 
 const menuItemSchema = z.object({
@@ -120,6 +122,8 @@ export interface PublicMenuBranchOption {
   id: number;
   name: string;
   location: string;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 function getPublicMenuConfig(): PublicMenuConfig {
@@ -327,6 +331,8 @@ export async function getPublicBranches(): Promise<PublicMenuBranchOption[]> {
         id: branch.id,
         name: branch.name,
         location: branch.location ?? "",
+        latitude: branch.latitude ?? null,
+        longitude: branch.longitude ?? null,
       }))
       .sort((left, right) => left.name.localeCompare(right.name));
   } catch {
