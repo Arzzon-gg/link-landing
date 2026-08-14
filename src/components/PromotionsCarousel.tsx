@@ -131,7 +131,7 @@ export function PromotionsCarousel({
                 key={promotion.id}
                 aria-roledescription="slide"
                 aria-label={`${index + 1} of ${visiblePromotions.length}`}
-                className="relative h-52 min-w-full snap-start overflow-hidden bg-white/[0.04] shadow-[0_20px_60px_rgba(0,0,0,0.35)] sm:h-64 lg:h-72"
+                className="relative aspect-video min-w-full snap-start overflow-hidden bg-white/[0.04] shadow-[0_20px_60px_rgba(0,0,0,0.35)]"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
