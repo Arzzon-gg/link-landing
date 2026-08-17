@@ -207,8 +207,9 @@ export function AccountLoginForm() {
 
       <p className="mt-6 text-center text-xs text-white/34">
         Just here to try it?{' '}
-        <Link href="/spin?guest=1" className="font-semibold text-cyan-300 transition-colors hover:text-cyan-200">
-          Continue as guest
+        {/* Guests browse the menu; the daily wheel needs an account. */}
+        <Link href="/menu" className="font-semibold text-cyan-300 transition-colors hover:text-cyan-200">
+          Browse as guest
         </Link>
       </p>
     </div>
