@@ -2,17 +2,17 @@
 
 import { useEffect, useState } from 'react';
 import { FadeIn } from '@/components/Reveal';
-import { GuestClaimPrompt, type GuestWheelReward } from '@/components/spin/GuestClaimPrompt';
+import { SpinSignInGate } from '@/components/spin/SpinSignInGate';
 import { buildGuestWheelUrl } from '@/lib/wheel';
 
 /**
  * Landing-page daily wheel — the same wheel the apps embed on Home, so it is
  * present from the start rather than hidden behind a call to action.
  *
- * It runs against CloudHub's public wheel endpoints: a visitor can spin as
- * often as they like, but the reward they land on is a preview and is never
- * credited. Claiming requires an account, which is what [GuestClaimPrompt]
- * pushes once a spin finishes.
+ * A visitor sees the real wheel with the real rewards on it, but cannot spin
+ * it: the embedded module posts `link-wheel:login-required` the moment they
+ * tap, and this shows the sign-up / log-in prompt instead. Nothing is ever
+ * spun for a guest, so there is no reward to take away from them afterwards.
  *
  * Mobile viewports only. The wheel is drawn for a phone-shaped frame — the
  * apps only ever render it at that width — and stretching it across a desktop
@@ -27,8 +27,7 @@ import { buildGuestWheelUrl } from '@/lib/wheel';
  * never starts.
  */
 export function DailySpinSection() {
-  const [reward, setReward] = useState<GuestWheelReward | null>(null);
-  const [finished, setFinished] = useState(false);
+  const [signInAsked, setSignInAsked] = useState(false);
 
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
@@ -40,10 +39,9 @@ export function DailySpinSection() {
       if (
         data &&
         typeof data === 'object' &&
-        (data as { type?: unknown }).type === 'link-wheel:finished'
+        (data as { type?: unknown }).type === 'link-wheel:login-required'
       ) {
-        setReward((data as { reward?: GuestWheelReward }).reward ?? null);
-        setFinished(true);
+        setSignInAsked(true);
       }
     }
 
@@ -70,11 +68,8 @@ export function DailySpinSection() {
             className="h-[560px] w-full sm:h-[620px]"
             style={{ border: 0 }}
           />
-          {finished && (
-            <GuestClaimPrompt
-              reward={reward}
-              onDismiss={() => setFinished(false)}
-            />
+          {signInAsked && (
+            <SpinSignInGate onDismiss={() => setSignInAsked(false)} />
           )}
         </div>
       </div>

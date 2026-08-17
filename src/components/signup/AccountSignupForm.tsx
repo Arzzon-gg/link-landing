@@ -148,11 +148,12 @@ function CreateAccountForm() {
 
           <motion.p variants={rowVariants} className="text-center text-xs text-white/34">
             Just here to try it?{' '}
+            {/* Guests browse the menu; the daily wheel needs an account. */}
             <Link
-              href="/spin?guest=1"
+              href="/menu"
               className="font-semibold text-cyan-300 transition-colors hover:text-cyan-200"
             >
-              Continue as guest
+              Browse as guest
             </Link>
           </motion.p>
         </motion.div>

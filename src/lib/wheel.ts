@@ -30,14 +30,19 @@ export function buildWheelUrl(session: WheelLaunchSession): string {
 }
 
 /**
- * Builds the embedded wheel URL for an unauthenticated guest preview — no
- * token, so the Flutter module talks to CloudHub's public wheel endpoints and
- * nothing spun is claimable until the player signs up or logs in.
+ * Builds the embedded wheel URL for a signed-out visitor — no token, so the
+ * Flutter module reads the wheel from CloudHub's public endpoint. The real
+ * rewards are shown, but it cannot be spun: a spin attempt posts
+ * `link-wheel:login-required` to this page instead (see DailySpinSection).
+ *
+ * `compact` keeps it to the wheel alone — a visitor has no spin history or
+ * "today's reward" to show.
  */
 export function buildGuestWheelUrl(branchId: number = WHEEL_BRANCH_ID): string {
   const params = new URLSearchParams({
     guest: 'true',
     branchId: String(branchId),
+    compact: 'true',
   });
   return `/wheel/index.html?${params.toString()}`;
 }

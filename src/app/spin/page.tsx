@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { ACCOUNT_SESSION_COOKIE_NAME } from '@/lib/account-auth';
 import { getCurrentAccountSession } from '@/lib/account-session';
-import { buildGuestWheelUrl, buildWheelUrl } from '@/lib/wheel';
+import { buildWheelUrl } from '@/lib/wheel';
 import { SpinWheelFrame } from './SpinWheelFrame';
 
 export const metadata: Metadata = {
@@ -11,32 +11,20 @@ export const metadata: Metadata = {
   description: 'Spin the daily wheel for a reward.',
 };
 
-type SpinPageProps = {
-  searchParams: Promise<{ guest?: string }>;
-};
-
 // Full-screen wheel launched right after signup. Reads the player's session
 // from the auth cookie (set by both the email signup and Google login flows)
 // and hands it to the embedded Flutter wheel so it opens already authenticated.
 //
-// A visitor who followed "Continue as guest" (?guest=1) skips the login
-// redirect and gets an unauthenticated preview of the wheel instead — see
-// buildGuestWheelUrl and the guest branch in SpinWheelFrame.
-export default async function SpinPage({ searchParams }: SpinPageProps) {
-  const { guest } = await searchParams;
+// Signed-in only. A visitor without a session — including one following an old
+// `?guest=1` link — is sent to log in; the landing page is where they get to
+// see the wheel, which shows them the real rewards but answers a tap with a
+// sign-in prompt rather than a spin (see DailySpinSection).
+export default async function SpinPage() {
   const session = await getCurrentAccountSession();
   const token = (await cookies()).get(ACCOUNT_SESSION_COOKIE_NAME)?.value?.trim();
 
   if (!session || !token) {
-    if (guest !== '1') {
-      redirect('/login');
-    }
-
-    return (
-      <main className="fixed inset-0 bg-black">
-        <SpinWheelFrame wheelUrl={buildGuestWheelUrl()} isGuest />
-      </main>
-    );
+    redirect('/login');
   }
 
   const wheelUrl = buildWheelUrl({

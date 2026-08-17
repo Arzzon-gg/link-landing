@@ -2,32 +2,24 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { Lock } from 'lucide-react';
 
-export type GuestWheelReward = {
-  label?: string;
-  rewardDisplayValue?: string;
-  colorHex?: string;
-  isWinning?: boolean;
-};
-
-type GuestClaimPromptProps = {
-  reward: GuestWheelReward | null;
+type SpinSignInGateProps = {
   /**
-   * Returns to the wheel. Guest spins cost nothing, so this prompt must be
-   * escapable — without it the nudge would consume the very spin the guest is
-   * being told they didn't get.
+   * Closes the prompt and returns to the wheel. Nothing was spent to get here
+   * — the visitor only tapped a wheel they were never able to spin — so this
+   * must be escapable rather than a wall.
    */
   onDismiss?: () => void;
 };
 
 /**
- * Shown after a guest finishes (or closes) the preview wheel. Guest spins are
- * never saved to an account, so this replaces the normal /menu redirect with a
- * signup/login nudge instead of silently dropping whatever they won.
+ * Shown when a signed-out visitor tries to spin the embedded wheel. The wheel
+ * behind it is real and its rewards are real; what needs an account is landing
+ * on one. So this asks for the account instead of running a spin whose prize
+ * would then have to be taken back.
  */
-export function GuestClaimPrompt({ reward, onDismiss }: GuestClaimPromptProps) {
-  const won = reward?.isWinning && reward.label;
-
+export function SpinSignInGate({ onDismiss }: SpinSignInGateProps) {
   return (
     <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/80 px-4 backdrop-blur-sm">
       <motion.div
@@ -36,27 +28,21 @@ export function GuestClaimPrompt({ reward, onDismiss }: GuestClaimPromptProps) {
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         className="w-full max-w-md rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(11,13,23,0.97),rgba(8,9,18,0.96))] p-8 text-center shadow-[0_0_60px_rgba(34,211,238,0.15)]"
       >
-        <p className="font-orbitron text-[10px] font-black uppercase tracking-[0.3em] text-cyan-300/80">
-          Guest preview
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-cyan-400/12">
+          <Lock className="h-7 w-7 text-cyan-300" strokeWidth={2.2} />
+        </div>
+
+        <p className="mt-5 font-orbitron text-[10px] font-black uppercase tracking-[0.3em] text-cyan-300/80">
+          Members only
         </p>
 
         <h2 className="mt-3 font-orbitron text-2xl font-black uppercase leading-tight text-white sm:text-3xl">
-          {won ? reward!.label : 'Ready for the real spin?'}
+          Sign in to spin
         </h2>
 
-        {reward?.rewardDisplayValue && (
-          <p
-            className="mt-2 text-lg font-bold"
-            style={{ color: reward.colorHex ?? '#22d3ee' }}
-          >
-            {reward.rewardDisplayValue}
-          </p>
-        )}
-
         <p className="mx-auto mt-4 max-w-sm text-sm leading-6 text-white/50">
-          {won
-            ? 'Guest spins are just a preview — sign up or log in to claim this reward and unlock unlimited daily spins.'
-            : 'Create a real account to unlock unlimited daily spins and claim whatever you win.'}
+          The daily wheel is part of your Link account. Sign up or log in to
+          spin it — and to keep whatever it lands on.
         </p>
 
         <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
@@ -64,7 +50,7 @@ export function GuestClaimPrompt({ reward, onDismiss }: GuestClaimPromptProps) {
             href="/signup"
             className="button-sheen inline-flex items-center justify-center gap-2 overflow-hidden rounded-2xl bg-gradient-to-r from-cyan-500 via-sky-500 to-violet-600 px-6 py-4 text-[11px] font-black uppercase tracking-[0.3em] text-white shadow-[0_0_28px_rgba(34,211,238,0.32)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_46px_rgba(34,211,238,0.52)]"
           >
-            Sign up to claim
+            Sign up
           </Link>
           <Link
             href="/login"
@@ -80,7 +66,7 @@ export function GuestClaimPrompt({ reward, onDismiss }: GuestClaimPromptProps) {
             onClick={onDismiss}
             className="mt-5 block w-full text-xs text-white/34 transition-colors hover:text-white/60"
           >
-            Keep spinning
+            Maybe later
           </button>
         )}
 
