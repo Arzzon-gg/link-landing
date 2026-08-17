@@ -38,6 +38,8 @@ const menuItemSchema = z.object({
   isAvailable: z.boolean(),
   sortOrder: z.number(),
   imageUrl: z.string().nullable().optional(),
+  isCombo: z.boolean().default(false),
+  comboItems: z.array(z.object({ id: z.number(), name: z.string() })).default([]),
 });
 
 const menuCategorySchema = z.object({
@@ -82,6 +84,8 @@ type RawMenuItem = {
   isAvailable: boolean;
   sortOrder: number;
   imageUrl?: string | null;
+  isCombo?: boolean;
+  comboItems?: { id: number; name: string }[];
 };
 type RawMenuCategory = {
   id: number;
@@ -260,6 +264,8 @@ function sanitizeItems(items: RawMenuItem[] = []): PublicMenuItem[] {
       isAvailable: item.isAvailable,
       sortOrder: item.sortOrder,
       imageUrl: item.imageUrl ?? null,
+      isCombo: item.isCombo ?? false,
+      comboItems: item.comboItems ?? [],
     }));
 }
 

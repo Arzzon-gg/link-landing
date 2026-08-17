@@ -6,6 +6,13 @@ export interface PublicMenuItem {
   isAvailable: boolean;
   sortOrder: number;
   imageUrl: string | null;
+  isCombo: boolean;
+  comboItems: PublicMenuComboItem[];
+}
+
+export interface PublicMenuComboItem {
+  id: number;
+  name: string;
 }
 
 export interface PublicMenuCategory {
