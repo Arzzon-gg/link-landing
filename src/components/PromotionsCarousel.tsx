@@ -140,11 +140,13 @@ export function PromotionsCarousel({
                   loading={placement === "menu" || index === 0 ? "eager" : "lazy"}
                   className="h-full w-full object-cover"
                 />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#020209]/72 via-transparent to-transparent" />
-                {promotion.altText ? (
-                  <p className="absolute bottom-5 left-5 right-5 font-orbitron text-sm font-black uppercase tracking-[0.12em] text-white drop-shadow-lg sm:text-base">
-                    {promotion.altText}
-                  </p>
+                {promotion.altText?.trim() ? (
+                  <>
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
+                    <p className="absolute bottom-5 left-5 right-5 max-w-[92%] break-words font-orbitron text-sm font-black uppercase tracking-[0.12em] text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] sm:text-base">
+                      {promotion.altText}
+                    </p>
+                  </>
                 ) : null}
               </article>
             ))}
