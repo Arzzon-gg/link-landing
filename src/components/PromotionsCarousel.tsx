@@ -112,7 +112,7 @@ export function PromotionsCarousel({
           </div>
           <div
             ref={railRef}
-            className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain rounded-[1.6rem] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="mx-auto flex w-full snap-x snap-mandatory overflow-x-auto overscroll-x-contain rounded-[1.6rem] [scrollbar-width:none] lg:max-w-5xl [&::-webkit-scrollbar]:hidden"
             role="region"
             aria-roledescription="carousel"
             aria-label="Featured promotions"
@@ -131,7 +131,13 @@ export function PromotionsCarousel({
                 key={promotion.id}
                 aria-roledescription="slide"
                 aria-label={`${index + 1} of ${visiblePromotions.length}`}
-                className="relative aspect-video min-w-full snap-start overflow-hidden bg-white/[0.04] shadow-[0_20px_60px_rgba(0,0,0,0.35)]"
+                className={`relative aspect-video min-w-full snap-start overflow-hidden bg-white/[0.04] shadow-[0_20px_60px_rgba(0,0,0,0.35)]${
+                  // The menu page carries real content below — keep the banner
+                  // a compact strip instead of a viewport-tall 16:9 slab.
+                  placement === "menu"
+                    ? " max-h-[200px] sm:max-h-[280px] lg:max-h-[320px]"
+                    : ""
+                }`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
