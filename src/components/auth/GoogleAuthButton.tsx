@@ -1,7 +1,7 @@
 'use client';
 
 import { Loader2 } from 'lucide-react';
-import { getIdToken, signInWithPopup, signOut } from 'firebase/auth';
+import { getIdToken, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { getFirebaseAuthClient } from '@/lib/firebase-client';
@@ -27,11 +27,15 @@ export function GoogleAuthButton({ mode, onError }: GoogleAuthButtonProps) {
       const { auth, provider } = authClient;
       const result = await signInWithPopup(auth, provider);
       const idToken = await getIdToken(result.user, true);
+      const googleCredential = GoogleAuthProvider.credentialFromResult(result);
 
       const response = await fetch('/api/account-login-google', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken }),
+        body: JSON.stringify({
+          idToken,
+          googleAccessToken: googleCredential?.accessToken ?? null,
+        }),
       });
 
       const payload = (await response.json()) as AccountLoginApiResponse;

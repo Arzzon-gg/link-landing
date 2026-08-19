@@ -10,6 +10,7 @@ import { z } from 'zod';
 
 const googleLoginSchema = z.object({
   idToken: z.string().trim().min(1, 'Google ID token is required'),
+  googleAccessToken: z.string().trim().min(1).nullable().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -78,6 +79,7 @@ export async function POST(req: NextRequest) {
       cache: 'no-store',
       body: JSON.stringify({
         idToken: parsed.data.idToken,
+        googleAccessToken: parsed.data.googleAccessToken ?? null,
       }),
     });
 

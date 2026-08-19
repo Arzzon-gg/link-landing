@@ -232,6 +232,7 @@ function CreateAccountForm() {
             countryCodeReg={register('countryCode')}
             phoneNumberReg={register('phoneNumber')}
             dateOfBirthReg={register('dateOfBirth')}
+            showDateOfBirth
             addressReg={register('address')}
             noteReg={register('note')}
             errors={errors}
@@ -342,6 +343,7 @@ function CompleteProfileForm({ session }: { session: AccountLoginSession }) {
           countryCodeReg={register('countryCode')}
           phoneNumberReg={register('phoneNumber')}
           dateOfBirthReg={register('dateOfBirth')}
+          showDateOfBirth={!defaultValues.dateOfBirth}
           addressReg={register('address')}
           noteReg={register('note')}
           errors={errors}
@@ -458,6 +460,7 @@ function ProfileFields({
   countryCodeReg,
   phoneNumberReg,
   dateOfBirthReg,
+  showDateOfBirth,
   addressReg,
   noteReg,
   errors,
@@ -466,6 +469,7 @@ function ProfileFields({
   countryCodeReg: UseFormRegisterReturn<'countryCode'>;
   phoneNumberReg: UseFormRegisterReturn<'phoneNumber'>;
   dateOfBirthReg: UseFormRegisterReturn<'dateOfBirth'>;
+  showDateOfBirth: boolean;
   addressReg: UseFormRegisterReturn<'address'>;
   noteReg: UseFormRegisterReturn<'note'>;
   errors: FieldErrors<AccountSignupInput> | FieldErrors<AccountProfileCompletionInput>;
@@ -484,14 +488,18 @@ function ProfileFields({
       </motion.div>
 
       <motion.div variants={rowVariants} className="grid gap-4 sm:grid-cols-2">
-        <FormField
-          label="Date of Birth"
-          id="dateOfBirth"
-          type="date"
-          autoComplete="bday"
-          error={errors.dateOfBirth?.message}
-          {...dateOfBirthReg}
-        />
+        {showDateOfBirth ? (
+          <FormField
+            label="Date of Birth"
+            id="dateOfBirth"
+            type="date"
+            autoComplete="bday"
+            error={errors.dateOfBirth?.message}
+            {...dateOfBirthReg}
+          />
+        ) : (
+          <input type="hidden" {...dateOfBirthReg} />
+        )}
 
         <FormField
           label="Address (optional)"

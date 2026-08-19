@@ -28,6 +28,10 @@ export function getFirebaseAuthClient() {
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
+  // Firebase's default Google claims do not include birthday. This optional
+  // People API scope lets CloudHub import it when the user grants access.
+  provider.addScope('https://www.googleapis.com/auth/user.birthday.read');
+
   provider.setCustomParameters({
     prompt: 'select_account',
   });
