@@ -148,6 +148,10 @@ export function PublicMenuPage({
                       />
                     ))}
                   </div>
+                  <div
+                    aria-hidden="true"
+                    className="mt-12 h-px w-full bg-gradient-to-r from-cyan-400/65 via-white/15 to-transparent"
+                  />
                 </section>
               ))}
 
@@ -164,27 +168,29 @@ export function PublicMenuPage({
                   id="menu-category-uncategorized"
                   className="scroll-mt-28"
                 >
-                  <FadeIn className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                    <div className="flex items-center gap-4">
-                      <div>
-                        <div className="mb-2 flex items-center gap-3">
-                          <span
-                            className="h-2.5 w-2.5 rounded-full shadow-[0_0_18px_rgba(255,255,255,0.25)]"
-                            style={{ backgroundColor: "#39ff14" }}
-                          />
-                          <span className="font-orbitron text-[10px] font-black uppercase tracking-[0.3em] text-white/46">
-                            {menu.uncategorizedItems.length} dishes
-                          </span>
+                  <FadeIn className="mb-7">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                      <div className="flex items-center gap-4">
+                        <div>
+                          <div className="mb-2 flex items-center gap-3">
+                            <span
+                              className="h-2.5 w-2.5 rounded-full shadow-[0_0_18px_rgba(255,255,255,0.25)]"
+                              style={{ backgroundColor: "#39ff14" }}
+                            />
+                            <span className="font-orbitron text-[10px] font-black uppercase tracking-[0.3em] text-white/46">
+                              {menu.uncategorizedItems.length} dishes
+                            </span>
+                          </div>
+                          <h3 className="font-orbitron text-2xl font-black uppercase text-white sm:text-3xl">
+                            Uncategorized
+                          </h3>
                         </div>
-                        <h3 className="font-orbitron text-2xl font-black uppercase text-white sm:text-3xl">
-                          Uncategorized
-                        </h3>
                       </div>
-                    </div>
 
-                    <p className="max-w-lg text-sm leading-7 text-white/38">
-                      Dishes that haven't been assigned to a category yet.
-                    </p>
+                      <p className="max-w-lg text-sm leading-7 text-white/38">
+                        Dishes that haven't been assigned to a category yet.
+                      </p>
+                    </div>
                   </FadeIn>
 
                   <StaggerGroup
@@ -262,7 +268,7 @@ function MenuCategorySection({
             className="h-24 w-24 flex-shrink-0 rounded-2xl border border-white/10 object-cover shadow-[0_0_28px_rgba(0,0,0,0.50)] sm:h-32 sm:w-32"
           />
         ) : null}
-          <div className="min-w-0">
+        <div className="min-w-0">
           <div className="mb-2 flex items-center gap-3">
             <span
               className="h-2.5 w-2.5 rounded-full shadow-[0_0_18px_rgba(255,255,255,0.25)]"
