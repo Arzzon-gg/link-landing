@@ -41,8 +41,8 @@ export function SpinSignInGate({ onDismiss }: SpinSignInGateProps) {
         </h2>
 
         <p className="mx-auto mt-4 max-w-sm text-sm leading-6 text-white/50">
-          The daily wheel is part of your Link account. Sign up or log in to
-          spin it — and to keep whatever it lands on.
+          Your one-time welcome spin is unlocked when you create a Link
+          account. Sign up to spin it and keep whatever it lands on.
         </p>
 
         <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">

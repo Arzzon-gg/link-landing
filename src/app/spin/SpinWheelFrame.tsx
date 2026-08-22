@@ -49,7 +49,7 @@ export function SpinWheelFrame({ wheelUrl }: SpinWheelFrameProps) {
         allow="clipboard-write"
         onLoad={() => setWheelLoaded(true)}
       />
-      {!wheelLoaded && <RouteLoading label="Loading your daily spin" overlay />}
+      {!wheelLoaded && <RouteLoading label="Loading your welcome spin" overlay />}
     </div>
   );
 }

@@ -3,7 +3,6 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
 import { Features } from "@/components/landing/Features";
 import { CallToAction } from "@/components/landing/CallToAction";
-import { DailySpinSection } from "@/components/landing/DailySpinSection";
 import { FeaturesBar } from "@/components/landing/FeaturesBar";
 import { Footer } from "@/components/landing/Footer";
 import { PromotionsCarousel } from "@/components/PromotionsCarousel";
@@ -20,7 +19,6 @@ export default async function LandingPage() {
       <main>
         <Hero />
         <Features />
-        <DailySpinSection />
         <CallToAction />
         <FeaturesBar />
         {promotionsResult.status === "ready" ? (

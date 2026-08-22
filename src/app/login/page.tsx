@@ -15,7 +15,7 @@ export default async function LoginPage() {
   const session = await getCurrentAccountSession();
 
   if (session) {
-    redirect(session.profileCompleted ? '/spin' : '/signup');
+    redirect(session.profileCompleted ? '/menu' : '/signup');
   }
 
   return (

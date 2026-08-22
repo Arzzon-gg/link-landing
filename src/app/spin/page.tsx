@@ -7,18 +7,16 @@ import { buildWheelUrl } from '@/lib/wheel';
 import { SpinWheelFrame } from './SpinWheelFrame';
 
 export const metadata: Metadata = {
-  title: 'Daily Spin | The Link',
-  description: 'Spin the daily wheel for a reward.',
+  title: 'Welcome Spin | The Link',
+  description: 'Use your one-time registration spin for a reward.',
 };
 
 // Full-screen wheel launched right after signup. Reads the player's session
 // from the auth cookie (set by both the email signup and Google login flows)
 // and hands it to the embedded Flutter wheel so it opens already authenticated.
 //
-// Signed-in only. A visitor without a session — including one following an old
-// `?guest=1` link — is sent to log in; the landing page is where they get to
-// see the wheel, which shows them the real rewards but answers a tap with a
-// sign-in prompt rather than a spin (see DailySpinSection).
+// Signed-in only. A visitor without a session is sent to log in. Normal login
+// deliberately goes to the menu; this route is entered by registration.
 export default async function SpinPage() {
   const session = await getCurrentAccountSession();
   const token = (await cookies()).get(ACCOUNT_SESSION_COOKIE_NAME)?.value?.trim();

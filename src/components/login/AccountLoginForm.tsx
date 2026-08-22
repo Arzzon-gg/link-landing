@@ -67,9 +67,9 @@ export function AccountLoginForm() {
       }
 
       router.refresh();
-      // After a successful login, send the player to the daily spin wheel.
-      // Profiles that still need completing go to /signup first.
-      router.replace(result.session.profileCompleted ? '/spin' : '/signup');
+      // The wheel is the one-time registration benefit. A normal login goes
+      // to the app/menu and must not reopen the registration wheel.
+      router.replace(result.session.profileCompleted ? '/menu' : '/signup');
     } catch {
       setServerError('Network error. Please check your connection and try again.');
     }
