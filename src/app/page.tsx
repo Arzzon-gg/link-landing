@@ -27,6 +27,7 @@ export default async function LandingPage() {
           <PromotionsCarousel
             promotions={promotionsResult.menu.promotions}
             placement="home"
+            branchId={promotionsResult.menu.branch.id}
           />
         ) : null}
       </main>

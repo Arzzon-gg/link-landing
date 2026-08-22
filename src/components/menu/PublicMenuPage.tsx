@@ -13,17 +13,20 @@ import { BranchSelector } from "./BranchSelector";
 import { MenuCategoryNav } from "./MenuCategoryNav";
 import { PublicMenuItemCard } from "./PublicMenuItemCard";
 import { PromotionsCarousel } from "@/components/PromotionsCarousel";
+import { ScrollToMenuItem } from "./ScrollToMenuItem";
 
 interface PublicMenuPageProps {
   menu: PublicMenuData;
   branches: PublicMenuBranchOption[];
   selectedBranchId: number | null;
+  selectedItemId?: number | null;
 }
 
 export function PublicMenuPage({
   menu,
   branches,
   selectedBranchId,
+  selectedItemId = null,
 }: PublicMenuPageProps) {
   const categoryAccentIndex = new Map(
     menu.categories.map((category, index) => [category.id, index]),
@@ -44,6 +47,7 @@ export function PublicMenuPage({
 
   return (
     <div className="relative min-w-0 overflow-x-clip">
+      <ScrollToMenuItem itemId={selectedItemId} />
       <section className="relative flex min-h-[380px] items-center justify-center overflow-hidden px-4 pt-16 sm:min-h-[440px] sm:px-6 lg:min-h-[520px] lg:px-8 lg:pt-20">
         <Image
           src="/images/hero-menu.png"
@@ -87,7 +91,11 @@ export function PublicMenuPage({
         </div>
       </section>
 
-      <PromotionsCarousel promotions={menu.promotions} placement="menu" />
+      <PromotionsCarousel
+        promotions={menu.promotions}
+        placement="menu"
+        branchId={menu.branch.id}
+      />
 
       <section id="menu-categories" className="px-4 pb-24 sm:px-6 lg:px-8">
         <div className="mx-auto min-w-0 max-w-7xl">
@@ -141,11 +149,12 @@ export function PublicMenuPage({
 
                   <div className="space-y-16">
                     {section.categories.map((category) => (
-                      <MenuCategorySection
-                        key={category.id}
-                        category={category}
-                        accentIndex={categoryAccentIndex.get(category.id) ?? 0}
-                      />
+                        <MenuCategorySection
+                          key={category.id}
+                          category={category}
+                          accentIndex={categoryAccentIndex.get(category.id) ?? 0}
+                          selectedItemId={selectedItemId}
+                        />
                     ))}
                   </div>
                   <div
@@ -160,6 +169,7 @@ export function PublicMenuPage({
                   key={category.id}
                   category={category}
                   accentIndex={categoryAccentIndex.get(category.id) ?? 0}
+                  selectedItemId={selectedItemId}
                 />
               ))}
 
@@ -207,6 +217,7 @@ export function PublicMenuPage({
                           priceLabel={formatCurrency(item.basePrice)}
                           teaser={getMenuItemTeaser(item.description)}
                           priorityImage={false}
+                          showFullDescription={selectedItemId === item.id}
                         />
                       </StaggerItem>
                     ))}
@@ -239,9 +250,11 @@ export function PublicMenuPage({
 function MenuCategorySection({
   category,
   accentIndex,
+  selectedItemId,
 }: {
   category: PublicMenuCategory;
   accentIndex: number;
+  selectedItemId: number | null;
 }) {
   const accentColor =
     accentIndex % 4 === 0
@@ -299,6 +312,7 @@ function MenuCategorySection({
                 priceLabel={formatCurrency(item.basePrice)}
                 teaser={getMenuItemTeaser(item.description)}
                 priorityImage={accentIndex === 0 && itemIndex < 3}
+                showFullDescription={selectedItemId === item.id}
               />
             </StaggerItem>
           ))}

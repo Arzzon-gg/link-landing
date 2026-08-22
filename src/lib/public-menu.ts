@@ -69,6 +69,7 @@ const menuResponseSchema = z.object({
         imageUrl: z.string(),
         altText: z.string().nullable().optional(),
         sortOrder: z.number(),
+        menuItemId: z.number().nullable().optional(),
       }),
     )
     .default([]),
@@ -100,6 +101,7 @@ type RawPromotion = {
   imageUrl: string;
   altText?: string | null;
   sortOrder: number;
+  menuItemId?: number | null;
 };
 type PublicMenuConfig =
   | {
@@ -311,6 +313,7 @@ function sanitizePromotions(
       imageUrl: promotion.imageUrl,
       altText: promotion.altText ?? null,
       sortOrder: promotion.sortOrder,
+      menuItemId: promotion.menuItemId ?? null,
     }));
 }
 

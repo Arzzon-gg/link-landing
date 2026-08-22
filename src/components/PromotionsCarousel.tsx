@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FadeIn } from "@/components/Reveal";
 import { resolvePublicPromotionImageUrl } from "@/lib/public-image-url";
@@ -11,9 +12,11 @@ const MANUAL_PAUSE_MS = 8_000;
 export function PromotionsCarousel({
   promotions,
   placement,
+  branchId,
 }: {
   promotions: PublicPromotion[];
   placement: "home" | "menu";
+  branchId?: number | null;
 }) {
   const visiblePromotions = useMemo(
     () =>
@@ -131,7 +134,7 @@ export function PromotionsCarousel({
                 key={promotion.id}
                 aria-roledescription="slide"
                 aria-label={`${index + 1} of ${visiblePromotions.length}`}
-                className="relative aspect-video min-w-full snap-start overflow-hidden bg-white/[0.04] shadow-[0_20px_60px_rgba(0,0,0,0.35)]"
+                className={`relative aspect-video min-w-full snap-start overflow-hidden bg-white/[0.04] shadow-[0_20px_60px_rgba(0,0,0,0.35)] ${promotion.menuItemId && branchId ? "cursor-pointer" : ""}`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -147,6 +150,13 @@ export function PromotionsCarousel({
                       {promotion.altText}
                     </p>
                   </>
+                ) : null}
+                {promotion.menuItemId && branchId ? (
+                  <Link
+                    href={`/menu?branch=${branchId}&item=${promotion.menuItemId}#menu-item-${promotion.menuItemId}`}
+                    className="absolute inset-0 z-10"
+                    aria-label={`View ${promotion.altText?.trim() || "featured promotion"} menu item`}
+                  />
                 ) : null}
               </article>
             ))}

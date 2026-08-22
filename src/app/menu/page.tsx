@@ -18,10 +18,11 @@ export const revalidate = 300;
 export default async function MenuPage({
   searchParams,
 }: {
-  searchParams: Promise<{ branch?: string }>;
+  searchParams: Promise<{ branch?: string; item?: string }>;
 }) {
-  const { branch } = await searchParams;
+  const { branch, item } = await searchParams;
   const requestedBranchId = Number(branch);
+  const requestedItemId = Number(item);
   const selectedBranchId =
     Number.isFinite(requestedBranchId) && requestedBranchId > 0
       ? requestedBranchId
@@ -42,6 +43,11 @@ export default async function MenuPage({
         menu={result.menu}
         branches={branches}
         selectedBranchId={result.menu.branch.id ?? selectedBranchId ?? null}
+        selectedItemId={
+          Number.isFinite(requestedItemId) && requestedItemId > 0
+            ? requestedItemId
+            : null
+        }
       />
     );
   }

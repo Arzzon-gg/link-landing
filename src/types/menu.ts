@@ -50,4 +50,5 @@ export interface PublicPromotion {
   imageUrl: string;
   altText: string | null;
   sortOrder: number;
+  menuItemId: number | null;
 }
