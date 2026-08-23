@@ -8,6 +8,7 @@ export interface PublicMenuItem {
   imageUrl: string | null;
   isCombo: boolean;
   comboItems: PublicMenuComboItem[];
+  menuId: number | null;
 }
 
 export interface PublicMenuComboItem {
@@ -21,10 +22,18 @@ export interface PublicMenuCategory {
   imageUrl: string | null;
   sortOrder: number;
   sectionId: number | null;
+  menuId: number | null;
   items: PublicMenuItem[];
 }
 
 export interface PublicMenuSection {
+  id: number;
+  name: string;
+  sortOrder: number;
+  menuId: number | null;
+}
+
+export interface PublicMenuCatalog {
   id: number;
   name: string;
   sortOrder: number;
@@ -39,6 +48,7 @@ export interface PublicMenuBranch {
 export interface PublicMenuData {
   branch: PublicMenuBranch;
   generatedAtUtc: string;
+  menus: PublicMenuCatalog[];
   sections: PublicMenuSection[];
   categories: PublicMenuCategory[];
   uncategorizedItems: PublicMenuItem[];

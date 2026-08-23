@@ -8,8 +8,15 @@ import {
   type PublicMenuBranchOption,
   type PublicMenuLoadResult,
 } from "@/lib/public-menu";
-import type { PublicMenuCategory, PublicMenuData } from "@/types/menu";
+import type {
+  PublicMenuCatalog,
+  PublicMenuCategory,
+  PublicMenuData,
+  PublicMenuItem,
+  PublicMenuSection,
+} from "@/types/menu";
 import { BranchSelector } from "./BranchSelector";
+import { MenuCatalogNav } from "./MenuCatalogNav";
 import { MenuCategoryNav } from "./MenuCategoryNav";
 import { PublicMenuItemCard } from "./PublicMenuItemCard";
 import { PromotionsCarousel } from "@/components/PromotionsCarousel";
@@ -31,18 +38,45 @@ export function PublicMenuPage({
   const categoryAccentIndex = new Map(
     menu.categories.map((category, index) => [category.id, index]),
   );
-  const knownSectionIds = new Set(menu.sections.map((section) => section.id));
-  const visibleSections = menu.sections
-    .map((section) => ({
-      ...section,
-      categories: menu.categories.filter(
-        (category) => category.sectionId === section.id,
-      ),
-    }))
-    .filter((section) => section.categories.length > 0);
-  const standaloneCategories = menu.categories.filter(
-    (category) =>
-      category.sectionId == null || !knownSectionIds.has(category.sectionId),
+  const catalogs = menu.menus.length
+    ? menu.menus
+    : [{ id: 0, name: "Main Menu", sortOrder: 0 }];
+  const menuGroups = catalogs.map((catalog) => {
+    const belongsToCatalog = <T extends { menuId: number | null }>(value: T) =>
+      value.menuId === catalog.id || (catalog.id === 0 && value.menuId == null);
+    const categories = menu.categories.filter(belongsToCatalog);
+    const sections = menu.sections.filter(belongsToCatalog);
+    const sectionIds = new Set(sections.map((section) => section.id));
+    const visibleSections = sections
+      .map((section) => ({
+        ...section,
+        categories: categories.filter(
+          (category) => category.sectionId === section.id,
+        ),
+      }))
+      .filter((section) => section.categories.length > 0);
+    const standaloneCategories = categories.filter(
+      (category) =>
+        category.sectionId == null || !sectionIds.has(category.sectionId),
+    );
+    const uncategorizedItems = menu.uncategorizedItems.filter(belongsToCatalog);
+    const itemCount = categories.reduce(
+      (total, category) => total + category.items.length,
+      0,
+    ) + uncategorizedItems.length;
+
+    return {
+      catalog,
+      categories,
+      visibleSections,
+      standaloneCategories,
+      uncategorizedItems,
+      itemCount,
+    };
+  });
+  const allCategories = menuGroups.flatMap((group) => group.categories);
+  const allUncategorizedItems = menuGroups.flatMap(
+    (group) => group.uncategorizedItems,
   );
 
   return (
@@ -110,120 +144,50 @@ export function PublicMenuPage({
           </FadeIn>
 
           <FadeIn>
+            <MenuCatalogNav
+              menus={menuGroups.map((group) => ({
+                id: `menu-catalog-${group.catalog.id}`,
+                name: group.catalog.name,
+                sectionCount: group.visibleSections.length,
+                itemCount: group.itemCount,
+              }))}
+            />
             <MenuCategoryNav
               categories={[
-                ...menu.categories.map((category) => ({
+                ...allCategories.map((category) => ({
                   id: buildMenuCategoryAnchor(category.name, category.id),
                   name: category.name,
                   itemCount: category.items.length,
                 })),
-                ...(menu.uncategorizedItems.length
-                  ? [
-                      {
-                        id: "menu-category-uncategorized",
-                        name: "Uncategorized",
-                        itemCount: menu.uncategorizedItems.length,
-                      },
-                    ]
-                  : []),
+                ...menuGroups.flatMap((group) =>
+                  group.uncategorizedItems.length
+                    ? [
+                        {
+                          id: `menu-category-uncategorized-${group.catalog.id}`,
+                          name: `${group.catalog.name} · Other`,
+                          itemCount: group.uncategorizedItems.length,
+                        },
+                      ]
+                    : [],
+                ),
               ]}
             />
           </FadeIn>
 
-          {menu.categories.length || menu.uncategorizedItems.length ? (
+          {allCategories.length || allUncategorizedItems.length ? (
             <div className="space-y-16">
-              {visibleSections.map((section) => (
-                <section key={section.id} className="min-w-0 space-y-10">
-                  <FadeIn className="rounded-[2rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(12,12,28,0.96),rgba(7,7,14,0.98))] px-6 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.24)] sm:px-8">
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                      <div>
-                        <h2 className="font-orbitron text-3xl font-black uppercase text-white">
-                          {section.name}
-                        </h2>
-                      </div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/42">
-                        {section.categories.length} categories
-                      </p>
-                    </div>
-                  </FadeIn>
-
-                  <div className="space-y-16">
-                    {section.categories.map((category) => (
-                        <MenuCategorySection
-                          key={category.id}
-                          category={category}
-                          accentIndex={categoryAccentIndex.get(category.id) ?? 0}
-                          selectedItemId={selectedItemId}
-                        />
-                    ))}
-                  </div>
-                  <div
-                    aria-hidden="true"
-                    className="mt-12 h-px w-full bg-gradient-to-r from-cyan-400/65 via-white/15 to-transparent"
-                  />
-                </section>
-              ))}
-
-              {standaloneCategories.map((category) => (
-                <MenuCategorySection
-                  key={category.id}
-                  category={category}
-                  accentIndex={categoryAccentIndex.get(category.id) ?? 0}
+              {menuGroups.map((group) => (
+                <MenuCatalogSection
+                  key={group.catalog.id}
+                  id={`menu-catalog-${group.catalog.id}`}
+                  catalog={group.catalog}
+                  sections={group.visibleSections}
+                  standaloneCategories={group.standaloneCategories}
+                  uncategorizedItems={group.uncategorizedItems}
+                  categoryAccentIndex={categoryAccentIndex}
                   selectedItemId={selectedItemId}
                 />
               ))}
-
-              {menu.uncategorizedItems.length ? (
-                <section
-                  id="menu-category-uncategorized"
-                  className="scroll-mt-28"
-                >
-                  <FadeIn className="mb-7">
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                      <div className="flex items-center gap-4">
-                        <div>
-                          <div className="mb-2 flex items-center gap-3">
-                            <span
-                              className="h-2.5 w-2.5 rounded-full shadow-[0_0_18px_rgba(255,255,255,0.25)]"
-                              style={{ backgroundColor: "#39ff14" }}
-                            />
-                            <span className="font-orbitron text-[10px] font-black uppercase tracking-[0.3em] text-white/46">
-                              {menu.uncategorizedItems.length} dishes
-                            </span>
-                          </div>
-                          <h3 className="font-orbitron text-2xl font-black uppercase text-white sm:text-3xl">
-                            Uncategorized
-                          </h3>
-                        </div>
-                      </div>
-
-                      <p className="max-w-lg text-sm leading-7 text-white/38">
-                        Dishes that haven't been assigned to a category yet.
-                      </p>
-                    </div>
-                  </FadeIn>
-
-                  <StaggerGroup
-                    className="grid gap-2 lg:grid-cols-2"
-                    stagger={0.05}
-                    amount={0.08}
-                  >
-                    {menu.uncategorizedItems.map((item) => (
-                      <StaggerItem key={item.id} className="min-w-0">
-                        <PublicMenuItemCard
-                          item={item}
-                          category="Uncategorized"
-                          imageUrl={resolvePublicMenuImageUrl(item.imageUrl)}
-                          priceLabel={formatCurrency(item.basePrice)}
-                          teaser={getMenuItemTeaser(item.description)}
-                          priorityImage={false}
-                          showFullDescription={selectedItemId === item.id}
-                        />
-                      </StaggerItem>
-                    ))}
-                  </StaggerGroup>
-                </section>
-              ) : null}
             </div>
           ) : (
             <FadeIn>
@@ -244,6 +208,138 @@ export function PublicMenuPage({
         </div>
       </section>
     </div>
+  );
+}
+
+function MenuCatalogSection({
+  id,
+  catalog,
+  sections,
+  standaloneCategories,
+  uncategorizedItems,
+  categoryAccentIndex,
+  selectedItemId,
+}: {
+  id: string;
+  catalog: PublicMenuCatalog;
+  sections: Array<PublicMenuSection & { categories: PublicMenuCategory[] }>;
+  standaloneCategories: PublicMenuCategory[];
+  uncategorizedItems: PublicMenuItem[];
+  categoryAccentIndex: Map<number, number>;
+  selectedItemId: number | null;
+}) {
+  const categoryCount = sections.reduce(
+    (total, section) => total + section.categories.length,
+    standaloneCategories.length,
+  );
+  const itemCount = sections.reduce(
+    (total, section) =>
+      total + section.categories.reduce(
+        (sectionTotal, category) => sectionTotal + category.items.length,
+        0,
+      ),
+    standaloneCategories.reduce(
+      (total, category) => total + category.items.length,
+      0,
+    ) + uncategorizedItems.length,
+  );
+
+  return (
+    <section id={id} className="scroll-mt-28 space-y-12">
+      <FadeIn className="relative overflow-hidden rounded-[2rem] border border-cyan-300/15 bg-[linear-gradient(135deg,rgba(11,22,39,0.96),rgba(9,9,22,0.98)_55%,rgba(35,12,53,0.90))] px-6 py-6 shadow-[0_24px_70px_rgba(0,0,0,0.30)] sm:px-8 sm:py-7">
+        <div className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-cyan-400/10 blur-3xl" />
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="font-orbitron text-[9px] font-black uppercase tracking-[0.3em] text-cyan-300">
+              Menu collection
+            </p>
+            <h2 className="mt-2 font-orbitron text-3xl font-black uppercase text-white sm:text-4xl">
+              {catalog.name}
+            </h2>
+          </div>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/48">
+            {categoryCount} {categoryCount === 1 ? "category" : "categories"} · {itemCount} dishes
+          </p>
+        </div>
+      </FadeIn>
+
+      {sections.map((section) => (
+        <section key={section.id} className="min-w-0 space-y-9">
+          <FadeIn className="flex flex-col gap-3 border-l-2 border-cyan-300/55 py-1 pl-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="font-orbitron text-[9px] font-black uppercase tracking-[0.26em] text-cyan-300/80">
+                Section
+              </p>
+              <h3 className="mt-1 font-orbitron text-2xl font-black uppercase text-white sm:text-3xl">
+                {section.name}
+              </h3>
+            </div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/42">
+              {section.categories.length} {section.categories.length === 1 ? "category" : "categories"}
+            </p>
+          </FadeIn>
+          <div className="space-y-14">
+            {section.categories.map((category) => (
+              <MenuCategorySection
+                key={category.id}
+                category={category}
+                accentIndex={categoryAccentIndex.get(category.id) ?? 0}
+                selectedItemId={selectedItemId}
+              />
+            ))}
+          </div>
+        </section>
+      ))}
+
+      {standaloneCategories.length ? (
+        <div className="space-y-14 border-l-2 border-violet-400/45 py-1 pl-5">
+          <p className="font-orbitron text-[9px] font-black uppercase tracking-[0.26em] text-violet-300/80">
+            More in {catalog.name}
+          </p>
+          {standaloneCategories.map((category) => (
+            <MenuCategorySection
+              key={category.id}
+              category={category}
+              accentIndex={categoryAccentIndex.get(category.id) ?? 0}
+              selectedItemId={selectedItemId}
+            />
+          ))}
+        </div>
+      ) : null}
+
+      {uncategorizedItems.length ? (
+        <section id={`menu-category-uncategorized-${catalog.id}`} className="scroll-mt-28">
+          <FadeIn className="mb-7 flex items-end justify-between gap-4">
+            <div>
+              <p className="font-orbitron text-[9px] font-black uppercase tracking-[0.26em] text-white/42">
+                Other dishes
+              </p>
+              <h3 className="mt-1 font-orbitron text-2xl font-black uppercase text-white">
+                Uncategorized
+              </h3>
+            </div>
+            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-white/42">
+              {uncategorizedItems.length} dishes
+            </span>
+          </FadeIn>
+          <StaggerGroup className="grid gap-2 lg:grid-cols-2" stagger={0.05} amount={0.08}>
+            {uncategorizedItems.map((item) => (
+              <StaggerItem key={item.id} className="min-w-0">
+                <PublicMenuItemCard
+                  item={item}
+                  category="Uncategorized"
+                  imageUrl={resolvePublicMenuImageUrl(item.imageUrl)}
+                  priceLabel={formatCurrency(item.basePrice)}
+                  teaser={getMenuItemTeaser(item.description)}
+                  priorityImage={false}
+                  showFullDescription={selectedItemId === item.id}
+                />
+              </StaggerItem>
+            ))}
+          </StaggerGroup>
+        </section>
+      ) : null}
+    </section>
   );
 }
 

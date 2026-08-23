@@ -3,6 +3,7 @@ import "server-only";
 import { z } from "zod";
 import type {
   PublicMenuBranch,
+  PublicMenuCatalog,
   PublicMenuCategory,
   PublicMenuData,
   PublicMenuItem,
@@ -40,6 +41,7 @@ const menuItemSchema = z.object({
   imageUrl: z.string().nullable().optional(),
   isCombo: z.boolean().default(false),
   comboItems: z.array(z.object({ id: z.number(), name: z.string() })).default([]),
+  menuId: z.number().nullable().optional(),
 });
 
 const menuCategorySchema = z.object({
@@ -48,6 +50,7 @@ const menuCategorySchema = z.object({
   imageUrl: z.string().nullable().optional(),
   sortOrder: z.number(),
   sectionId: z.number().nullable().optional(),
+  menuId: z.number().nullable().optional(),
   items: z.array(menuItemSchema).default([]),
 });
 
@@ -55,10 +58,12 @@ const menuSectionSchema = z.object({
   id: z.number(),
   name: z.string(),
   sortOrder: z.number(),
+  menuId: z.number().nullable().optional(),
 });
 
 const menuResponseSchema = z.object({
   generatedAtUtc: z.string(),
+  menus: z.array(z.object({ id: z.number(), name: z.string(), sortOrder: z.number() })).default([]),
   sections: z.array(menuSectionSchema).default([]),
   categories: z.array(menuCategorySchema).default([]),
   uncategorizedItems: z.array(menuItemSchema).default([]),
@@ -87,6 +92,7 @@ type RawMenuItem = {
   imageUrl?: string | null;
   isCombo?: boolean;
   comboItems?: { id: number; name: string }[];
+  menuId?: number | null;
 };
 type RawMenuCategory = {
   id: number;
@@ -94,6 +100,7 @@ type RawMenuCategory = {
   imageUrl?: string | null;
   sortOrder: number;
   sectionId?: number | null;
+  menuId?: number | null;
   items?: RawMenuItem[];
 };
 type RawPromotion = {
@@ -268,6 +275,7 @@ function sanitizeItems(items: RawMenuItem[] = []): PublicMenuItem[] {
       imageUrl: item.imageUrl ?? null,
       isCombo: item.isCombo ?? false,
       comboItems: item.comboItems ?? [],
+      menuId: item.menuId ?? null,
     }));
 }
 
@@ -283,6 +291,7 @@ function sanitizeCategories(
       imageUrl: category.imageUrl ?? null,
       sortOrder: category.sortOrder,
       sectionId: category.sectionId ?? null,
+      menuId: category.menuId ?? null,
       items: sanitizeItems(category.items),
     }));
 }
@@ -297,6 +306,7 @@ function sanitizeSections(
       id: section.id,
       name: section.name,
       sortOrder: section.sortOrder,
+      menuId: section.menuId ?? null,
     }));
 }
 
@@ -385,6 +395,7 @@ export async function getPublicMenu(
       menu: {
         branch,
         generatedAtUtc: menu.generatedAtUtc,
+        menus: menu.menus as PublicMenuCatalog[],
         sections: sanitizeSections(menu.sections ?? []),
         categories: sanitizeCategories(menu.categories ?? []),
         uncategorizedItems: sanitizeItems(menu.uncategorizedItems ?? []),
