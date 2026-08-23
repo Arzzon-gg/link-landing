@@ -7,6 +7,7 @@ interface MenuCategoryNavItem {
   id: string;
   name: string;
   itemCount: number;
+  menuId?: number;
 }
 
 interface MenuCategoryNavProps {
@@ -26,7 +27,7 @@ export function MenuCategoryNav({ categories }: MenuCategoryNavProps) {
 
       for (const category of categories) {
         const section = document.getElementById(category.id);
-        if (!section) continue;
+        if (!section || section.offsetParent === null) continue;
 
         if (section.offsetTop <= scrollAnchor) {
           current = category.id;
@@ -54,6 +55,7 @@ export function MenuCategoryNav({ categories }: MenuCategoryNavProps) {
           <a
             key={category.id}
             href={`#${category.id}`}
+            data-menu-category-menu-id={category.menuId}
             className={`button-sheen group relative min-w-max overflow-hidden rounded-full border px-4 py-2 text-left backdrop-blur-sm transition-all duration-300 ${
               isActive
                 ? 'border-cyan-400/40 bg-[#0d1322] shadow-[0_0_24px_rgba(34,211,238,0.14)]'

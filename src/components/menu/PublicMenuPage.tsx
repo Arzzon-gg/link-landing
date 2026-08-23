@@ -74,10 +74,25 @@ export function PublicMenuPage({
       itemCount,
     };
   });
-  const allCategories = menuGroups.flatMap((group) => group.categories);
+
+  const selectedItemCatalogId = selectedItemId
+    ? menuGroups.find((group) =>
+        group.categories.some((category) =>
+          category.items.some((item) => item.id === selectedItemId),
+        ) || group.uncategorizedItems.some((item) => item.id === selectedItemId),
+      )?.catalog.id ?? null
+    : null;
+  const initialCatalogId = selectedItemCatalogId ?? menuGroups[0]?.catalog.id ?? null;
+  const allCategories = menuGroups.flatMap((group) =>
+    group.categories.map((category) => ({
+      ...category,
+      ownerMenuId: group.catalog.id,
+    })),
+  );
   const allUncategorizedItems = menuGroups.flatMap(
     (group) => group.uncategorizedItems,
   );
+  const hasPublishedItems = allCategories.length > 0 || allUncategorizedItems.length > 0;
 
   return (
     <div className="relative min-w-0 overflow-x-clip">
@@ -131,7 +146,10 @@ export function PublicMenuPage({
         branchId={menu.branch.id}
       />
 
-      <section id="menu-categories" className="px-4 pb-24 sm:px-6 lg:px-8">
+      <section
+        id="menu-categories"
+        className="scroll-mt-28 px-4 pb-24 sm:scroll-mt-32 sm:px-6 lg:px-8"
+      >
         <div className="mx-auto min-w-0 max-w-7xl">
           <FadeIn className="mb-10 text-center">
             <div className="flex items-center justify-center gap-5">
@@ -151,6 +169,7 @@ export function PublicMenuPage({
                 sectionCount: group.visibleSections.length,
                 itemCount: group.itemCount,
               }))}
+              initialMenuId={initialCatalogId}
             />
             <MenuCategoryNav
               categories={[
@@ -158,6 +177,7 @@ export function PublicMenuPage({
                   id: buildMenuCategoryAnchor(category.name, category.id),
                   name: category.name,
                   itemCount: category.items.length,
+                  menuId: category.ownerMenuId,
                 })),
                 ...menuGroups.flatMap((group) =>
                   group.uncategorizedItems.length
@@ -166,6 +186,7 @@ export function PublicMenuPage({
                           id: `menu-category-uncategorized-${group.catalog.id}`,
                           name: `${group.catalog.name} · Other`,
                           itemCount: group.uncategorizedItems.length,
+                          menuId: group.catalog.id,
                         },
                       ]
                     : [],
@@ -177,16 +198,22 @@ export function PublicMenuPage({
           {allCategories.length || allUncategorizedItems.length ? (
             <div className="space-y-16">
               {menuGroups.map((group) => (
-                <MenuCatalogSection
+                <div
                   key={group.catalog.id}
-                  id={`menu-catalog-${group.catalog.id}`}
-                  catalog={group.catalog}
-                  sections={group.visibleSections}
-                  standaloneCategories={group.standaloneCategories}
-                  uncategorizedItems={group.uncategorizedItems}
-                  categoryAccentIndex={categoryAccentIndex}
-                  selectedItemId={selectedItemId}
-                />
+                  data-menu-catalog-content
+                  data-menu-id={group.catalog.id}
+                  hidden={group.catalog.id !== initialCatalogId}
+                >
+                  <MenuCatalogSection
+                    id={`menu-catalog-${group.catalog.id}`}
+                    catalog={group.catalog}
+                    sections={group.visibleSections}
+                    standaloneCategories={group.standaloneCategories}
+                    uncategorizedItems={group.uncategorizedItems}
+                    categoryAccentIndex={categoryAccentIndex}
+                    selectedItemId={selectedItemId}
+                  />
+                </div>
               ))}
             </div>
           ) : (

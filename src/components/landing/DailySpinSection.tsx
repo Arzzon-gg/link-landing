@@ -6,7 +6,7 @@ import { SpinSignInGate } from '@/components/spin/SpinSignInGate';
 import { buildGuestWheelUrl } from '@/lib/wheel';
 
 /**
- * Landing-page daily wheel — the same wheel the apps embed on Home, so it is
+ * Landing-page welcome wheel — the same wheel the apps embed on Home, so it is
  * present from the start rather than hidden behind a call to action.
  *
  * A visitor sees the real wheel with the real rewards on it, but cannot spin
@@ -55,7 +55,7 @@ export function DailySpinSection() {
         <FadeIn className="mb-8 flex items-center gap-4">
           <span className="h-px flex-1 bg-gradient-to-r from-transparent to-cyan-400/40" />
           <p className="font-orbitron text-[10px] font-black uppercase tracking-[0.32em] text-white/45">
-            Daily spin
+            Welcome spin
           </p>
           <span className="h-px flex-1 bg-gradient-to-l from-transparent to-violet-400/35" />
         </FadeIn>
@@ -63,7 +63,7 @@ export function DailySpinSection() {
         <div className="relative mx-auto w-full max-w-2xl overflow-hidden rounded-2xl">
           <iframe
             src={buildGuestWheelUrl()}
-            title="Daily spin wheel"
+            title="Welcome spin wheel"
             loading="lazy"
             className="h-[560px] w-full sm:h-[620px]"
             style={{ border: 0 }}

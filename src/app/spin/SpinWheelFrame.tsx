@@ -43,7 +43,7 @@ export function SpinWheelFrame({ wheelUrl }: SpinWheelFrameProps) {
     <div className="relative h-full w-full">
       <iframe
         src={wheelUrl}
-        title="Daily spin wheel"
+        title="Welcome spin wheel"
         className="h-full w-full"
         style={{ border: 0 }}
         allow="clipboard-write"

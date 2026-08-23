@@ -46,7 +46,7 @@ export function GoogleAuthButton({ mode, onError }: GoogleAuthButtonProps) {
       }
 
       router.refresh();
-      // After both login and signup, launch the daily spin wheel. Profiles that
+      // After both login and signup, launch the one-time welcome spin. Profiles that
       // still need completing go to /signup first.
       router.replace(payload.session.profileCompleted ? '/spin' : '/signup');
     } catch (error) {
