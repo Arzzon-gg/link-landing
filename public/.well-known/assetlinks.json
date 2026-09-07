@@ -1,0 +1,22 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "world.thelink.app",
+      "sha256_cert_fingerprints": [
+        "4E:A6:0E:F1:14:3D:A9:03:71:B4:66:1A:91:EC:EC:33:02:40:59:01:E0:BE:C9:82:63:A2:EE:8E:1E:64:22:EB"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "world.thelink.app.debug",
+      "sha256_cert_fingerprints": [
+        "4E:A6:0E:F1:14:3D:A9:03:71:B4:66:1A:91:EC:EC:33:02:40:59:01:E0:BE:C9:82:63:A2:EE:8E:1E:64:22:EB"
+      ]
+    }
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "37C6WGJVV5.world.thelink.app",
+          "37C6WGJVV5.world.thelink.app.debug"
+        ],
+        "components": [
+          { "/": "/app/*" }
+        ]
+      }
+    ]
+  }
+}
