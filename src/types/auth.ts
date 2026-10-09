@@ -16,6 +16,9 @@ export interface AccountLoginSession {
   firebaseLinked: boolean;
   hasPassword: boolean;
   profileCompleted: boolean;
+  isStudent: boolean;
+  universityId: string | null;
+  studentId: string | null;
 }
 
 export interface AccountLoginApiResponse {

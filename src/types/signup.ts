@@ -11,6 +11,9 @@ export interface AccountSignupApiResponse {
   success: boolean;
   message: string;
   userId?: number;
+  isStudent?: boolean;
+  universityId?: string | null;
+  studentId?: string | null;
   /**
    * Present when the new account was also signed in so the post-signup wheel
    * can open already authenticated. Absent if the auto-login step failed.

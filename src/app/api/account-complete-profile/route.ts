@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { ACCOUNT_SESSION_COOKIE_NAME } from '@/lib/account-auth';
 import {
-  accountProfileCompletionSchema,
-  type AccountProfileCompletionInput,
+  accountProfilePatchSchema,
+  type AccountProfilePatchInput,
 } from '@/lib/account-profile-validation';
 import { getCurrentAccountSession } from '@/lib/account-session';
 import { checkRateLimit } from '@/lib/rate-limit';
@@ -16,6 +16,9 @@ type CloudHubProfileUpdatePayload = {
   marriageDate?: string | null;
   address?: string | null;
   profileCompleted?: boolean;
+  isStudent?: boolean;
+  universityId?: string | null;
+  studentId?: string | null;
 };
 
 export async function PATCH(req: NextRequest) {
@@ -61,7 +64,7 @@ export async function PATCH(req: NextRequest) {
     );
   }
 
-  const parsed = accountProfileCompletionSchema.safeParse(body);
+  const parsed = accountProfilePatchSchema.safeParse(body);
 
   if (!parsed.success) {
     return NextResponse.json(
@@ -133,6 +136,9 @@ export async function PATCH(req: NextRequest) {
       success: true,
       message: 'Your profile has been completed successfully.',
       profileCompleted: !!payload.profileCompleted,
+      isStudent: payload.isStudent ?? false,
+      universityId: payload.isStudent ? payload.universityId ?? null : null,
+      studentId: payload.isStudent ? payload.studentId ?? null : null,
     });
   } catch (error) {
     console.error('[account-complete-profile] CloudHub request failed:', error);
@@ -152,7 +158,7 @@ export function GET() {
   return NextResponse.json({ message: 'Method not allowed.' }, { status: 405 });
 }
 
-function buildCloudHubProfilePayload(data: AccountProfileCompletionInput) {
+function buildCloudHubProfilePayload(data: AccountProfilePatchInput) {
   const normalizedPhoneDigits = data.phoneNumber.replace(/\D/g, '');
   const phone = normalizedPhoneDigits ? `+${data.countryCode}${normalizedPhoneDigits}` : null;
   const isMarried =
@@ -160,6 +166,9 @@ function buildCloudHubProfilePayload(data: AccountProfileCompletionInput) {
 
   return {
     name: null,
+    isStudent: data.isStudent,
+    universityId: data.universityId,
+    studentId: data.studentId,
     phone,
     dateOfBirth: toIsoDateOrNull(data.dateOfBirth),
     isMarried,

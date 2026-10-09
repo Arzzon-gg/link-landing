@@ -24,6 +24,9 @@ type CloudHubErrorPayload = {
 
 type CloudHubUserPayload = {
   id?: number;
+  isStudent?: boolean;
+  universityId?: string | null;
+  studentId?: string | null;
 };
 
 export async function POST(req: NextRequest) {
@@ -129,7 +132,7 @@ export async function POST(req: NextRequest) {
       console.error('[account-signup] Google Sheets skipped:', sheetsError);
     } else {
       try {
-        await appendRegistration(buildSignupRow(parsed.data));
+        await appendRegistration(buildSignupRow(parsed.data), parsed.data);
         sheetsSaved = true;
       } catch (error) {
         sheetsError = error instanceof Error ? error.message : 'Unknown Google Sheets error.';
@@ -142,6 +145,9 @@ export async function POST(req: NextRequest) {
         success: true,
         message: 'Your account has been created successfully.',
         userId: result.id,
+        isStudent: result.isStudent ?? parsed.data.isStudent,
+        universityId: (result.isStudent ?? parsed.data.isStudent) ? result.universityId ?? parsed.data.universityId : null,
+        studentId: (result.isStudent ?? parsed.data.isStudent) ? result.studentId ?? parsed.data.studentId : null,
         wheelSession,
         sheetsSaved,
         sheetsError,
@@ -265,6 +271,9 @@ function buildCloudHubUserPayload(data: ReturnType<typeof accountSignupSchema.pa
     name: data.name.trim(),
     email: data.email.trim().toLowerCase(),
     password: data.password,
+    isStudent: data.isStudent,
+    universityId: data.universityId,
+    studentId: data.studentId,
     phone,
     dateOfBirth: toIsoDateOrNull(data.dateOfBirth),
     isMarried,

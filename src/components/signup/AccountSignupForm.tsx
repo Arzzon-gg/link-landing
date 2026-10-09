@@ -12,9 +12,11 @@ import type { FieldErrors, UseFormRegisterReturn } from 'react-hook-form';
 import { GoogleAuthButton } from '@/components/auth/GoogleAuthButton';
 import { FormField } from '@/components/FormField';
 import { PhoneField } from '@/components/PhoneField';
+import { StudentFields } from '@/components/signup/StudentFields';
 import { COUNTRY_CODES } from '@/data/countryCodes';
 import {
   accountProfileCompletionSchema,
+  buildProfileCompletionRequest,
   type AccountProfileCompletionInput,
 } from '@/lib/account-profile-validation';
 import {
@@ -64,6 +66,7 @@ function CreateAccountForm() {
     register,
     handleSubmit,
     watch,
+    resetField,
     formState: { errors, isSubmitting },
   } = useForm<AccountSignupInput>({
     resolver: zodResolver(accountSignupSchema),
@@ -73,6 +76,9 @@ function CreateAccountForm() {
       dateOfBirth: '',
       address: '',
       note: '',
+      isStudent: false,
+      universityId: null,
+      studentId: null,
     },
     shouldUnregister: true,
   });
@@ -239,6 +245,20 @@ function CreateAccountForm() {
             watchCountryCode={watch('countryCode')}
           />
 
+          <StudentFields
+            isStudent={watch('isStudent')}
+            universityId={watch('universityId')}
+            isStudentReg={register('isStudent')}
+            universityIdReg={register('universityId')}
+            studentIdReg={register('studentId')}
+            universityError={errors.universityId?.message}
+            studentIdError={errors.studentId?.message}
+            onClear={() => {
+              resetField('universityId', { defaultValue: null });
+              resetField('studentId', { defaultValue: null });
+            }}
+          />
+
           <motion.div variants={rowVariants} className="pt-2">
             <button
               type="submit"
@@ -264,6 +284,7 @@ function CompleteProfileForm({ session }: { session: AccountLoginSession }) {
     register,
     handleSubmit,
     watch,
+    resetField,
     formState: { errors, isSubmitting },
   } = useForm<AccountProfileCompletionInput>({
     resolver: zodResolver(accountProfileCompletionSchema),
@@ -278,7 +299,7 @@ function CompleteProfileForm({ session }: { session: AccountLoginSession }) {
       const response = await fetch('/api/account-complete-profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(buildProfileCompletionRequest(data)),
       });
 
       const result = (await response.json()) as {
@@ -348,6 +369,20 @@ function CompleteProfileForm({ session }: { session: AccountLoginSession }) {
           noteReg={register('note')}
           errors={errors}
           watchCountryCode={watch('countryCode')}
+        />
+
+        <StudentFields
+          isStudent={watch('isStudent')}
+          universityId={watch('universityId')}
+          isStudentReg={register('isStudent')}
+          universityIdReg={register('universityId')}
+          studentIdReg={register('studentId')}
+          universityError={errors.universityId?.message}
+          studentIdError={errors.studentId?.message}
+          onClear={() => {
+            resetField('universityId', { defaultValue: null });
+            resetField('studentId', { defaultValue: null });
+          }}
         />
 
         <motion.div variants={rowVariants} className="pt-2">
@@ -600,6 +635,9 @@ function getProfileDefaultValues(session: AccountLoginSession): AccountProfileCo
     marriageDate: toDateInputValue(session.marriageDate),
     address: session.address ?? '',
     note: session.note ?? '',
+    isStudent: session.isStudent ?? false,
+    universityId: session.isStudent ? session.universityId : null,
+    studentId: session.isStudent ? session.studentId : null,
   };
 }
 

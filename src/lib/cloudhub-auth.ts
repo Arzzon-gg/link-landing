@@ -25,6 +25,9 @@ export type CloudHubAuthPayload = {
   firebaseLinked?: boolean;
   hasPassword?: boolean;
   profileCompleted?: boolean;
+  isStudent?: boolean;
+  universityId?: string | null;
+  studentId?: string | null;
 };
 
 type CloudHubErrorPayload = {
@@ -51,6 +54,9 @@ export function buildAccountSession(payload: {
   firebaseLinked: boolean;
   hasPassword: boolean;
   profileCompleted: boolean;
+  isStudent: boolean;
+  universityId: string | null;
+  studentId: string | null;
 }): AccountLoginSession {
   return {
     userId: payload.userId,
@@ -70,6 +76,9 @@ export function buildAccountSession(payload: {
     firebaseLinked: payload.firebaseLinked,
     hasPassword: payload.hasPassword,
     profileCompleted: payload.profileCompleted,
+    isStudent: payload.isStudent,
+    universityId: payload.isStudent ? payload.universityId : null,
+    studentId: payload.isStudent ? payload.studentId : null,
   };
 }
 
@@ -98,6 +107,9 @@ export function parseCloudHubSession(payload: CloudHubAuthPayload) {
       firebaseLinked: !!payload.firebaseLinked,
       hasPassword: !!payload.hasPassword,
       profileCompleted: !!payload.profileCompleted,
+      isStudent: payload.isStudent === true,
+      universityId: typeof payload.universityId === 'string' ? payload.universityId : null,
+      studentId: typeof payload.studentId === 'string' ? payload.studentId : null,
     }),
   };
 }

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { studentFields, studentPatchSchema, validateStudentDetails, normalizeStudentDetails } from '@/lib/student-validation';
 import { COUNTRY_CODES } from '@/data/countryCodes';
 import { getAgeFromDateOfBirth } from '@/lib/validation';
 
@@ -8,7 +9,7 @@ const optionalTrimmedString = z
   .optional()
   .transform((value) => value ?? '');
 
-export const accountProfileCompletionSchema = z
+const accountProfileBaseSchema = z
   .object({
     countryCode: z.string().trim().min(1, 'Please select a country code'),
     phoneNumber: optionalTrimmedString,
@@ -112,4 +113,15 @@ export const accountProfileCompletionSchema = z
     }
   });
 
+export const accountProfileCompletionSchema = accountProfileBaseSchema.and(
+  z.object(studentFields).superRefine(validateStudentDetails).transform(normalizeStudentDetails)
+);
+
+export const accountProfilePatchSchema = accountProfileBaseSchema.and(studentPatchSchema);
+
 export type AccountProfileCompletionInput = z.infer<typeof accountProfileCompletionSchema>;
+export type AccountProfilePatchInput = z.infer<typeof accountProfilePatchSchema>;
+
+export function buildProfileCompletionRequest(data: AccountProfileCompletionInput): AccountProfilePatchInput {
+  return { ...data, studentId: data.isStudent ? data.studentId ?? '' : null };
+}

@@ -1,10 +1,13 @@
 import { google } from 'googleapis';
+import type { StudentDetails } from '@/lib/student-validation';
 
-// Column order: Submission ID | Created At | Name | Email | Phone | Address | DateOfBirth | Married | AnniversaryDate
+// A–J: Submission ID | Created At | Name | Email | Phone | Address | DateOfBirth | Married | AnniversaryDate | Note
+// K–M: Is Student | University ID | Student ID (only on compatible sheets).
 // Defaults to 'Sheet1' (the Google Sheets default tab name).
 // Override by setting GOOGLE_SHEET_TAB in your environment.
 const SHEET_TAB = process.env.GOOGLE_SHEET_TAB ?? 'Sheet1';
-const SHEET_RANGE = `${SHEET_TAB}!A:I`;
+const SHEET_RANGE = `${SHEET_TAB}!A:J`;
+const STUDENT_HEADERS = ['Is Student', 'University ID', 'Student ID'];
 
 function buildCredentials() {
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
@@ -81,7 +84,7 @@ export async function checkDuplicate(
   return null;
 }
 
-export async function appendRegistration(row: string[]): Promise<void> {
+export async function appendRegistration(row: string[], studentDetails?: StudentDetails): Promise<void> {
   const sheetId = process.env.GOOGLE_SHEET_ID;
 
   if (!sheetId) {
@@ -92,11 +95,42 @@ export async function appendRegistration(row: string[]): Promise<void> {
 
   const { sheets, sheetId: id } = buildSheetsClient(sheetId);
 
+  let values = row;
+  if (studentDetails) {
+    const existing = await sheets.spreadsheets.values.get({
+      spreadsheetId: id,
+      range: `${SHEET_TAB}!A:M`,
+    });
+    const rows = existing.data.values ?? [];
+    const header = rows[0] ?? [];
+    const hasStudentHeaders = STUDENT_HEADERS.every((name, index) => header[index + 10] === name);
+    const canAddStudentHeaders = header[3]?.toLowerCase() === 'email'
+      && rows.every((item) => item.slice(10, 13).every((value) => value === '' || value == null));
+
+    if (hasStudentHeaders || canAddStudentHeaders) {
+      if (!hasStudentHeaders) {
+        await sheets.spreadsheets.values.update({
+          spreadsheetId: id,
+          range: `${SHEET_TAB}!K1:M1`,
+          valueInputOption: 'RAW',
+          requestBody: { values: [STUDENT_HEADERS] },
+        });
+      }
+      // USER_ENTERED remains compatible with the original columns. Prefix IDs
+      // as literal text so leading zeros survive and formulas cannot execute.
+      values = [...row, studentDetails.isStudent ? 'Yes' : 'No',
+        studentDetails.universityId ? `'${studentDetails.universityId}` : '',
+        studentDetails.studentId ? `'${studentDetails.studentId}` : ''];
+    } else {
+      console.warn('[sheets] Student columns skipped: existing sheet layout is not compatible.');
+    }
+  }
+
   await sheets.spreadsheets.values.append({
     spreadsheetId: id,
-    range: SHEET_RANGE,
+    range: values.length > 10 ? `${SHEET_TAB}!A:M` : SHEET_RANGE,
     valueInputOption: 'USER_ENTERED',
     insertDataOption: 'INSERT_ROWS',
-    requestBody: { values: [row] },
+    requestBody: { values: [values] },
   });
 }

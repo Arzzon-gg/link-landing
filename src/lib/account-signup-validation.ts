@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { studentFields, validateStudentDetails, normalizeStudentDetails } from '@/lib/student-validation';
 import { COUNTRY_CODES } from '@/data/countryCodes';
 import { getAgeFromDateOfBirth } from '@/lib/validation';
 
@@ -10,6 +11,7 @@ const optionalTrimmedString = z
 
 export const accountSignupSchema = z
   .object({
+    ...studentFields,
     name: z
       .string()
       .trim()
@@ -52,6 +54,7 @@ export const accountSignupSchema = z
       .transform((value) => value ?? ''),
   })
   .superRefine((data, ctx) => {
+    validateStudentDetails(data, ctx);
     if (data.password !== data.confirmPassword) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -147,6 +150,7 @@ export const accountSignupSchema = z
       });
       return;
     }
-  });
+  })
+  .transform(normalizeStudentDetails);
 
 export type AccountSignupInput = z.infer<typeof accountSignupSchema>;
